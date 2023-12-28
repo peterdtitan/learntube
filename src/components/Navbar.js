@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import ThemeSwitcher from 'src/app/ThemeSwitcher';
+import ThemeSwitcher from '../app/ThemeSwitcher';
 
 export default function Navbar() {
   return (

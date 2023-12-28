@@ -11,7 +11,7 @@ export default function Providers({ children }) {
   }, []);
 
   if (!mounted) {
-    return { children };
+    return <div>{children}</div>;
   }
 
   return <ThemeProvider>{children}</ThemeProvider>;
