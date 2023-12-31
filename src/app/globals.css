@@ -3,4 +3,22 @@
 @tailwind utilities;
 
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Poppins&display=swap');
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+.active-link {
+    position: relative;
+    color: inherit;
+}
+
+.active-link::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; /* Adjust the offset as needed */
+    left: 0;
+    right: 0;
+    height: 2px; /* Adjust the thickness as needed */
+    background-color: red; /* Adjust the color as needed */
+}

@@ -1,11 +1,10 @@
 import React from 'react';
 import './globals.css';
-import Navbar from '../components/Navbar';
 
 export default function Home() {
   return (
     <div>
-      <Navbar />
+      <p>Welcome to home page</p>
     </div>
   );
 }

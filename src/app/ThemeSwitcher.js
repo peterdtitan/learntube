@@ -18,15 +18,17 @@ function ThemeSwitcher() {
   }
 
   return (
-    <div className="bg-[#0D091A]/90 flex items-center justify-center dark:bg-gray-800 rounded-full p-1 h-10 w-10">
-      <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-        {theme === 'dark' ? (
-          <BsSunFill className="text-yellow-400 bg-inherit" />
-        ) : (
-          <BsFillMoonFill className="text-yellow-400" />
-        )}
-      </button>
-    </div>
+    <button
+      className="bg-[#0D091A]/90 flex items-center justify-center dark:bg-gray-800 rounded-full p-1 h-10 w-10"
+      type="button"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {theme === 'dark' ? (
+        <BsSunFill className="text-yellow-400 bg-inherit" />
+      ) : (
+        <BsFillMoonFill className="text-yellow-400" />
+      )}
+    </button>
   );
 }
 
