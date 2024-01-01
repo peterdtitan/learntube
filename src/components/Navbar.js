@@ -2,11 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { AiOutlineMenu} from "react-icons/ai";
-import { FaUserAlt } from "react-icons/fa";
+import { AiOutlineMenu } from 'react-icons/ai';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-
 
 import ThemeSwitcher from '../app/ThemeSwitcher';
 

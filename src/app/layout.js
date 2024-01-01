@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>
           <Navbar />
-          <div className='p-8'>{children}</div>
+          <div className="p-8">{children}</div>
         </Providers>
       </body>
     </html>
