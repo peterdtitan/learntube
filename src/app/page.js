@@ -1,10 +1,12 @@
-import React from 'react';
+'use client';
+import Hero from '../components/Hero';
 import './globals.css';
 
 export default function Home() {
   return (
     <div>
-      <p>Welcome to home page</p>
+      <Hero />
     </div>
+    
   );
 }
