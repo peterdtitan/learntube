@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 import ThemeSwitcher from '../app/ThemeSwitcher';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
@@ -38,31 +39,42 @@ export default function Navbar() {
 
       <div className="hidden lg:flex text-md items-center gap-8 justify-center">
         <Link href="/short-courses" className={`link ${pathname === '/short-courses' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }}>Short Courses</motion.p>
+          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Short Courses</motion.p>
         </Link>
         <Link href="/pathways" className={`link ${pathname === '/pathways' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }}>Pathways</motion.p>
+          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Pathways</motion.p>
         </Link>
         <Link href="/micro-learn" className={`link ${pathname === '/micro-learn' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }}>Micro-Learn</motion.p>
+          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Micro-Learn</motion.p>
         </Link>
       </div>
 
       <div className="flex items-center justify-between">
-        {/** Toogle modes */}
+        {/** Toggle modes */}
         <div className="flex mx-4">
           <ThemeSwitcher />
         </div>
 
         {/** Login/Sign-up options */}
         <div>
-          <div className="hidden lg:flex lg:text-md gap-2">
-            <motion.button whileTap={{ scale: 0.8 }} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
-              Login
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.8 }} type="button" className="rounded-md py-1 px-2 bg-emerald-300 text-black hover:bg-emerald-500">
-              Sign-up
-            </motion.button>
+          <div className="hidden lg:flex lg:text-md gap-2 items-center">
+            {session?.data ? (
+              <>
+                <Link href="/dashboard" className="px-3 py-1 rounded-md bg-slate-200 dark:bg-slate-700">Dashboard</Link>
+                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signOut()} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
+                  Logout
+                </motion.button>
+              </>
+            ) : (
+              <>
+                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signIn()} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
+                  Login
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signIn()} type="button" className="rounded-md py-1 px-2 bg-emerald-300 text-black hover:bg-emerald-500">
+                  Sign-up
+                </motion.button>
+              </>
+            )}
           </div>
         </div>
 

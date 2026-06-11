@@ -10,7 +10,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-4xl lg:text-6xl font-bold max-w-[80%] md:max-w-[50%] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-pink-500 to-red-500">
             <p>Learning</p>
             {' '}
-            <span className="dark:text-white">redefined with</span>
+            <span className="text-black">redefined with</span>
             {' '}
             LearnTube
             <span>.</span>
@@ -28,10 +28,10 @@ export default function Hero() {
           </motion.button>
         </div>
 
-        <div className="w-full lg:w-[50%] h-[300px] lg:h-[450px]">
+        <div className="w-full lg:w-[50%] h-[300px] lg:h-[450px] lg:-mx-24">
           <img
             alt="Captivating design"
-            className="object-cover w-full h-full lg:transform lg:-skew-x-12"
+            className="object-cover w-full h-full lg:transform lg:-skew-x-12 "
             height="500"
             src="/vercel.jpg"
             style={{
@@ -41,9 +41,7 @@ export default function Hero() {
             width="500"
           />
         </div>
-
       </div>
-
     </div>
   );
 }

@@ -8,17 +8,30 @@
 body {
     font-family: 'Lato', sans-serif;
 }
-.active-link {
-    position: relative;
-    color: inherit;
+
+/* CSS variables for light/dark themes */
+:root {
+    --bg: #ffffff;
+    --text: #0b1220;
+    --muted: #6b7280;
+    --surface: #ffffff;
 }
 
-.active-link::after {
-    content: '';
-    position: absolute;
-    bottom: -8px; /* Adjust the offset as needed */
-    left: 0;
-    right: 0;
-    height: 2px; /* Adjust the thickness as needed */
-    background-color: red; /* Adjust the color as needed */
+.dark {
+    --bg: #071021;
+    --text: #ecf0f6;
+    --muted: #9ca3af;
+    --surface: #0b1220;
 }
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.green-pink-gradient {
+    background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+

@@ -6,27 +6,28 @@ import { BsSunFill, BsFillMoonFill } from 'react-icons/bs';
 
 function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
-  const { systemTheme, theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
-    setTheme(systemTheme);
-  }, [setTheme, systemTheme]);
+  }, []);
 
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
+
+  const current = resolvedTheme || theme;
 
   return (
     <button
-      className="bg-[#0D091A]/90 flex items-center justify-center dark:bg-gray-800 rounded-full p-1 h-8 w-8 lg:h-10 lg:w-10 mb-2 lg:mb-0"
+      aria-label="Toggle color theme"
+      title="Toggle color theme"
+      className="flex items-center justify-center rounded-full p-1 h-8 w-8 lg:h-10 lg:w-10 transition-colors bg-white/80 dark:bg-gray-800/80 shadow-sm"
       type="button"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(current === 'dark' ? 'light' : 'dark')}
     >
-      {theme === 'dark' ? (
-        <BsSunFill className="text-yellow-400 bg-inherit" />
+      {current === 'dark' ? (
+        <BsSunFill className="text-yellow-400" />
       ) : (
-        <BsFillMoonFill className="text-yellow-400" />
+        <BsFillMoonFill className="text-slate-700" />
       )}
     </button>
   );
