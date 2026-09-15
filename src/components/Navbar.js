@@ -6,10 +6,11 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 
-import ThemeSwitcher from '../app/ThemeSwitcher';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import ThemeSwitcher from '../app/ThemeSwitcher';
 
 export default function Navbar() {
+  const { data: session } = useSession();
   const [showMenu, setShowMenu] = useState(false);
 
   const pathname = usePathname();
@@ -58,7 +59,7 @@ export default function Navbar() {
         {/** Login/Sign-up options */}
         <div>
           <div className="hidden lg:flex lg:text-md gap-2 items-center">
-            {session?.data ? (
+            {session?.user ? (
               <>
                 <Link href="/dashboard" className="px-3 py-1 rounded-md bg-slate-200 dark:bg-slate-700">Dashboard</Link>
                 <motion.button whileTap={{ scale: 0.8 }} onClick={() => signOut()} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
