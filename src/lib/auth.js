@@ -15,10 +15,8 @@ export const authOptions = {
   },
   callbacks: {
     async session({ session, user }) {
-      if (session?.user) {
-        session.user.id = user.id;
-      }
-      return session;
+      if (!session?.user) return session;
+      return { ...session, user: { ...session.user, id: user.id } };
     },
   },
   pages: {
