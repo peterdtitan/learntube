@@ -17,6 +17,7 @@ model User {
   sessions      Session[]
   pathways      Pathway[]
   videoProgress VideoProgress[]
+  notes         Note[]
 }
 
 model Account {
@@ -59,27 +60,59 @@ model Pathway {
   id          String   @id @default(cuid())
   title       String
   description String?
+  category    String?
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  units       Unit[]
+  videos      Video[]
+}
+
+model Unit {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int      @default(0)
+  pathwayId   String
+  pathway     Pathway  @relation(fields: [pathwayId], references: [id], onDelete: Cascade)
   videos      Video[]
 }
 
 model Video {
-  id          String   @id @default(cuid())
-  title       String
-  url         String
-  duration    Int      // seconds
-  pathway     Pathway? @relation(fields: [pathwayId], references: [id])
-  pathwayId   String?
-  progress    VideoProgress[]
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  url          String   // full YouTube URL or video ID
+  duration     Int      // seconds
+  order        Int      @default(0)
+  captionsLang String?  // e.g. "en", passed to the YouTube player for CC
+  transcript   String?  // plain-text transcript shown under the player
+  pathway      Pathway? @relation(fields: [pathwayId], references: [id])
+  pathwayId    String?
+  unit         Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  unitId       String?
+  progress     VideoProgress[]
+  notes        Note[]
 }
 
 model VideoProgress {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   videoId   String
   watchedAt DateTime @default(now())
   stoppedAt Int      // seconds position
+  completed Boolean  @default(false)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  @@unique([userId, videoId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  content   String
+  updatedAt DateTime @updatedAt
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
