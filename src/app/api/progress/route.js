@@ -9,19 +9,23 @@ export async function POST(req) {
   if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
 
   const body = await req.json();
-  const { videoId, stoppedAt } = body;
+  const { videoId, stoppedAt, completed } = body;
   if (!videoId || typeof stoppedAt !== 'number') return new Response('Bad Request', { status: 400 });
 
   const upsert = await prisma.videoProgress.upsert({
     where: { userId_videoId: { userId: session.user.id, videoId } },
-    update: { stoppedAt, watchedAt: new Date() },
-    create: { userId: session.user.id, videoId, stoppedAt },
+    update: {
+      stoppedAt, watchedAt: new Date(), ...(completed ? { completed: true } : {}),
+    },
+    create: {
+      userId: session.user.id, videoId, stoppedAt, completed: Boolean(completed),
+    },
   });
 
   return new Response(JSON.stringify(upsert), { status: 200 });
 }
 
-export async function GET(req) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
 
