@@ -29,14 +29,17 @@
         },
       });
 
-      // Clear previous seed pathways so this script is re-runnable.
+      // Clear previous seed content so this script is re-runnable. Lessons go first:
+      // deleting a unit only nulls Video.unitId, which would leave orphaned lessons behind.
+      await prisma.video.deleteMany({ where: { unit: { pathway: { ownerId: owner.id } } } });
       await prisma.pathway.deleteMany({ where: { ownerId: owner.id } });
 
       const pathway1 = await prisma.pathway.create({
         data: {
           title: 'Frontend Fundamentals',
           description: 'Bite-sized units covering HTML, CSS and React patterns.',
-          category: 'Software Engineering',
+          skillId: 'software-engineering',
+          makeTitle: 'A sign-up page in HTML, CSS and React',
           ownerId: owner.id,
           units: {
             create: [
@@ -47,6 +50,7 @@
                   create: [
                     {
                       title: 'HTML Basics',
+                      tryTask: 'Write a page skeleton with a header, main and footer.',
                       description: 'Structure a page with semantic HTML elements.',
                       url: SAMPLE_VIDEO_A,
                       duration: 300,
@@ -56,6 +60,7 @@
                     },
                     {
                       title: 'Forms and Inputs',
+                      tryTask: 'Build a form with name, email and a submit button.',
                       description: 'Collect user input with forms, labels, and validation.',
                       url: SAMPLE_VIDEO_A,
                       duration: 360,
@@ -73,6 +78,7 @@
                   create: [
                     {
                       title: 'CSS Layouts',
+                      tryTask: 'Lay out three cards in a row with grid, then stack them on a narrow screen.',
                       description: 'Flexbox and grid for real-world layouts.',
                       url: SAMPLE_VIDEO_A,
                       duration: 420,
@@ -90,6 +96,7 @@
                   create: [
                     {
                       title: 'Intro to React',
+                      tryTask: 'Make a counter button that adds one on each click.',
                       description: 'Components, props, and state.',
                       url: SAMPLE_VIDEO_B,
                       duration: 600,
@@ -110,7 +117,8 @@
         data: {
           title: 'Data Basics',
           description: 'Introductory data skills and SQL fundamentals.',
-          category: 'Data',
+          skillId: 'data',
+          makeTitle: 'Answers from a real dataset, with SQL',
           ownerId: owner.id,
           units: {
             create: [
@@ -121,6 +129,7 @@
                   create: [
                     {
                       title: 'Data Modeling',
+                      tryTask: 'Sketch the tables for a recipe app: recipes, ingredients, and how they link.',
                       description: 'Entities, relationships, and normalization.',
                       url: SAMPLE_VIDEO_A,
                       duration: 480,
@@ -138,6 +147,7 @@
                   create: [
                     {
                       title: 'SQL Basics',
+                      tryTask: 'Write a query that lists every recipe with fewer than five ingredients.',
                       description: 'SELECT, WHERE, JOIN — the 80% you use daily.',
                       url: SAMPLE_VIDEO_B,
                       duration: 540,

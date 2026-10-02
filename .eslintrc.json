@@ -12,16 +12,50 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "extends": ["airbnb", "plugin:react/recommended", "plugin:react-hooks/recommended", "next/core-web-vitals"],
-  "plugins": ["react"],
+  "extends": [
+    "airbnb",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "next/core-web-vitals"
+  ],
+  "plugins": [
+    "react"
+  ],
   "rules": {
-    "react/jsx-filename-extension": ["warn", { "extensions": [".js", ".jsx"] }],
+    "react/jsx-filename-extension": [
+      "warn",
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
     "react/react-in-jsx-scope": "off",
     "import/no-unresolved": "off",
-    "no-shadow": "off"
+    "no-shadow": "off",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": [
+          "_count",
+          "_sum"
+        ]
+      }
+    ]
   },
   "ignorePatterns": [
     "dist/",
     "build/"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "src/app/**/route.js"
+      ],
+      "rules": {
+        "import/prefer-default-export": "off"
+      }
+    }
   ]
 }

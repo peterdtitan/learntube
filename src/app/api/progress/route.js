@@ -3,12 +3,15 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prismadb';
+import { awardXp } from '../../../lib/xp';
+import { readJson } from '../../../lib/api';
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
 
-  const body = await req.json();
+  const body = await readJson(req);
+  if (!body) return new Response('Bad Request', { status: 400 });
   const { videoId, stoppedAt, completed } = body;
   if (!videoId || typeof stoppedAt !== 'number') return new Response('Bad Request', { status: 400 });
 
@@ -22,7 +25,9 @@ export async function POST(req) {
     },
   });
 
-  return new Response(JSON.stringify(upsert), { status: 200 });
+  const award = completed ? await awardXp(session.user.id, 'WATCH', `watch:${videoId}`) : null;
+
+  return Response.json({ ...upsert, xpAwarded: award?.amount || 0 });
 }
 
 export async function GET() {

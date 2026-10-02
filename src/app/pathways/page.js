@@ -12,6 +12,7 @@ export default async function PathwaysPage() {
 
   const pathways = await prisma.pathway.findMany({
     include: {
+      skill: true,
       units: { include: { videos: true } },
       videos: { where: { unitId: null } },
     },
@@ -46,9 +47,9 @@ export default async function PathwaysPage() {
               href={`/pathways/${pw.id}`}
               className="flex flex-col gap-2 rounded-lg bg-white/80 p-4 shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-gray-800/80"
             >
-              {pw.category && (
+              {pw.skill && (
                 <span className="w-fit rounded-full bg-red-400/10 px-2 py-0.5 text-xs font-medium text-red-500">
-                  {pw.category}
+                  {pw.skill.name}
                 </span>
               )}
               <div className="font-semibold text-lg">{pw.title}</div>
