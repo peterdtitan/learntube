@@ -1,7 +1,12 @@
 (async () => {
   const { PrismaClient } = await import('@prisma/client');
-  const { PrismaBetterSqlite3 } = await import('@prisma/adapter-better-sqlite3');
-  const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
+  const { PrismaPg } = await import('@prisma/adapter-pg');
+  const { config } = await import('dotenv');
+  config({ path: '.env.local', quiet: true });
+  config({ quiet: true });
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL,
+  });
   const prisma = new PrismaClient({ adapter });
 
   // NOTE: these YouTube IDs are placeholders that are known-public and
