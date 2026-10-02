@@ -18,6 +18,11 @@ model User {
   pathways      Pathway[]
   videoProgress VideoProgress[]
   notes         Note[]
+  makes         Make[]
+  kudos         Kudos[]
+  xpEvents      XpEvent[]
+  weeklyGoal    Int       @default(3) // practice days per week, 2-5
+  timeZone      String    @default("UTC") // IANA name; decides where a practice day and week begin
 }
 
 model Account {
@@ -56,15 +61,32 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum SkillTier {
+  HAND
+  SCREEN
+}
+
+model Skill {
+  id       String    @id // stable slug, e.g. "cooking"
+  name     String
+  tier     SkillTier
+  color    String // hex, shared by web and app
+  order    Int       @default(0)
+  pathways Pathway[]
+}
+
 model Pathway {
   id          String   @id @default(cuid())
   title       String
   description String?
-  category    String?
+  makeTitle   String? // what the learner has made by the end
+  skillId     String?
+  skill       Skill?   @relation(fields: [skillId], references: [id], onDelete: SetNull)
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   units       Unit[]
   videos      Video[]
+  makes       Make[]
 }
 
 model Unit {
@@ -86,12 +108,14 @@ model Video {
   order        Int      @default(0)
   captionsLang String?  // e.g. "en", passed to the YouTube player for CC
   transcript   String?  // plain-text transcript shown under the player
+  tryTask      String?  // the hands-on step after watching, e.g. "Cast on 20 stitches"
   pathway      Pathway? @relation(fields: [pathwayId], references: [id])
   pathwayId    String?
   unit         Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
   unitId       String?
   progress     VideoProgress[]
   notes        Note[]
+  makes        Make[]
 }
 
 model VideoProgress {
@@ -100,7 +124,8 @@ model VideoProgress {
   videoId   String
   watchedAt DateTime @default(now())
   stoppedAt Int      // seconds position
-  completed Boolean  @default(false)
+  completed Boolean  @default(false) // watched to the end
+  triedAt   DateTime? // when the learner marked the Try step done
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
@@ -117,4 +142,55 @@ model Note {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
   @@unique([userId, videoId])
+}
+
+model Make {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String? // the lesson this came from
+  pathwayId String? // set for a pathway's final project
+  title     String
+  note      String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video   Video?   @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  pathway Pathway? @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  kudos   Kudos[]
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model Kudos {
+  userId    String
+  makeId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  make Make @relation(fields: [makeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, makeId])
+}
+
+enum XpKind {
+  WATCH
+  TRY
+  LOG
+}
+
+// Append-only XP ledger. sourceKey makes each award happen once, e.g. "try:<videoId>".
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  kind      XpKind
+  amount    Int
+  sourceKey String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceKey])
+  @@index([userId, createdAt])
 }
