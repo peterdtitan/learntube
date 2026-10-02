@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: learntube-postgres
+    environment:
+      POSTGRES_USER: learntube
+      POSTGRES_PASSWORD: learntube
+      POSTGRES_DB: learntube
+    ports:
+      - "5433:5432"
+    volumes:
+      - learntube-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learntube"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  learntube-pgdata:
