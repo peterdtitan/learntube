@@ -10,6 +10,7 @@ import ThemeSwitcher from '../app/ThemeSwitcher';
 import Button from './ui/Button';
 import Pill from './ui/Pill';
 import useLearnerSummary from './useLearnerSummary';
+import NotificationBell from './community/NotificationBell';
 import cn from '../lib/cn';
 import { initials } from '../lib/people';
 
@@ -118,6 +119,7 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-2 sm:flex">{stats}</div>
           <ThemeSwitcher />
+          {session?.user && <NotificationBell />}
           {session?.user
             ? <AccountMenu user={session.user} />
             : <Button size="sm" onClick={() => signIn()}>Sign in</Button>}
