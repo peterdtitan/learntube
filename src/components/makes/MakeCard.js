@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import KudosButton from './KudosButton';
 import cn from '../../lib/cn';
-import { firstName } from '../../lib/people';
 
 // compact: a horizontal row for feeds, where a full-width photo would crowd out everything else.
 export default function MakeCard({ make, compact = false }) {
@@ -46,7 +45,7 @@ export default function MakeCard({ make, compact = false }) {
         </h3>
         <p className="truncate text-sm text-muted">
           {make.isMine ? 'You' : (
-            <Link href={`/learners/${make.author.id}`} className="hover:text-ink">{firstName(make.author.name)}</Link>
+            <Link href={`/learners/${make.author.id}`} className="hover:text-ink">{make.author.name}</Link>
           )}
           {where && ` · ${where}`}
         </p>

@@ -4,7 +4,6 @@ import {
   Award, Flame, Flag, Sparkles,
 } from 'lucide-react';
 import CheerButton from './CheerButton';
-import { firstName } from '../../lib/people';
 
 const ICONS = {
   XP: Sparkles, STREAK: Flame, FIRST_MAKE: Award, PATHWAY_DONE: Flag,
@@ -21,7 +20,7 @@ export default function MilestoneCard({ milestone }) {
         <p className="text-[15px]">
           {milestone.isMine ? <strong>You</strong> : (
             <Link href={`/learners/${milestone.author.id}`} className="font-bold hover:text-accent">
-              {firstName(milestone.author.name)}
+              {milestone.author.name}
             </Link>
           )}
           {` ${milestone.isMine ? milestone.text.replace('their', 'your') : milestone.text}`}

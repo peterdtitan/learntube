@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
 import { X } from 'lucide-react';
 import cn from '../../lib/cn';
-import { firstName } from '../../lib/people';
 
 export default function CommentThread({ makeId, initialComments, presets }) {
   const { status } = useSession();
@@ -49,7 +48,7 @@ export default function CommentThread({ makeId, initialComments, presets }) {
             <li key={c.id} className="flex items-center justify-between gap-3 rounded-md bg-canvas px-4 py-3">
               <div className="grid gap-0.5">
                 <Link href={`/learners/${c.author.id}`} className="text-sm font-bold text-muted hover:text-accent">
-                  {c.isMine ? 'You' : firstName(c.author.name)}
+                  {c.isMine ? 'You' : c.author.name}
                 </Link>
                 <p className="text-[15px]">{c.text}</p>
               </div>
