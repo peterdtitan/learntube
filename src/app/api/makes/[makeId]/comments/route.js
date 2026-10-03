@@ -21,8 +21,11 @@ export async function POST(req, { params }) {
   const body = await readJson(req);
   if (!body || !presetText(body.preset)) return error(400, 'Pick one of the suggested comments.');
 
-  const make = await prisma.make.findUnique({ where: { id: params.makeId }, select: { id: true } });
-  if (!make) return error(404, 'Make not found.');
+  const make = await prisma.make.findUnique({
+    where: { id: params.makeId },
+    select: { id: true, hiddenAt: true },
+  });
+  if (!make || make.hiddenAt) return error(404, 'Make not found.');
 
   try {
     await prisma.makeComment.create({ data: { makeId: make.id, userId, preset: body.preset } });
