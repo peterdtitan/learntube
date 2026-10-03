@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+jobs:
+  checks:
+    name: Lint, test and build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npx eslint "**/*.{js,jsx,mjs}"
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+        env:
+          # The build never connects; pages that read the database render on request.
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          NEXTAUTH_SECRET: ci-only-not-secret
+
+  migrations:
+    name: Migrations match the schema
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply every migration to an empty database
+        run: npx prisma migrate deploy
+      - name: Fail if schema.prisma has changes with no migration
+        run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+      - name: Seed runs cleanly
+        run: npm run db:seed
