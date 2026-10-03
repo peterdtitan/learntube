@@ -65,7 +65,8 @@
     },
     {
       "files": [
-        "src/components/ui/**/*.js"
+        "src/components/ui/**/*.js",
+        "src/components/admin/**/*.js"
       ],
       "rules": {
         "react/jsx-props-no-spreading": "off"
