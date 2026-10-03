@@ -1,5 +1,7 @@
 import prisma from '../../../../../lib/prismadb';
 import { error, json, requireUserId } from '../../../../../lib/api';
+import { rateLimit } from '../../../../../lib/rateLimit';
+import { notify, retract } from '../../../../../lib/notifications';
 
 async function countFor(makeId) {
   return prisma.kudos.count({ where: { makeId } });
@@ -8,6 +10,8 @@ async function countFor(makeId) {
 export async function POST(req, { params }) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to give kudos.');
+  const limited = await rateLimit('reaction', userId);
+  if (limited) return limited;
 
   const make = await prisma.make.findUnique({
     where: { id: params.makeId },
@@ -21,13 +25,22 @@ export async function POST(req, { params }) {
     update: {},
     create: { userId, makeId: make.id },
   });
+  await notify('KUDOS', { userId: make.userId, actorId: userId, makeId: make.id });
   return json({ gaveKudos: true, kudosCount: await countFor(make.id) });
 }
 
 export async function DELETE(req, { params }) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change kudos.');
+  const limited = await rateLimit('reaction', userId);
+  if (limited) return limited;
 
-  await prisma.kudos.deleteMany({ where: { userId, makeId: params.makeId } });
+  const { count } = await prisma.kudos.deleteMany({ where: { userId, makeId: params.makeId } });
+  if (count) {
+    const make = await prisma.make.findUnique({
+      where: { id: params.makeId }, select: { userId: true },
+    });
+    await retract('KUDOS', { userId: make?.userId, actorId: userId, makeId: params.makeId });
+  }
   return json({ gaveKudos: false, kudosCount: await countFor(params.makeId) });
 }
