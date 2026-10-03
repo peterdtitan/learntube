@@ -8,36 +8,42 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  pathways      Pathway[]
-  videoProgress VideoProgress[]
-  notes         Note[]
-  makes         Make[]
-  kudos         Kudos[]
-  xpEvents      XpEvent[]
-  weeklyGoal    Int       @default(3) // practice days per week, 2-5
-  timeZone      String    @default("UTC") // IANA name; decides where a practice day and week begin
+  id                String          @id @default(cuid())
+  name              String?
+  email             String?         @unique
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  pathways          Pathway[]
+  videoProgress     VideoProgress[]
+  notes             Note[]
+  makes             Make[]
+  kudos             Kudos[]
+  xpEvents          XpEvent[]
+  comments          MakeComment[]
+  following         Follow[]        @relation("follower")
+  followers         Follow[]        @relation("following")
+  milestones        Milestone[]
+  cheers            Cheer[]
+  showOnLeaderboard Boolean         @default(true)
+  weeklyGoal        Int             @default(3) // practice days per week, 2-5
+  timeZone          String          @default("UTC") // IANA name; decides where a practice day and week begin
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -73,45 +79,48 @@ model Skill {
   color    String // hex, shared by web and app
   order    Int       @default(0)
   pathways Pathway[]
+  xpEvents XpEvent[]
 }
 
 model Pathway {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   title       String
   description String?
   makeTitle   String? // what the learner has made by the end
   skillId     String?
-  skill       Skill?   @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  skill       Skill?      @relation(fields: [skillId], references: [id], onDelete: SetNull)
   ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   units       Unit[]
   videos      Video[]
   makes       Make[]
+  xpEvents    XpEvent[]
+  milestones  Milestone[]
 }
 
 model Unit {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
   description String?
-  order       Int      @default(0)
+  order       Int     @default(0)
   pathwayId   String
-  pathway     Pathway  @relation(fields: [pathwayId], references: [id], onDelete: Cascade)
+  pathway     Pathway @relation(fields: [pathwayId], references: [id], onDelete: Cascade)
   videos      Video[]
 }
 
 model Video {
-  id           String   @id @default(cuid())
+  id           String          @id @default(cuid())
   title        String
   description  String?
-  url          String   // full YouTube URL or video ID
-  duration     Int      // seconds
-  order        Int      @default(0)
-  captionsLang String?  // e.g. "en", passed to the YouTube player for CC
-  transcript   String?  // plain-text transcript shown under the player
-  tryTask      String?  // the hands-on step after watching, e.g. "Cast on 20 stitches"
-  pathway      Pathway? @relation(fields: [pathwayId], references: [id])
+  url          String // full YouTube URL or video ID
+  duration     Int // seconds
+  order        Int             @default(0)
+  captionsLang String? // e.g. "en", passed to the YouTube player for CC
+  transcript   String? // plain-text transcript shown under the player
+  tryTask      String? // the hands-on step after watching, e.g. "Cast on 20 stitches"
+  pathway      Pathway?        @relation(fields: [pathwayId], references: [id])
   pathwayId    String?
-  unit         Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  unit         Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
   unitId       String?
   progress     VideoProgress[]
   notes        Note[]
@@ -119,16 +128,17 @@ model Video {
 }
 
 model VideoProgress {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   videoId   String
-  watchedAt DateTime @default(now())
-  stoppedAt Int      // seconds position
-  completed Boolean  @default(false) // watched to the end
+  watchedAt DateTime  @default(now())
+  stoppedAt Int // seconds position
+  completed Boolean   @default(false) // watched to the end
   triedAt   DateTime? // when the learner marked the Try step done
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
   @@unique([userId, videoId])
 }
 
@@ -141,6 +151,7 @@ model Note {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
   @@unique([userId, videoId])
 }
 
@@ -154,10 +165,11 @@ model Make {
   imageUrl  String?
   createdAt DateTime @default(now())
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video   Video?   @relation(fields: [videoId], references: [id], onDelete: SetNull)
-  pathway Pathway? @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
-  kudos   Kudos[]
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video    Video?        @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  pathway  Pathway?      @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  kudos    Kudos[]
+  comments MakeComment[]
 
   @@index([userId, createdAt])
   @@index([createdAt])
@@ -187,10 +199,81 @@ model XpEvent {
   kind      XpKind
   amount    Int
   sourceKey String
+  // Where the XP was earned, so leaderboards can rank per pathway or skill.
+  pathwayId String?
+  skillId   String?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pathway Pathway? @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  skill   Skill?   @relation(fields: [skillId], references: [id], onDelete: SetNull)
 
   @@unique([userId, sourceKey])
   @@index([userId, createdAt])
+  @@index([pathwayId, createdAt])
+  @@index([skillId, createdAt])
+  @@index([createdAt])
+}
+
+// Comments are picked from a fixed list of phrases (src/lib/comments.js), so there's no free text to moderate.
+model MakeComment {
+  id        String   @id @default(cuid())
+  makeId    String
+  userId    String
+  preset    String
+  createdAt DateTime @default(now())
+
+  make Make @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([makeId, userId, preset])
+  @@index([makeId, createdAt])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+enum MilestoneKind {
+  XP
+  STREAK
+  FIRST_MAKE
+  PATHWAY_DONE
+}
+
+// Recorded once per learner per key, e.g. "xp:500", "streak:4", "pathway:<id>".
+model Milestone {
+  id        String        @id @default(cuid())
+  userId    String
+  kind      MilestoneKind
+  key       String
+  value     Int?
+  pathwayId String?
+  createdAt DateTime      @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pathway Pathway? @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  cheers  Cheer[]
+
+  @@unique([userId, key])
+  @@index([userId, createdAt])
+}
+
+model Cheer {
+  userId      String
+  milestoneId String
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+  @@id([userId, milestoneId])
 }

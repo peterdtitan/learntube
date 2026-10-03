@@ -1,4 +1,5 @@
 import prisma from './prismadb';
+import { presetText } from './comments';
 
 export function serializeMake(make, viewerId) {
   return {
@@ -12,6 +13,7 @@ export function serializeMake(make, viewerId) {
     pathway: make.pathway ? { id: make.pathway.id, title: make.pathway.title } : null,
     skill: make.pathway?.skill || make.video?.unit?.pathway?.skill || null,
     kudosCount: make._count.kudos,
+    commentCount: make._count.comments,
     gaveKudos: viewerId ? make.kudos.some((k) => k.userId === viewerId) : false,
     isMine: viewerId === make.user.id,
   };
@@ -19,22 +21,61 @@ export function serializeMake(make, viewerId) {
 
 const SKILL = { select: { id: true, name: true, color: true } };
 
-export async function listMakes({ viewerId, scope = 'recent', limit = 20 }) {
+function makeInclude(viewerId) {
+  return {
+    user: { select: { id: true, name: true } },
+    video: {
+      select: {
+        id: true, title: true, unit: { select: { pathway: { select: { skill: SKILL } } } },
+      },
+    },
+    pathway: { select: { id: true, title: true, skill: SKILL } },
+    kudos: viewerId ? { where: { userId: viewerId }, select: { userId: true } } : false,
+    _count: { select: { kudos: true, comments: true } },
+  };
+}
+
+// scope: 'recent' (everyone), 'mine', or pass userIds to list specific learners' makes.
+export async function listMakes({
+  viewerId, scope = 'recent', userIds, limit = 20,
+}) {
+  let where = {};
+  if (userIds) where = { userId: { in: userIds } };
+  else if (scope === 'mine') where = { userId: viewerId };
+
   const makes = await prisma.make.findMany({
-    where: scope === 'mine' ? { userId: viewerId } : {},
+    where,
     orderBy: { createdAt: 'desc' },
     take: limit,
-    include: {
-      user: { select: { id: true, name: true } },
-      video: {
-        select: {
-          id: true, title: true, unit: { select: { pathway: { select: { skill: SKILL } } } },
-        },
-      },
-      pathway: { select: { id: true, title: true, skill: SKILL } },
-      kudos: viewerId ? { where: { userId: viewerId }, select: { userId: true } } : false,
-      _count: { select: { kudos: true } },
-    },
+    include: makeInclude(viewerId),
   });
   return makes.map((m) => serializeMake({ ...m, kudos: m.kudos || [] }, viewerId));
+}
+
+export async function getMake(makeId, viewerId) {
+  const make = await prisma.make.findUnique({
+    where: { id: makeId },
+    include: {
+      ...makeInclude(viewerId),
+      comments: {
+        orderBy: { createdAt: 'asc' },
+        include: { user: { select: { id: true, name: true } } },
+      },
+    },
+  });
+  if (!make) return null;
+  return {
+    ...serializeMake({ ...make, kudos: make.kudos || [] }, viewerId),
+    pathwayId: make.pathway?.id || null,
+    comments: make.comments
+      .filter((c) => presetText(c.preset))
+      .map((c) => ({
+        id: c.id,
+        preset: c.preset,
+        text: presetText(c.preset),
+        createdAt: c.createdAt.toISOString(),
+        author: c.user,
+        isMine: c.user.id === viewerId,
+      })),
+  };
 }

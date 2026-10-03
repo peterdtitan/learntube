@@ -3,7 +3,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prismadb';
-import { awardXp } from '../../../lib/xp';
+import { lessonContext, reward } from '../../../lib/rewards';
 import { readJson } from '../../../lib/api';
 
 export async function POST(req) {
@@ -25,9 +25,11 @@ export async function POST(req) {
     },
   });
 
-  const award = completed ? await awardXp(session.user.id, 'WATCH', `watch:${videoId}`) : null;
+  const result = completed
+    ? await reward(session.user.id, 'WATCH', `watch:${videoId}`, await lessonContext(videoId))
+    : { xpAwarded: 0, milestones: [] };
 
-  return Response.json({ ...upsert, xpAwarded: award?.amount || 0 });
+  return Response.json({ ...upsert, ...result });
 }
 
 export async function GET() {
