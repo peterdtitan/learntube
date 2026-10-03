@@ -27,6 +27,7 @@ export default function Footer() {
           <Link href="/#skills" className="hover:text-accent">Skills</Link>
           <Link href="/pathways" className="hover:text-accent">Pathways</Link>
           <Link href="/makes" className="hover:text-accent">Makes</Link>
+          <Link href="/leaderboard" className="hover:text-accent">Leaderboard</Link>
           <Link href="/dashboard" className="hover:text-accent">Dashboard</Link>
         </nav>
         <div className="grid content-start gap-3">

@@ -11,21 +11,14 @@ import Button from './ui/Button';
 import Pill from './ui/Pill';
 import useLearnerSummary from './useLearnerSummary';
 import cn from '../lib/cn';
+import { initials } from '../lib/people';
 
 const LINKS = [
   { href: '/#skills', label: 'Skills', match: (p) => p === '/' },
   { href: '/pathways', label: 'Pathways', match: (p) => p.startsWith('/pathways') },
   { href: '/makes', label: 'Makes', match: (p) => p.startsWith('/makes') },
+  { href: '/leaderboard', label: 'Leaderboard', match: (p) => p.startsWith('/leaderboard') },
 ];
-
-function initials(name) {
-  return (name || '?')
-    .split(/\s+/)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-}
 
 function streakLabel(summary) {
   if (summary.streakWeeks > 0) return `${summary.streakWeeks}-week streak`;
@@ -70,6 +63,9 @@ function AccountMenu({ user }) {
           <p className="truncate px-3 py-2 text-sm text-muted">{user.name || user.email}</p>
           <Link role="menuitem" href="/dashboard" onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
             Dashboard
+          </Link>
+          <Link role="menuitem" href={`/learners/${user.id}`} onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
+            Your profile
           </Link>
           <button role="menuitem" type="button" onClick={() => signOut()} className="block w-full rounded-sm px-3 py-2 text-left text-[15px] hover:bg-sunken">
             Sign out
