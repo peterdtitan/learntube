@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import NotesPanel from './NotesPanel';
+import CodeSandbox from './CodeSandbox';
 import cn from '../../lib/cn';
 
 export default function LessonTabs({
-  videoId, transcript, initialNote, isSignedIn, showSandbox,
+  videoId, transcript, initialNote, isSignedIn, showSandbox, starterCode,
 }) {
   const tabs = ['Notes', 'Transcript', ...(showSandbox ? ['Code sandbox'] : [])];
   const [active, setActive] = useState('Notes');
@@ -43,12 +44,7 @@ export default function LessonTabs({
               : <p className="text-muted">No transcript for this lesson yet.</p>}
           </div>
         )}
-        {active === 'Code sandbox' && (
-          <div className="grid justify-items-center gap-1 rounded-md border border-dashed border-line py-10 text-center text-[15px] text-muted">
-            <p className="font-bold text-ink">Code sandbox, coming soon</p>
-            <p className="max-w-sm">You&apos;ll be able to practise the code from this lesson right here.</p>
-          </div>
-        )}
+        {active === 'Code sandbox' && <CodeSandbox lessonId={videoId} starterCode={starterCode} />}
       </div>
     </section>
   );
