@@ -11,9 +11,9 @@ export async function POST(req, { params }) {
 
   const make = await prisma.make.findUnique({
     where: { id: params.makeId },
-    select: { id: true, userId: true },
+    select: { id: true, userId: true, hiddenAt: true },
   });
-  if (!make) return error(404, 'Make not found.');
+  if (!make || make.hiddenAt) return error(404, 'Make not found.');
   if (make.userId === userId) return error(400, "You can't give kudos to your own make.");
 
   await prisma.kudos.upsert({

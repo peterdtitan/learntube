@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
 import { getMake } from '../../../lib/makes';
+import { REPORT_REASONS } from '../../../lib/moderation';
+import ReportButton from '../../../components/makes/ReportButton';
 import { COMMENT_PRESETS } from '../../../lib/comments';
 import KudosButton from '../../../components/makes/KudosButton';
 import CommentThread from '../../../components/community/CommentThread';
@@ -14,7 +16,8 @@ export const dynamic = 'force-dynamic';
 export default async function MakePage({ params }) {
   const session = await getServerSession(authOptions);
   const viewerId = session?.user?.id || null;
-  const make = await getMake(params.makeId, viewerId);
+  const viewerIsAdmin = Boolean(session?.user?.isAdmin);
+  const make = await getMake(params.makeId, viewerId, { viewerIsAdmin });
   if (!make) notFound();
 
   const when = new Date(make.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -58,18 +61,35 @@ export default async function MakePage({ params }) {
 
       {make.note && <p className="max-w-[65ch] whitespace-pre-wrap text-[17px] leading-relaxed">{make.note}</p>}
 
-      <div>
-        <KudosButton
-          makeId={make.id}
-          initialCount={make.kudosCount}
-          initialGave={make.gaveKudos}
-          isMine={make.isMine}
-        />
-      </div>
+      {make.hidden && (
+        <p role="status" className="rounded-md bg-xp-soft px-4 py-3 text-[15px] text-xp">
+          {make.isMine
+            ? 'This make is hidden while we review reports about it. Only you can see it.'
+            : 'Hidden while under review. Learners can’t see it.'}
+        </p>
+      )}
 
-      <div className="border-t border-line pt-6">
-        <CommentThread makeId={make.id} initialComments={make.comments} presets={COMMENT_PRESETS} />
-      </div>
+      {!make.hidden && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <KudosButton
+            makeId={make.id}
+            initialCount={make.kudosCount}
+            initialGave={make.gaveKudos}
+            isMine={make.isMine}
+          />
+          {!make.isMine && <ReportButton makeId={make.id} reasons={REPORT_REASONS} />}
+        </div>
+      )}
+
+      {!make.hidden && (
+        <div className="border-t border-line pt-6">
+          <CommentThread
+            makeId={make.id}
+            initialComments={make.comments}
+            presets={COMMENT_PRESETS}
+          />
+        </div>
+      )}
     </article>
   );
 }
