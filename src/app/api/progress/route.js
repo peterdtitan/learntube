@@ -5,10 +5,13 @@ import { authOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prismadb';
 import { lessonContext, reward } from '../../../lib/rewards';
 import { readJson } from '../../../lib/api';
+import { rateLimit } from '../../../lib/rateLimit';
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
+  const limited = await rateLimit('progress', session.user.id);
+  if (limited) return limited;
 
   const body = await readJson(req);
   if (!body) return new Response('Bad Request', { status: 400 });

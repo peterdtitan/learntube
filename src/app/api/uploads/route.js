@@ -1,5 +1,6 @@
 import { put } from '@vercel/blob';
 import { error, json, requireUserId } from '../../../lib/api';
+import { rateLimit } from '../../../lib/rateLimit';
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
@@ -8,6 +9,8 @@ const TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 export async function POST(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to upload a photo.');
+  const limited = await rateLimit('upload', userId);
+  if (limited) return limited;
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return error(503, 'Photo uploads aren’t set up yet. You can log your make without a photo.');
   }

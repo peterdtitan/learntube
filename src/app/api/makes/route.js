@@ -6,6 +6,7 @@ import {
   lessonContext, pathwayContext, recordMilestones, reward,
 } from '../../../lib/rewards';
 import { listMakes } from '../../../lib/makes';
+import { rateLimit } from '../../../lib/rateLimit';
 
 const MAX_TITLE = 120;
 const MAX_NOTE = 2000;
@@ -43,6 +44,8 @@ export async function GET(req) {
 export async function POST(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to log what you made.');
+  const limited = await rateLimit('make', userId);
+  if (limited) return limited;
 
   const body = await readJson(req);
   if (!body) return error(400, 'Send the make as JSON.');
