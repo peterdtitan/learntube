@@ -3,6 +3,10 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prismadb';
+import { readJson } from '../../../lib/api';
+import { rateLimit } from '../../../lib/rateLimit';
+
+const MAX_NOTE = 20000;
 
 export async function GET(req) {
   const session = await getServerSession(authOptions);
@@ -22,10 +26,15 @@ export async function GET(req) {
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
+  const limited = await rateLimit('note', session.user.id);
+  if (limited) return limited;
 
-  const body = await req.json();
-  const { videoId, content } = body;
+  const body = await readJson(req);
+  const { videoId, content } = body || {};
   if (!videoId || typeof content !== 'string') return new Response('Bad Request', { status: 400 });
+  if (content.length > MAX_NOTE) {
+    return Response.json({ error: `Notes can be up to ${MAX_NOTE.toLocaleString('en')} characters.` }, { status: 400 });
+  }
 
   const note = await prisma.note.upsert({
     where: { userId_videoId: { userId: session.user.id, videoId } },

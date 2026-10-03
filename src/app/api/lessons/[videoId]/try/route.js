@@ -1,10 +1,13 @@
 import prisma from '../../../../../lib/prismadb';
 import { error, json, requireUserId } from '../../../../../lib/api';
 import { lessonContext, reward } from '../../../../../lib/rewards';
+import { rateLimit } from '../../../../../lib/rateLimit';
 
 export async function POST(req, { params }) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to save practice.');
+  const limited = await rateLimit('try', userId);
+  if (limited) return limited;
 
   const { videoId } = params;
   const video = await prisma.video.findUnique({ where: { id: videoId }, select: { id: true } });

@@ -3,12 +3,15 @@ import {
   error, json, readJson, requireUserId,
 } from '../../../../../lib/api';
 import { AUTO_HIDE_REPORTS, reasonText } from '../../../../../lib/moderation';
+import { rateLimit } from '../../../../../lib/rateLimit';
 
 // POST { reason }: one report per learner per make. Enough open reports hide the make
 // until an admin reviews it.
 export async function POST(req, { params }) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to report a make.');
+  const limited = await rateLimit('report', userId);
+  if (limited) return limited;
 
   const body = await readJson(req);
   if (!body || !reasonText(body.reason)) return error(400, 'Pick a reason for the report.');

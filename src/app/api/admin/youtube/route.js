@@ -1,4 +1,5 @@
 import { getAdmin } from '../../../../lib/admin';
+import { rateLimit } from '../../../../lib/rateLimit';
 import { error, json } from '../../../../lib/api';
 import { parseYouTubeId } from '../../../../lib/youtube';
 
@@ -6,7 +7,10 @@ import { parseYouTubeId } from '../../../../lib/youtube';
 // (no API key). oEmbed fails for private videos and ones whose owner disabled embedding,
 // which would never play on LearnTube, so that's reported as an error.
 export async function GET(req) {
-  if (!(await getAdmin())) return error(404, 'Not found.');
+  const admin = await getAdmin();
+  if (!admin) return error(404, 'Not found.');
+  const limited = await rateLimit('videoCheck', admin.id);
+  if (limited) return limited;
 
   const id = parseYouTubeId(new URL(req.url).searchParams.get('url'));
   if (!id) return error(400, 'That isn’t a YouTube video link.');

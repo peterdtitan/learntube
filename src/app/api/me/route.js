@@ -5,6 +5,7 @@ import {
 import { getLearnerSummary } from '../../../lib/xp';
 import { validateDisplayName } from '../../../lib/people';
 import { deletePhotos } from '../../../lib/blob';
+import { rateLimit } from '../../../lib/rateLimit';
 import {
   isValidTimeZone, MAX_WEEKLY_GOAL, MIN_WEEKLY_GOAL,
 } from '../../../lib/practice';
@@ -20,6 +21,8 @@ export async function GET() {
 export async function PATCH(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change your goal.');
+  const limited = await rateLimit('settings', userId);
+  if (limited) return limited;
 
   const body = await readJson(req);
   if (!body) return error(400, 'Send settings as JSON.');
@@ -63,6 +66,8 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to delete your account.');
+  const limited = await rateLimit('deleteAccount', userId);
+  if (limited) return limited;
 
   const body = await readJson(req);
   if (body?.confirm !== 'DELETE') return error(400, 'Type DELETE to confirm.');
