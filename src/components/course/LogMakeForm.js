@@ -77,7 +77,7 @@ export default function LogMakeForm({ videoId, suggestion, onLogged }) {
     setNote('');
     setPhoto(null);
     setStatus('idle');
-    onLogged(data.xpAwarded || 0);
+    onLogged(data.xpAwarded || 0, data.milestones || []);
   };
 
   return (

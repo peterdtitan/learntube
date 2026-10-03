@@ -68,8 +68,9 @@ export default function Classroom({
   const [logOpen, setLogOpen] = useState(myMakes.length === 0);
   const clearToast = useCallback(() => setToast(null), []);
 
-  const celebrate = useCallback((message, xp) => {
-    setToast({ message, xp, at: Date.now() });
+  // A newly reached milestone takes over the toast, e.g. "You reached 250 XP!".
+  const celebrate = useCallback((message, xp, milestones = []) => {
+    setToast({ message: milestones.length ? `${milestones[0]}!` : message, xp, at: Date.now() });
     if (xp > 0) notifySummaryChanged();
     router.refresh();
   }, [router]);
@@ -82,7 +83,7 @@ export default function Classroom({
     setWatched(true);
     if (!isSignedIn) return;
     const data = await saveProgress(lesson.id, lesson.duration, true);
-    if (data?.xpAwarded) celebrate('Watched to the end', data.xpAwarded);
+    if (data?.xpAwarded) celebrate('Watched to the end', data.xpAwarded, data.milestones);
   }, [lesson.id, lesson.duration, isSignedIn, celebrate]);
 
   const handleLoopClick = () => {
@@ -116,7 +117,7 @@ export default function Classroom({
     if (!res.ok) return;
     const data = await res.json();
     setTriedAt(data.triedAt);
-    celebrate('Nice work. Practice counted.', data.xpAwarded);
+    celebrate('Nice work. Practice counted.', data.xpAwarded, data.milestones);
   };
 
   return (
@@ -182,9 +183,9 @@ export default function Classroom({
               <LogMakeForm
                 videoId={lesson.id}
                 suggestion={lesson.tryTask}
-                onLogged={(xp) => {
+                onLogged={(xp, milestones) => {
                   setLogOpen(false);
-                  celebrate('Logged to your makes', xp);
+                  celebrate('Logged to your makes', xp, milestones);
                 }}
               />
             )}
