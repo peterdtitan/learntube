@@ -31,3 +31,25 @@ export function formatDuration(totalSeconds) {
   }
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+
+const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
+
+// Strict version for admin input: the 11-character video id, or null if the text isn't a
+// YouTube video link or id. Handles watch?v=, youtu.be/, /embed/, /shorts/ and /live/.
+export function parseYouTubeId(value) {
+  const text = (value || '').trim();
+  if (VIDEO_ID.test(text)) return text;
+  let url;
+  try {
+    url = new URL(text);
+  } catch {
+    return null;
+  }
+  const host = url.hostname.replace(/^(www|m|music)\./, '');
+  let id = null;
+  if (host === 'youtu.be') [, id] = url.pathname.split('/');
+  else if (['youtube.com', 'youtube-nocookie.com'].includes(host)) {
+    id = url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1] || null;
+  }
+  return id && VIDEO_ID.test(id) ? id : null;
+}
