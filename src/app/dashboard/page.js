@@ -9,6 +9,8 @@ import PathwayCard from '../../components/home/PathwayCard';
 import WeekCard from '../../components/practice/WeekCard';
 import MakeCard from '../../components/makes/MakeCard';
 import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import LeaderboardToggle from '../../components/community/LeaderboardToggle';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Dashboard · LearnTube' };
@@ -43,7 +45,16 @@ export default async function DashboardPage() {
             </div>
           )}
         </section>
-        {summary && <WeekCard summary={summary} />}
+        <div className="grid gap-4">
+          {summary && <WeekCard summary={summary} />}
+          <Card className="grid gap-3">
+            <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Community</h3>
+            <LeaderboardToggle initialShown={summary?.showOnLeaderboard ?? true} />
+            <Button href={`/learners/${userId}`} variant="ghost" size="sm" className="justify-self-start">
+              View your profile
+            </Button>
+          </Card>
+        </div>
       </div>
 
       <section className="grid gap-4 border-t border-line pt-8">
