@@ -1,9 +1,9 @@
-'use server';
-
 import { redirect, notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
-import { getPathwayWithUnits, getProgressByVideoId } from '../../../lib/course';
+import { getPathwayWithUnits, getProgressByVideoId, isLessonDone } from '../../../lib/course';
+
+export const dynamic = 'force-dynamic';
 
 export default async function PathwayRedirectPage({ params }) {
   const { pathwayId } = params;
@@ -19,7 +19,7 @@ export default async function PathwayRedirectPage({ params }) {
     orderedVideos.map((v) => v.id),
   );
 
-  const nextVideo = orderedVideos.find((v) => !progressByVideoId[v.id]?.completed)
+  const nextVideo = orderedVideos.find((v) => !isLessonDone(progressByVideoId[v.id]))
     || orderedVideos[0];
 
   redirect(`/pathways/${pathwayId}/learn/${nextVideo.id}`);

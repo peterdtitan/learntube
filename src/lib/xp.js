@@ -1,8 +1,8 @@
 import prisma from './prismadb';
 import { localDayKey, summarizePractice } from './practice';
+import { XP } from './xpValues';
 
-// Doing earns more than watching.
-export const XP = { WATCH: 10, TRY: 25, LOG: 40 };
+export { XP };
 
 const PRACTICE_KINDS = ['TRY', 'LOG'];
 

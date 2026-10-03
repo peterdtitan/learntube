@@ -3,6 +3,7 @@ import {
   error, json, readJson, requireUserId,
 } from '../../../lib/api';
 import { awardXp } from '../../../lib/xp';
+import { listMakes } from '../../../lib/makes';
 
 const MAX_TITLE = 120;
 const MAX_NOTE = 2000;
@@ -17,25 +18,12 @@ function cleanImageUrl(value) {
   if (typeof value !== 'string' || !value) return null;
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' ? url.toString() : undefined;
+    // Only photos uploaded through /api/uploads, which land in Vercel Blob.
+    const ok = url.protocol === 'https:' && url.hostname.endsWith('.public.blob.vercel-storage.com');
+    return ok ? url.toString() : undefined;
   } catch {
     return undefined;
   }
-}
-
-function serialize(make, viewerId) {
-  return {
-    id: make.id,
-    title: make.title,
-    note: make.note,
-    imageUrl: make.imageUrl,
-    createdAt: make.createdAt,
-    author: { id: make.user.id, name: make.user.name, image: make.user.image },
-    lesson: make.video ? { id: make.video.id, title: make.video.title } : null,
-    pathway: make.pathway ? { id: make.pathway.id, title: make.pathway.title } : null,
-    kudosCount: make._count.kudos,
-    gaveKudos: viewerId ? make.kudos.some((k) => k.userId === viewerId) : false,
-  };
 }
 
 // GET /api/makes?scope=recent|mine&limit=20
@@ -46,20 +34,7 @@ export async function GET(req) {
   const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
   if (scope === 'mine' && !viewerId) return error(401, 'Sign in to see your makes.');
 
-  const makes = await prisma.make.findMany({
-    where: scope === 'mine' ? { userId: viewerId } : {},
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-      video: { select: { id: true, title: true } },
-      pathway: { select: { id: true, title: true } },
-      kudos: viewerId ? { where: { userId: viewerId }, select: { userId: true } } : false,
-      _count: { select: { kudos: true } },
-    },
-  });
-
-  return json({ makes: makes.map((m) => serialize({ ...m, kudos: m.kudos || [] }, viewerId)) });
+  return json({ makes: await listMakes({ viewerId, scope, limit }) });
 }
 
 // POST /api/makes { title, note?, imageUrl?, videoId?, pathwayId? }
@@ -74,7 +49,7 @@ export async function POST(req) {
   if (!title) return error(400, 'Give your make a title.');
   const note = cleanText(body.note, MAX_NOTE);
   const imageUrl = cleanImageUrl(body.imageUrl);
-  if (imageUrl === undefined) return error(400, 'Photo links must start with https://.');
+  if (imageUrl === undefined) return error(400, 'Upload the photo first, then log the make with the link it returns.');
 
   const videoId = typeof body.videoId === 'string' ? body.videoId : null;
   const pathwayId = typeof body.pathwayId === 'string' ? body.pathwayId : null;
