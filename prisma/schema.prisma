@@ -32,6 +32,8 @@ model User {
   role              Role            @default(LEARNER)
   displayName       String? // shown publicly instead of the Google account name
   reports           Report[]
+  notifications     Notification[]  @relation("recipient")
+  notificationsSent Notification[]  @relation("actor")
 }
 
 model Account {
@@ -126,6 +128,7 @@ model Video {
   captionsLang String? // e.g. "en", passed to the YouTube player for CC
   transcript   String? // plain-text transcript shown under the player
   tryTask      String? // the hands-on step after watching, e.g. "Cast on 20 stitches"
+  starterCode  String? // HTML/CSS/JS the code sandbox opens with
   pathway      Pathway?        @relation(fields: [pathwayId], references: [id])
   pathwayId    String?
   unit         Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
@@ -175,12 +178,13 @@ model Make {
   // Set when reports cross the threshold or an admin hides it; only the author and admins see it.
   hiddenAt  DateTime?
 
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video    Video?        @relation(fields: [videoId], references: [id], onDelete: SetNull)
-  pathway  Pathway?      @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
-  kudos    Kudos[]
-  comments MakeComment[]
-  reports  Report[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video         Video?         @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  pathway       Pathway?       @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  kudos         Kudos[]
+  comments      MakeComment[]
+  reports       Report[]
+  notifications Notification[]
 
   @@index([userId, createdAt])
   @@index([createdAt])
@@ -270,9 +274,10 @@ model Milestone {
   pathwayId String?
   createdAt DateTime      @default(now())
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pathway Pathway? @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
-  cheers  Cheer[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pathway       Pathway?       @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
+  cheers        Cheer[]
+  notifications Notification[]
 
   @@unique([userId, key])
   @@index([userId, createdAt])
@@ -303,4 +308,44 @@ model Report {
 
   @@unique([makeId, reporterId])
   @@index([resolvedAt, createdAt])
+}
+
+enum NotificationKind {
+  KUDOS
+  COMMENT
+  FOLLOW
+  CHEER
+}
+
+// key makes each notification happen once, e.g. "kudos:<makeId>:<actorId>", so taking
+// kudos back and giving it again doesn't notify twice.
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String // who is told
+  actorId     String // who did it
+  kind        NotificationKind
+  key         String
+  makeId      String?
+  milestoneId String?
+  preset      String? // the comment phrase, for COMMENT
+  createdAt   DateTime         @default(now())
+  readAt      DateTime?
+
+  user      User       @relation("recipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor     User       @relation("actor", fields: [actorId], references: [id], onDelete: Cascade)
+  make      Make?      @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+// Fixed-window counters for the write APIs, keyed like "comment:<userId>".
+model RateLimit {
+  key         String   @id
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@index([windowStart])
 }
