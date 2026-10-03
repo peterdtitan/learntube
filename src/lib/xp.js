@@ -8,11 +8,17 @@ const PRACTICE_KINDS = ['TRY', 'LOG'];
 
 // One award per sourceKey, so replaying a video or re-marking a step never pays twice.
 // Returns the created event, or null if it was already awarded.
-export async function awardXp(userId, kind, sourceKey) {
+// context ({ pathwayId, skillId }) records where it was earned, for leaderboards.
+export async function awardXp(userId, kind, sourceKey, context = {}) {
   try {
     return await prisma.xpEvent.create({
       data: {
-        userId, kind, amount: XP[kind], sourceKey,
+        userId,
+        kind,
+        amount: XP[kind],
+        sourceKey,
+        pathwayId: context.pathwayId || null,
+        skillId: context.skillId || null,
       },
     });
   } catch (err) {
@@ -24,7 +30,7 @@ export async function awardXp(userId, kind, sourceKey) {
 export async function getLearnerSummary(userId, now = new Date()) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { weeklyGoal: true, timeZone: true },
+    select: { weeklyGoal: true, timeZone: true, showOnLeaderboard: true },
   });
   if (!user) return null;
 
@@ -53,6 +59,7 @@ export async function getLearnerSummary(userId, now = new Date()) {
   return {
     xp: { total: total._sum.amount || 0, thisWeek: xpThisWeek },
     timeZone: user.timeZone,
+    showOnLeaderboard: user.showOnLeaderboard,
     ...practice,
   };
 }

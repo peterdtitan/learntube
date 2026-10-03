@@ -1,6 +1,6 @@
 import prisma from '../../../../../lib/prismadb';
 import { error, json, requireUserId } from '../../../../../lib/api';
-import { awardXp } from '../../../../../lib/xp';
+import { lessonContext, reward } from '../../../../../lib/rewards';
 
 export async function POST(req, { params }) {
   const userId = await requireUserId();
@@ -18,7 +18,7 @@ export async function POST(req, { params }) {
       userId, videoId, stoppedAt: 0, triedAt: now,
     },
   });
-  const award = await awardXp(userId, 'TRY', `try:${videoId}`);
+  const result = await reward(userId, 'TRY', `try:${videoId}`, await lessonContext(videoId));
 
-  return json({ triedAt: now, xpAwarded: award?.amount || 0 });
+  return json({ triedAt: now, ...result });
 }

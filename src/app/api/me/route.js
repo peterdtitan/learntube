@@ -14,7 +14,7 @@ export async function GET() {
   return json(await getLearnerSummary(userId));
 }
 
-// PATCH /api/me { weeklyGoal?, timeZone? }
+// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard? }
 export async function PATCH(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change your goal.');
@@ -35,6 +35,10 @@ export async function PATCH(req) {
       return error(400, 'Time zone must be an IANA name, like Africa/Lagos.');
     }
     data.timeZone = body.timeZone;
+  }
+  if (body.showOnLeaderboard !== undefined) {
+    if (typeof body.showOnLeaderboard !== 'boolean') return error(400, 'showOnLeaderboard must be true or false.');
+    data.showOnLeaderboard = body.showOnLeaderboard;
   }
   if (!Object.keys(data).length) return error(400, 'Nothing to update.');
 

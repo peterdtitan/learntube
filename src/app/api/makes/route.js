@@ -2,7 +2,9 @@ import prisma from '../../../lib/prismadb';
 import {
   error, json, readJson, requireUserId,
 } from '../../../lib/api';
-import { awardXp } from '../../../lib/xp';
+import {
+  lessonContext, pathwayContext, recordMilestones, reward,
+} from '../../../lib/rewards';
 import { listMakes } from '../../../lib/makes';
 
 const MAX_TITLE = 120;
@@ -69,10 +71,11 @@ export async function POST(req) {
   });
 
   // XP once per lesson or pathway; makes not tied to either earn none.
-  let sourceKey = null;
-  if (videoId) sourceKey = `log:video:${videoId}`;
-  else if (pathwayId) sourceKey = `log:pathway:${pathwayId}`;
-  const award = sourceKey ? await awardXp(userId, 'LOG', sourceKey) : null;
+  let result = { xpAwarded: 0, milestones: [] };
+  if (videoId) result = await reward(userId, 'LOG', `log:video:${videoId}`, await lessonContext(videoId));
+  else if (pathwayId) result = await reward(userId, 'LOG', `log:pathway:${pathwayId}`, await pathwayContext(pathwayId));
+  // A first make counts as a milestone even when it earns no XP.
+  if (!result.xpAwarded) result.milestones = await recordMilestones(userId);
 
-  return json({ make, xpAwarded: award?.amount || 0 }, 201);
+  return json({ make, ...result }, 201);
 }
