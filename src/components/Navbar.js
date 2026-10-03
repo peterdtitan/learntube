@@ -67,6 +67,9 @@ function AccountMenu({ user }) {
           <Link role="menuitem" href={`/learners/${user.id}`} onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
             Your profile
           </Link>
+          <Link role="menuitem" href="/settings" onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
+            Settings
+          </Link>
           <button role="menuitem" type="button" onClick={() => signOut()} className="block w-full rounded-sm px-3 py-2 text-left text-[15px] hover:bg-sunken">
             Sign out
           </button>

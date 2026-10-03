@@ -3,6 +3,8 @@ import {
   error, json, readJson, requireUserId,
 } from '../../../lib/api';
 import { getLearnerSummary } from '../../../lib/xp';
+import { validateDisplayName } from '../../../lib/people';
+import { deletePhotos } from '../../../lib/blob';
 import {
   isValidTimeZone, MAX_WEEKLY_GOAL, MIN_WEEKLY_GOAL,
 } from '../../../lib/practice';
@@ -14,7 +16,7 @@ export async function GET() {
   return json(await getLearnerSummary(userId));
 }
 
-// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard? }
+// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard?, displayName? }
 export async function PATCH(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change your goal.');
@@ -36,6 +38,16 @@ export async function PATCH(req) {
     }
     data.timeZone = body.timeZone;
   }
+  if (body.displayName !== undefined) {
+    // An empty value clears it, falling back to first name and last initial.
+    if (body.displayName === null || String(body.displayName).trim() === '') {
+      data.displayName = null;
+    } else {
+      const checked = validateDisplayName(body.displayName);
+      if (checked.error) return error(400, checked.error);
+      data.displayName = checked.name;
+    }
+  }
   if (body.showOnLeaderboard !== undefined) {
     if (typeof body.showOnLeaderboard !== 'boolean') return error(400, 'showOnLeaderboard must be true or false.');
     data.showOnLeaderboard = body.showOnLeaderboard;
@@ -44,4 +56,22 @@ export async function PATCH(req) {
 
   await prisma.user.update({ where: { id: userId }, data });
   return json(await getLearnerSummary(userId));
+}
+
+// DELETE /api/me { confirm: "DELETE" }: removes the account and everything the learner
+// created (progress, notes, makes, comments, kudos, follows). Pathways they authored stay.
+export async function DELETE(req) {
+  const userId = await requireUserId();
+  if (!userId) return error(401, 'Sign in to delete your account.');
+
+  const body = await readJson(req);
+  if (body?.confirm !== 'DELETE') return error(400, 'Type DELETE to confirm.');
+
+  const photos = await prisma.make.findMany({
+    where: { userId, imageUrl: { not: null } },
+    select: { imageUrl: true },
+  });
+  await prisma.user.delete({ where: { id: userId } });
+  await deletePhotos(photos.map((p) => p.imageUrl));
+  return json({ deleted: true });
 }
