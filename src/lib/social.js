@@ -2,6 +2,7 @@ import prisma from './prismadb';
 import { getLearnerSummary } from './xp';
 import { listMakes } from './makes';
 import { describeMilestone } from './milestoneRules';
+import { publicName } from './people';
 
 export async function followingIds(viewerId) {
   if (!viewerId) return [];
@@ -17,7 +18,7 @@ function serializeMilestone(m, viewerId) {
     type: 'milestone',
     id: m.id,
     createdAt: m.createdAt.toISOString(),
-    author: { id: m.user.id, name: m.user.name },
+    author: { id: m.user.id, name: publicName(m.user) },
     text: describeMilestone(m, m.pathway?.title),
     kind: m.kind,
     cheerCount: m._count.cheers,
@@ -27,7 +28,7 @@ function serializeMilestone(m, viewerId) {
 }
 
 const MILESTONE_INCLUDE = (viewerId) => ({
-  user: { select: { id: true, name: true } },
+  user: { select: { id: true, name: true, displayName: true } },
   pathway: { select: { title: true } },
   cheers: viewerId ? { where: { userId: viewerId }, select: { userId: true } } : false,
   _count: { select: { cheers: true } },
@@ -63,7 +64,10 @@ export async function getProfile(userId, viewerId) {
     select: {
       id: true,
       name: true,
-      _count: { select: { followers: true, following: true, makes: true } },
+      displayName: true,
+      _count: {
+        select: { followers: true, following: true, makes: { where: { hiddenAt: null } } },
+      },
     },
   });
   if (!user) return null;
@@ -81,7 +85,7 @@ export async function getProfile(userId, viewerId) {
 
   return {
     id: user.id,
-    name: user.name || 'A learner',
+    name: publicName(user),
     followers: user._count.followers,
     following: user._count.following,
     makeCount: user._count.makes,

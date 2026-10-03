@@ -1,5 +1,7 @@
 import prisma from './prismadb';
 import { presetText } from './comments';
+import { publicName } from './people';
+import { visibleMakesFor } from './moderation';
 
 export function serializeMake(make, viewerId) {
   return {
@@ -8,7 +10,7 @@ export function serializeMake(make, viewerId) {
     note: make.note,
     imageUrl: make.imageUrl,
     createdAt: make.createdAt.toISOString(),
-    author: { id: make.user.id, name: make.user.name },
+    author: { id: make.user.id, name: publicName(make.user) },
     lesson: make.video ? { id: make.video.id, title: make.video.title } : null,
     pathway: make.pathway ? { id: make.pathway.id, title: make.pathway.title } : null,
     skill: make.pathway?.skill || make.video?.unit?.pathway?.skill || null,
@@ -16,6 +18,7 @@ export function serializeMake(make, viewerId) {
     commentCount: make._count.comments,
     gaveKudos: viewerId ? make.kudos.some((k) => k.userId === viewerId) : false,
     isMine: viewerId === make.user.id,
+    hidden: Boolean(make.hiddenAt),
   };
 }
 
@@ -23,7 +26,7 @@ const SKILL = { select: { id: true, name: true, color: true } };
 
 function makeInclude(viewerId) {
   return {
-    user: { select: { id: true, name: true } },
+    user: { select: { id: true, name: true, displayName: true } },
     video: {
       select: {
         id: true, title: true, unit: { select: { pathway: { select: { skill: SKILL } } } },
@@ -39,8 +42,8 @@ function makeInclude(viewerId) {
 export async function listMakes({
   viewerId, scope = 'recent', userIds, limit = 20,
 }) {
-  let where = {};
-  if (userIds) where = { userId: { in: userIds } };
+  let where = visibleMakesFor(viewerId);
+  if (userIds) where = { AND: [where, { userId: { in: userIds } }] };
   else if (scope === 'mine') where = { userId: viewerId };
 
   const makes = await prisma.make.findMany({
@@ -52,18 +55,19 @@ export async function listMakes({
   return makes.map((m) => serializeMake({ ...m, kudos: m.kudos || [] }, viewerId));
 }
 
-export async function getMake(makeId, viewerId) {
+export async function getMake(makeId, viewerId, { viewerIsAdmin = false } = {}) {
   const make = await prisma.make.findUnique({
     where: { id: makeId },
     include: {
       ...makeInclude(viewerId),
       comments: {
         orderBy: { createdAt: 'asc' },
-        include: { user: { select: { id: true, name: true } } },
+        include: { user: { select: { id: true, name: true, displayName: true } } },
       },
     },
   });
-  if (!make) return null;
+  // A hidden make is only visible to its author and to admins reviewing it.
+  if (!make || (make.hiddenAt && make.userId !== viewerId && !viewerIsAdmin)) return null;
   return {
     ...serializeMake({ ...make, kudos: make.kudos || [] }, viewerId),
     pathwayId: make.pathway?.id || null,
@@ -74,7 +78,7 @@ export async function getMake(makeId, viewerId) {
         preset: c.preset,
         text: presetText(c.preset),
         createdAt: c.createdAt.toISOString(),
-        author: c.user,
+        author: { id: c.user.id, name: publicName(c.user) },
         isMine: c.user.id === viewerId,
       })),
   };
