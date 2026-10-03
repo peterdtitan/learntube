@@ -1,100 +1,63 @@
-'use server';
-
 import React from 'react';
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../lib/auth';
-import prisma from '../../lib/prismadb';
-import { formatDuration } from '../../lib/youtube';
+import { getPathwayOverviews } from '../../lib/course';
+import { listMakes } from '../../lib/makes';
+import { getLearnerSummary } from '../../lib/xp';
+import PathwayCard from '../../components/home/PathwayCard';
+import WeekCard from '../../components/practice/WeekCard';
+import MakeCard from '../../components/makes/MakeCard';
+import Button from '../../components/ui/Button';
+
+export const dynamic = 'force-dynamic';
+export const metadata = { title: 'Dashboard · LearnTube' };
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) redirect('/auth/signin?callbackUrl=/dashboard');
 
-  const pathways = await prisma.pathway.findMany({
-    include: {
-      units: { include: { videos: true } },
-      videos: { where: { unitId: null } },
-    },
-  });
-
-  let progressByVideoId = {};
-  let recentProgress = [];
-  if (session?.user?.id) {
-    const progress = await prisma.videoProgress.findMany({
-      where: { userId: session.user.id },
-      include: { video: { include: { unit: true } } },
-      orderBy: { watchedAt: 'desc' },
-    });
-    progressByVideoId = Object.fromEntries(progress.map((p) => [p.videoId, p]));
-    recentProgress = progress.slice(0, 5);
-  }
+  const [summary, pathways, makes] = await Promise.all([
+    getLearnerSummary(userId),
+    getPathwayOverviews(userId),
+    listMakes({ viewerId: userId, scope: 'mine', limit: 8 }),
+  ]);
+  const started = pathways.filter((p) => p.started);
+  const firstName = (session.user.name || '').split(' ')[0];
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
+    <div className="grid gap-10">
+      <h1 className="text-[clamp(2rem,4vw,2.75rem)] font-bold leading-tight">
+        {firstName ? `${firstName}’s workbench` : 'Your workbench'}
+      </h1>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-medium mb-2">Continue Learning</h2>
-        {!session?.user && (
-          <p className="text-sm text-gray-600 dark:text-gray-300">Sign in to see your progress.</p>
-        )}
-        {session?.user && recentProgress.length === 0 && (
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            No progress tracked yet — jump into a pathway below.
-          </p>
-        )}
-        {session?.user && recentProgress.length > 0 && (
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {recentProgress.map((p) => (
-              <li key={p.id}>
-                <Link
-                  href={`/pathways/${p.video.pathwayId ?? p.video.unit?.pathwayId}/learn/${p.video.id}`}
-                  className="block rounded-md bg-white/80 p-3 shadow-sm dark:bg-gray-800/80"
-                >
-                  <div className="font-semibold">{p.video.title}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    {p.completed ? 'Completed' : `Stopped at ${formatDuration(p.stoppedAt)}`}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(p.watchedAt).toLocaleString()}
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <section className="grid gap-4" aria-label="Your pathways">
+          {started.length ? (
+            started.map((p) => <PathwayCard key={p.id} pathway={p} signedIn />)
+          ) : (
+            <div className="grid justify-items-start gap-3 rounded-lg border border-dashed border-line p-6">
+              <p className="text-lg font-bold">You haven’t started a pathway yet.</p>
+              <Button href="/pathways" size="sm">Browse pathways</Button>
+            </div>
+          )}
+        </section>
+        {summary && <WeekCard summary={summary} />}
+      </div>
 
-      <section>
-        <h2 className="text-xl font-medium mb-2">Available Pathways</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {pathways.map((pw) => {
-            const videos = [...pw.units.flatMap((u) => u.videos), ...pw.videos];
-            const completedCount = videos.filter((v) => progressByVideoId[v.id]?.completed).length;
-            const percent = videos.length ? Math.round((completedCount / videos.length) * 100) : 0;
-
-            return (
-              <Link
-                key={pw.id}
-                href={`/pathways/${pw.id}`}
-                className="block p-4 bg-white/80 dark:bg-gray-800/80 rounded"
-              >
-                <div className="font-semibold text-lg">{pw.title}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">{pw.description}</div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  {videos.length}
-                  {' '}
-                  lessons
-                </p>
-                {session?.user && (
-                  <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                    <div className="h-1.5 rounded-full bg-emerald-500" style={{ width: `${percent}%` }} />
-                  </div>
-                )}
-              </Link>
-            );
-          })}
+      <section className="grid gap-4 border-t border-line pt-8">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-2xl font-bold">Your makes</h2>
+          {makes.length > 0 && <Button href="/makes?view=mine" variant="quiet" size="sm">See all</Button>}
         </div>
+        {makes.length ? (
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {makes.map((m) => <MakeCard key={m.id} make={m} />)}
+          </div>
+        ) : (
+          <p className="text-muted">Finish a lesson&apos;s Log step and your makes collect here.</p>
+        )}
       </section>
     </div>
   );
