@@ -1,102 +1,70 @@
 import React from 'react';
 import Link from 'next/link';
+import { Check } from 'lucide-react';
+import ProgressBar from '../ui/ProgressBar';
 import { formatDuration } from '../../lib/youtube';
+import { isLessonDone } from '../../lib/course';
+import cn from '../../lib/cn';
 
-function VideoRow({
-  pathwayId, video, isActive, progress,
+function LessonRow({
+  pathwayId, lesson, isActive, done,
 }) {
-  const completed = Boolean(progress?.completed);
-
-  let dotClassName = 'border-gray-400 text-transparent';
-  if (completed) dotClassName = 'border-emerald-500 bg-emerald-500 text-white';
-  else if (isActive) dotClassName = 'border-red-400 text-red-400';
-
   return (
     <Link
-      href={`/pathways/${pathwayId}/learn/${video.id}`}
-      className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-        isActive
-          ? 'bg-red-400/10 text-red-500 font-semibold'
-          : 'hover:bg-black/5 dark:hover:bg-white/10'
-      }`}
+      href={`/pathways/${pathwayId}/learn/${lesson.id}`}
+      aria-current={isActive ? 'page' : undefined}
+      className={cn(
+        'flex items-center gap-3 rounded-md px-3 py-2 text-[15px] transition-colors',
+        isActive ? 'bg-accent-soft font-bold text-accent' : 'hover:bg-sunken',
+      )}
     >
       <span
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] ${dotClassName}`}
+        className={cn(
+          'grid h-5 w-5 shrink-0 place-items-center rounded-full border-[1.5px]',
+          done && 'border-accent bg-accent text-on-accent',
+          !done && isActive && 'border-accent',
+          !done && !isActive && 'border-line',
+        )}
       >
-        {completed ? '✓' : '●'}
+        {done && <Check size={12} strokeWidth={3} />}
+        {done && <span className="sr-only">Done:</span>}
       </span>
-      <span className="flex-1 truncate">{video.title}</span>
-      <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">{formatDuration(video.duration)}</span>
+      <span className="flex-1 truncate">{lesson.title}</span>
+      <span className="shrink-0 text-xs tabular-nums text-muted">{formatDuration(lesson.duration)}</span>
     </Link>
   );
 }
 
 export default function CourseSidebar({
-  pathway,
-  units,
-  unassignedVideos,
-  activeVideoId,
-  progressByVideoId,
+  pathway, units, unassignedVideos, activeVideoId, progressByVideoId,
 }) {
-  const totalVideos = units.reduce((sum, u) => sum + u.videos.length, 0) + unassignedVideos.length;
-  const completedCount = [
-    ...units.flatMap((u) => u.videos),
-    ...unassignedVideos,
-  ].filter((v) => progressByVideoId[v.id]?.completed).length;
-  const percent = totalVideos ? Math.round((completedCount / totalVideos) * 100) : 0;
+  const lessons = [...units.flatMap((u) => u.videos), ...unassignedVideos];
+  const doneCount = lessons.filter((v) => isLessonDone(progressByVideoId[v.id])).length;
+  const rows = (videos) => videos.map((v) => (
+    <LessonRow
+      key={v.id}
+      pathwayId={pathway.id}
+      lesson={v}
+      isActive={v.id === activeVideoId}
+      done={isLessonDone(progressByVideoId[v.id])}
+    />
+  ));
 
   return (
-    <nav className="flex flex-col gap-4">
-      <div>
-        <h2 className="font-semibold text-lg leading-tight">{pathway.title}</h2>
-        <div className="mt-2 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-          <div
-            className="h-2 rounded-full bg-emerald-500 transition-all"
-            style={{ width: `${percent}%` }}
-          />
+    <nav aria-label="Lessons in this pathway" className="grid gap-5">
+      <div className="grid gap-2">
+        <Link href="/pathways" className="text-sm text-muted hover:text-ink">← All pathways</Link>
+        <h2 className="text-lg font-bold leading-tight">{pathway.title}</h2>
+        <ProgressBar value={lessons.length ? doneCount / lessons.length : 0} label="Pathway progress" />
+        <p className="text-xs text-muted">{`${doneCount} of ${lessons.length} lessons done`}</p>
+      </div>
+      {units.map((unit) => (
+        <div key={unit.id} className="grid gap-1">
+          <p className="px-3 text-xs font-bold uppercase tracking-widest text-muted">{unit.title}</p>
+          {rows(unit.videos)}
         </div>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {completedCount}
-          {' of '}
-          {totalVideos}
-          {' lessons complete'}
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-4">
-        {units.map((unit) => (
-          <div key={unit.id}>
-            <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              {unit.title}
-            </p>
-            <div className="flex flex-col gap-1">
-              {unit.videos.map((video) => (
-                <VideoRow
-                  key={video.id}
-                  pathwayId={pathway.id}
-                  video={video}
-                  isActive={video.id === activeVideoId}
-                  progress={progressByVideoId[video.id]}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {unassignedVideos.length > 0 && (
-          <div className="flex flex-col gap-1">
-            {unassignedVideos.map((video) => (
-              <VideoRow
-                key={video.id}
-                pathwayId={pathway.id}
-                video={video}
-                isActive={video.id === activeVideoId}
-                progress={progressByVideoId[video.id]}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      ))}
+      {unassignedVideos.length > 0 && <div className="grid gap-1">{rows(unassignedVideos)}</div>}
     </nav>
   );
 }

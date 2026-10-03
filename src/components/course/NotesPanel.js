@@ -6,7 +6,7 @@ const SAVE_DEBOUNCE_MS = 800;
 
 export default function NotesPanel({ videoId, initialContent, isSignedIn }) {
   const [content, setContent] = useState(initialContent || '');
-  const [status, setStatus] = useState('idle'); // idle | saving | saved
+  const [status, setStatus] = useState('idle');
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -19,41 +19,40 @@ export default function NotesPanel({ videoId, initialContent, isSignedIn }) {
     setStatus('saving');
     timeoutRef.current = setTimeout(async () => {
       try {
-        await fetch('/api/notes', {
+        const res = await fetch('/api/notes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ videoId, content: value }),
         });
-        setStatus('saved');
+        setStatus(res.ok ? 'saved' : 'error');
       } catch {
-        setStatus('idle');
+        setStatus('error');
       }
     }, SAVE_DEBOUNCE_MS);
   };
 
   if (!isSignedIn) {
-    return (
-      <p className="text-sm text-gray-600 dark:text-gray-300">
-        Sign in to write and save personal notes for this lesson.
-      </p>
-    );
+    return <p className="text-[15px] text-muted">Sign in to write notes that stay with this lesson.</p>;
   }
 
   return (
-    <div>
+    <div className="grid gap-1">
+      <label htmlFor="lesson-notes" className="sr-only">Notes for this lesson</label>
       <textarea
+        id="lesson-notes"
         value={content}
         onChange={(e) => {
           setContent(e.target.value);
           save(e.target.value);
         }}
-        placeholder="Jot down notes for this lesson…"
-        rows={8}
-        className="w-full resize-y rounded-md border border-gray-300 bg-white/80 p-3 text-sm outline-none focus:border-red-400 dark:border-gray-600 dark:bg-gray-800/80"
+        placeholder="Measurements, tips, what to watch for next time…"
+        rows={7}
+        className="w-full resize-y rounded-md border border-line bg-surface p-3 text-[15px] placeholder:text-muted"
       />
-      <p className="mt-1 h-4 text-xs text-gray-500 dark:text-gray-400">
+      <p className="h-4 text-xs text-muted" aria-live="polite">
         {status === 'saving' && 'Saving…'}
         {status === 'saved' && 'Saved'}
+        {status === 'error' && 'Couldn’t save. Check your connection; your text is still here.'}
       </p>
     </div>
   );
