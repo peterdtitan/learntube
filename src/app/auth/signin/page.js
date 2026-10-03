@@ -1,12 +1,14 @@
-'use client';
-
 import React from 'react';
-import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import Button from '../../../components/ui/Button';
+import GoogleSignInButton from './GoogleSignInButton';
 
-export default function SignIn() {
-  const callbackUrl = useSearchParams().get('callbackUrl') || '/';
+export const metadata = { title: 'Sign in · LearnTube' };
+
+// Only same-site paths are allowed as a return destination.
+function safeCallback(value) {
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : '/';
+}
+
+export default function SignIn({ searchParams }) {
   return (
     <div className="mx-auto grid max-w-md gap-5 rounded-lg border border-line bg-surface p-8 sm:mt-10">
       <h1 className="text-3xl font-bold">Sign in</h1>
@@ -14,7 +16,7 @@ export default function SignIn() {
         Signing in saves your place in every lesson, your notes and makes, and your weekly streak.
         New here? Signing in creates your account.
       </p>
-      <Button onClick={() => signIn('google', { callbackUrl })}>Continue with Google</Button>
+      <GoogleSignInButton callbackUrl={safeCallback(searchParams?.callbackUrl)} />
     </div>
   );
 }
