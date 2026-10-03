@@ -11,6 +11,9 @@ import Button from '../../../../../components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
+// Skills whose lessons always get the code sandbox; any lesson with starter code gets it too.
+const SANDBOX_SKILLS = ['software-engineering'];
+
 export default async function LessonPage({ params }) {
   const { pathwayId, videoId } = params;
 
@@ -89,7 +92,8 @@ export default async function LessonPage({ params }) {
           transcript={lesson.transcript}
           initialNote={note?.content || ''}
           isSignedIn={Boolean(userId)}
-          showSandbox={pathway.skill?.id === 'software-engineering'}
+          showSandbox={Boolean(lesson.starterCode) || SANDBOX_SKILLS.includes(pathway.skill?.id)}
+          starterCode={lesson.starterCode}
         />
 
         <nav aria-label="Lesson navigation" className="flex flex-wrap justify-between gap-3">

@@ -118,6 +118,20 @@ export default function LessonForm({
       <Field id="ls-lang" label="Captions language" hint="Two-letter code YouTube uses for captions, e.g. en, fr, yo.">
         <input id="ls-lang" name="captionsLang" maxLength={10} defaultValue={lesson?.captionsLang || 'en'} className={inputClass('w-28')} />
       </Field>
+      <Field
+        id="ls-code"
+        label="Code sandbox starter"
+        hint="Optional. HTML, CSS and JavaScript the sandbox opens with. Adding it shows the sandbox on this lesson."
+      >
+        <textarea
+          id="ls-code"
+          name="starterCode"
+          rows={6}
+          spellCheck={false}
+          defaultValue={lesson?.starterCode || ''}
+          className={textareaClass('font-mono text-[13px]')}
+        />
+      </Field>
       <FormMessage state={state} />
       <SubmitButton className="justify-self-start">{lesson ? 'Save lesson' : 'Add lesson'}</SubmitButton>
     </form>

@@ -161,6 +161,7 @@ export async function saveLesson(prev, form) {
     tryTask: text(form, 'tryTask', { required: true, max: 300 }),
     transcript: text(form, 'transcript', { max: 50000 }),
     captionsLang: text(form, 'captionsLang', { max: 10 }),
+    starterCode: text(form, 'starterCode', { max: 20000 }),
   };
   const problem = Object.values(fields).find((f) => f.error);
   if (problem) return { error: problem.error };
@@ -177,6 +178,7 @@ export async function saveLesson(prev, form) {
     tryTask: fields.tryTask.value,
     transcript: fields.transcript.value,
     captionsLang: fields.captionsLang.value || 'en',
+    starterCode: fields.starterCode.value,
   };
 
   if (id) {
