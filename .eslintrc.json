@@ -70,6 +70,23 @@
       "rules": {
         "react/jsx-props-no-spreading": "off"
       }
+    },
+    {
+      "files": [
+        "prisma/**/*.js",
+        "scripts/**/*.{js,mjs}",
+        "*.config.js",
+        "*.config.mjs"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ],
+        "no-console": "off"
+      }
     }
   ]
 }
