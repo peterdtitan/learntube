@@ -29,6 +29,9 @@ model User {
   showOnLeaderboard Boolean         @default(true)
   weeklyGoal        Int             @default(3) // practice days per week, 2-5
   timeZone          String          @default("UTC") // IANA name; decides where a practice day and week begin
+  role              Role            @default(LEARNER)
+  displayName       String? // shown publicly instead of the Google account name
+  reports           Report[]
 }
 
 model Account {
@@ -67,6 +70,11 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum Role {
+  LEARNER
+  ADMIN
+}
+
 enum SkillTier {
   HAND
   SCREEN
@@ -89,8 +97,8 @@ model Pathway {
   makeTitle   String? // what the learner has made by the end
   skillId     String?
   skill       Skill?      @relation(fields: [skillId], references: [id], onDelete: SetNull)
-  ownerId     String
-  owner       User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?
+  owner       User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   units       Unit[]
   videos      Video[]
   makes       Make[]
@@ -156,20 +164,23 @@ model Note {
 }
 
 model Make {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   videoId   String? // the lesson this came from
   pathwayId String? // set for a pathway's final project
   title     String
   note      String?
   imageUrl  String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  // Set when reports cross the threshold or an admin hides it; only the author and admins see it.
+  hiddenAt  DateTime?
 
   user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   video    Video?        @relation(fields: [videoId], references: [id], onDelete: SetNull)
   pathway  Pathway?      @relation(fields: [pathwayId], references: [id], onDelete: SetNull)
   kudos    Kudos[]
   comments MakeComment[]
+  reports  Report[]
 
   @@index([userId, createdAt])
   @@index([createdAt])
@@ -276,4 +287,20 @@ model Cheer {
   milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
 
   @@id([userId, milestoneId])
+}
+
+// One report per learner per make. reason is a preset id from src/lib/moderation.js.
+model Report {
+  id         String    @id @default(cuid())
+  makeId     String
+  reporterId String
+  reason     String
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime? // set when an admin keeps, hides or deletes the make
+
+  make     Make @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([makeId, reporterId])
+  @@index([resolvedAt, createdAt])
 }

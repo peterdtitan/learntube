@@ -1,6 +1,7 @@
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from './prismadb';
+import { adminEmails, isAdminUser } from './roles';
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -16,7 +17,14 @@ export const authOptions = {
   callbacks: {
     async session({ session, user }) {
       if (!session?.user) return session;
-      return { ...session, user: { ...session.user, id: user.id } };
+      // Promote anyone listed in ADMIN_EMAILS, so the role survives removing them from the list.
+      if (user.role !== 'ADMIN' && adminEmails().includes((user.email || '').toLowerCase())) {
+        await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } });
+      }
+      return {
+        ...session,
+        user: { ...session.user, id: user.id, isAdmin: isAdminUser(user) },
+      };
     },
   },
   pages: {

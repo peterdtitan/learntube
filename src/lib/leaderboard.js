@@ -1,5 +1,6 @@
 import prisma from './prismadb';
 import { followingIds } from './social';
+import { publicName } from './people';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -40,9 +41,9 @@ export async function getLeaderboard({
 
   const users = await prisma.user.findMany({
     where: { id: { in: [...top.map((r) => r.userId), ...(viewerRow ? [viewerRow.userId] : [])] } },
-    select: { id: true, name: true },
+    select: { id: true, name: true, displayName: true },
   });
-  const names = Object.fromEntries(users.map((u) => [u.id, u.name]));
+  const names = Object.fromEntries(users.map((u) => [u.id, publicName(u)]));
   const viewer = viewerId
     ? await prisma.user.findUnique({ where: { id: viewerId }, select: { showOnLeaderboard: true } })
     : null;
