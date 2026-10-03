@@ -54,10 +54,37 @@ function lessonSummary(video) {
   };
 }
 
+const MAX_TERMS = 6;
+
+// Every word has to appear somewhere: title, description, what you make, skill or a lesson title.
+export function pathwaySearchWhere({ q, skillId } = {}) {
+  const terms = String(q || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, MAX_TERMS);
+  const and = terms.map((term) => {
+    const has = { contains: term, mode: 'insensitive' };
+    return {
+      OR: [
+        { title: has },
+        { description: has },
+        { makeTitle: has },
+        { skill: { name: has } },
+        { units: { some: { videos: { some: { title: has } } } } },
+        { videos: { some: { title: has } } },
+      ],
+    };
+  });
+  if (skillId) and.push({ skillId });
+  return and.length ? { AND: and } : {};
+}
+
 // Every pathway with lesson counts and, for a signed-in learner, where they are in it.
-// Started pathways come first.
-export async function getPathwayOverviews(userId) {
+// Started pathways come first. Pass { q, skillId } to search.
+export async function getPathwayOverviews(userId, search = {}) {
   const pathways = await prisma.pathway.findMany({
+    where: pathwaySearchWhere(search),
     include: { skill: true, ...LESSONS_INCLUDE },
     orderBy: { title: 'asc' },
   });
