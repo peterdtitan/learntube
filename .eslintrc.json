@@ -42,6 +42,12 @@
           "_sum"
         ]
       }
+    ],
+    "jsx-a11y/label-has-associated-control": [
+      "error",
+      {
+        "assert": "either"
+      }
     ]
   },
   "ignorePatterns": [
@@ -55,6 +61,14 @@
       ],
       "rules": {
         "import/prefer-default-export": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/ui/**/*.js"
+      ],
+      "rules": {
+        "react/jsx-props-no-spreading": "off"
       }
     }
   ]

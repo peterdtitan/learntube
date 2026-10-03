@@ -1,66 +1,48 @@
 import React from 'react';
 import Link from 'next/link';
-import { RiTwitterLine, RiInstagramLine } from 'react-icons/ri';
+import { RiInstagramLine, RiTwitterXLine } from 'react-icons/ri';
 import { FaLinkedinIn } from 'react-icons/fa';
+
+const SOCIALS = [
+  { href: 'https://www.linkedin.com/in/peterokorafor', label: 'LinkedIn', Icon: FaLinkedinIn },
+  { href: 'https://www.instagram.com/peterdtitan/', label: 'Instagram', Icon: RiInstagramLine },
+  { href: 'https://twitter.com/PeterDeTitan', label: 'X (Twitter)', Icon: RiTwitterXLine },
+];
 
 export default function Footer() {
   return (
-    <div className="flex flex-col mt-20 p-16 pb-8 gap-4 font-thin w-full">
-      <div className="grid grid-cols-2 gap-6 md:flex-row md:flex justify-between items-start">
-        <div className="flex flex-col gap-2 cursor-pointer">
-          <h2 className="text-base tracking-widest font-medium hover:text-primaryYellow">SITEMAP</h2>
-          <div className="text-sm">
-            <ul>
-              <Link href="/"><li className="hover:text-primaryYellow">Home</li></Link>
-              <Link href="/short-courses"><li className="hover:text-primaryYellow">Short Courses</li></Link>
-              <Link href="/pathways"><li className="hover:text-primaryYellow">Pathways</li></Link>
-              <Link href="/micro-learn"><li className="hover:text-primaryYellow">Micro-Learn</li></Link>
-            </ul>
-          </div>
+    <footer className="mt-16 border-t border-line">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-[2fr_1fr_1fr] sm:px-6 lg:px-8">
+        <div className="grid max-w-sm gap-2">
+          <Link href="/" className="font-display text-xl font-bold tracking-tight">
+            Learn
+            <span className="text-accent">Tube</span>
+          </Link>
+          <p className="text-[15px] text-muted">
+            Free YouTube lessons, put in order. Every lesson belongs to its YouTube creator.
+          </p>
         </div>
-
-        <div className="flex flex-col gap-2 cursor-pointer">
-          <h2 className="text-base tracking-widest font-medium hover:text-primaryYellow">DISCOVER</h2>
-          <div className="text-sm">
-            <ul>
-              <Link href="/"><li className="hover:text-primaryYellow">Popular Videos</li></Link>
-              <Link href="/"><li className="hover:text-primaryYellow">Top Courses</li></Link>
-              <Link href="/"><li className="hover:text-primaryYellow">Most Completed</li></Link>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 cursor-pointer">
-          <h2 className="text-base tracking-widest font-medium hover:text-primaryYellow">RESOURCES</h2>
-          <div className="text-sm">
-            <ul>
-              <Link href="/"><li className="hover:text-primaryYellow">Data Policy</li></Link>
-              <Link href="/marketplace"><li className="hover:text-primaryYellow">Become A Contributor</li></Link>
-              <Link href="/marketplace"><li className="hover:text-primaryYellow">FAQs</li></Link>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 cursor-pointer">
-          <h2 className="text-base tracking-widest font-medium hover:text-primaryYellow">CONNECT</h2>
-
-          <div className="flex items-center justify-start gap-6">
-            <Link href="https://www.linkedin.com/in/peterokorafor" rel="noopener noreferrer" target="_blank">
-              <FaLinkedinIn size={25} />
-            </Link>
-            <Link href="https://www.instagram.com/peterdtitan/" rel="noopener noreferrer" target="_blank">
-              <RiInstagramLine size={25} />
-            </Link>
-            <Link href="https://twitter.com/PeterDeTitan" rel="noopener noreferrer" target="_blank">
-              <RiTwitterLine size={25} />
-            </Link>
+        <nav aria-label="Footer" className="grid content-start gap-2 text-[15px]">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Learn</h2>
+          <Link href="/#skills" className="hover:text-accent">Skills</Link>
+          <Link href="/pathways" className="hover:text-accent">Pathways</Link>
+          <Link href="/makes" className="hover:text-accent">Makes</Link>
+          <Link href="/dashboard" className="hover:text-accent">Dashboard</Link>
+        </nav>
+        <div className="grid content-start gap-3">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Connect</h2>
+          <div className="flex gap-4">
+            {SOCIALS.map(({ href, label, Icon }) => (
+              <a key={href} href={href} aria-label={label} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-ink">
+                <Icon size={22} />
+              </a>
+            ))}
           </div>
         </div>
       </div>
-
-      <div className="flex items-center text-xs justify-center">
-        <p>© Copyright 2024, MadHouse Inc.</p>
-      </div>
-    </div>
+      <p className="mx-auto max-w-7xl px-4 pb-8 text-xs text-muted sm:px-6 lg:px-8">
+        {`© ${new Date().getFullYear()} MadHouse Inc.`}
+      </p>
+    </footer>
   );
 }

@@ -1,36 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { BsSunFill, BsFillMoonFill } from 'react-icons/bs';
+import { Moon, Sun } from 'lucide-react';
 
-function ThemeSwitcher() {
+export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  if (!mounted) return null;
+  // Keep the space reserved before mount so the navbar doesn't shift.
+  if (!mounted) return <span className="h-9 w-9" aria-hidden="true" />;
 
-  const current = resolvedTheme || theme;
-
+  const dark = resolvedTheme === 'dark';
   return (
     <button
-      aria-label="Toggle color theme"
-      title="Toggle color theme"
-      className="flex items-center justify-center rounded-full p-1 h-8 w-8 lg:h-10 lg:w-10 transition-colors bg-white/80 dark:bg-gray-800/80 shadow-sm"
       type="button"
-      onClick={() => setTheme(current === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(dark ? 'light' : 'dark')}
+      aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+      className="grid h-9 w-9 place-items-center rounded-pill border border-line bg-surface text-muted transition-colors hover:text-ink"
     >
-      {current === 'dark' ? (
-        <BsSunFill className="text-yellow-400" />
-      ) : (
-        <BsFillMoonFill className="text-slate-700" />
-      )}
+      {dark ? <Sun size={17} /> : <Moon size={17} />}
     </button>
   );
 }
-
-export default ThemeSwitcher;

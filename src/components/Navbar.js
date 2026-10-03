@@ -1,97 +1,149 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { AiOutlineMenu } from 'react-icons/ai';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { Menu, X } from 'lucide-react';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
 import ThemeSwitcher from '../app/ThemeSwitcher';
+import Button from './ui/Button';
+import Pill from './ui/Pill';
+import useLearnerSummary from './useLearnerSummary';
+import cn from '../lib/cn';
+
+const LINKS = [
+  { href: '/#skills', label: 'Skills', match: (p) => p === '/' },
+  { href: '/pathways', label: 'Pathways', match: (p) => p.startsWith('/pathways') },
+  { href: '/makes', label: 'Makes', match: (p) => p.startsWith('/makes') },
+];
+
+function initials(name) {
+  return (name || '?')
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
+function streakLabel(summary) {
+  if (summary.streakWeeks > 0) return `${summary.streakWeeks}-week streak`;
+  return `${summary.doneThisWeek}/${summary.weeklyGoal} days this week`;
+}
+
+function useDismiss(open, setOpen) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointer = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, setOpen]);
+  return ref;
+}
+
+function AccountMenu({ user }) {
+  const [open, setOpen] = useState(false);
+  const ref = useDismiss(open, setOpen);
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Account"
+        onClick={() => setOpen(!open)}
+        className="grid h-9 w-9 place-items-center rounded-pill bg-accent-soft text-sm font-bold text-accent"
+      >
+        {initials(user.name)}
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-11 z-50 w-48 rounded-md border border-line bg-surface p-1.5 shadow-lg">
+          <p className="truncate px-3 py-2 text-sm text-muted">{user.name || user.email}</p>
+          <Link role="menuitem" href="/dashboard" onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
+            Dashboard
+          </Link>
+          <button role="menuitem" type="button" onClick={() => signOut()} className="block w-full rounded-sm px-3 py-2 text-left text-[15px] hover:bg-sunken">
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Navbar() {
   const { data: session } = useSession();
-  const [showMenu, setShowMenu] = useState(false);
+  const summary = useLearnerSummary();
+  const pathname = usePathname() || '/';
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useDismiss(menuOpen, setMenuOpen);
 
-  const pathname = usePathname();
-  const active = 'font-bold underline underline-offset-8 text-red-400';
-  const inActive = 'px-4 py-2 rounded-md';
+  useEffect(() => setMenuOpen(false), [pathname]);
 
-  const menuRef = useRef();
-
-  const handleClickOutside = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
-      setShowMenu(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const stats = summary && (
+    <>
+      <Pill variant="xp">{`${summary.xp.total} XP`}</Pill>
+      <Pill>{streakLabel(summary)}</Pill>
+    </>
+  );
 
   return (
-    <div className="flex px-6 py-4 justify-between items-center mt-4">
-      <Link href="/" className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-pink-500 to-red-500">
-        <motion.p whileTap={{ scale: 0.8 }}>
-          LearnTube
-        </motion.p>
-      </Link>
+    <header ref={menuRef} className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="font-display text-[22px] font-bold tracking-tight">
+          Learn
+          <span className="text-accent">Tube</span>
+        </Link>
 
-      <div className="hidden lg:flex text-md items-center gap-8 justify-center">
-        <Link href="/short-courses" className={`link ${pathname === '/short-courses' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Short Courses</motion.p>
-        </Link>
-        <Link href="/pathways" className={`link ${pathname === '/pathways' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Pathways</motion.p>
-        </Link>
-        <Link href="/micro-learn" className={`link ${pathname === '/micro-learn' ? active : inActive}`}>
-          <motion.p whileTap={{ scale: 0.8 }} whileHover={{ scale: 1.1 }}>Micro-Learn</motion.p>
-        </Link>
-      </div>
+        <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn('text-[15px] text-muted hover:text-ink', link.match(pathname) && 'font-bold text-ink')}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-      <div className="flex items-center justify-between">
-        {/** Toggle modes */}
-        <div className="flex mx-4">
+        <div className="ml-auto flex items-center gap-2">
+          <div className="hidden items-center gap-2 sm:flex">{stats}</div>
           <ThemeSwitcher />
-        </div>
-
-        {/** Login/Sign-up options */}
-        <div>
-          <div className="hidden lg:flex lg:text-md gap-2 items-center">
-            {session?.user ? (
-              <>
-                <Link href="/dashboard" className="px-3 py-1 rounded-md bg-slate-200 dark:bg-slate-700">Dashboard</Link>
-                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signOut()} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
-                  Logout
-                </motion.button>
-              </>
-            ) : (
-              <>
-                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signIn()} type="button" className="rounded-md py-1 px-2 bg-red-400 text-black hover:bg-red-500">
-                  Login
-                </motion.button>
-                <motion.button whileTap={{ scale: 0.8 }} onClick={() => signIn()} type="button" className="rounded-md py-1 px-2 bg-emerald-300 text-black hover:bg-emerald-500">
-                  Sign-up
-                </motion.button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div ref={menuRef} className="lg:hidden">
-          <button type="button" aria-label="Menu" onClick={() => setShowMenu(!showMenu)}><AiOutlineMenu className="text-3xl text-red-500" /></button>
-          {showMenu && (
-            <div className="absolute top-20 right-0 w-40 p-2 rounded-md shadow-md">
-              <div className="flex flex-col justify-between items-center gap-6 p-4">
-                <Link href="/short-courses" className="text-sm font-medium font-montserrat ">Short Courses</Link>
-                <Link href="/pathways" className="text-sm font-medium font-montserrat ">Pathways</Link>
-                <Link href="/micro-learn" className="text-sm font-medium font-montserrat ">Micro-Learn</Link>
-              </div>
-            </div>
-          )}
+          {session?.user
+            ? <AccountMenu user={session.user} />
+            : <Button size="sm" onClick={() => signIn()}>Sign in</Button>}
+          <button
+            type="button"
+            className="grid h-9 w-9 place-items-center rounded-pill text-ink md:hidden"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
-    </div>
+
+      {menuOpen && (
+        <nav aria-label="Main" className="border-t border-line bg-canvas px-4 pb-4 pt-2 md:hidden">
+          {LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className="block py-3 text-[17px] font-bold">
+              {link.label}
+            </Link>
+          ))}
+          {stats && <div className="flex flex-wrap gap-2 pt-2 sm:hidden">{stats}</div>}
+        </nav>
+      )}
+    </header>
   );
 }
