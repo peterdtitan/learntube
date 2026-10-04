@@ -48,6 +48,7 @@ export default async function seed({ url, users }) {
     name: `Learner ${i} Load`,
     email: `load${i}@load.local`,
     timeZone: 'UTC',
+    onboardedAt: new Date(),
   }));
   await prisma.user.createMany({ data: people });
   await prisma.session.createMany({

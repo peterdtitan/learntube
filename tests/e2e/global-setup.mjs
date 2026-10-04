@@ -16,17 +16,38 @@ export default async function globalSetup() {
   const { prisma, resetDb, makeCourse } = await import('../integration/helpers.mjs');
   await resetDb();
   const course = await makeCourse();
+  // A short skill, for the Skills page and the welcome survey's picks.
+  await prisma.pathway.create({
+    data: {
+      title: 'Knit a swatch',
+      kind: 'SKILL',
+      skillId: 'knitting',
+      makeTitle: 'A garter-stitch swatch',
+      units: {
+        create: [{
+          title: 'Cast on',
+          videos: {
+            create: [{
+              title: 'Cast on', url: 'https://www.youtube.com/watch?v=eeeeeeeeeee', duration: 300, tryTask: 'Cast on 20 stitches',
+            }],
+          },
+        }],
+      },
+    },
+  });
 
   const people = {};
   const expires = new Date(Date.now() + 7 * 86400000);
-  for (const [key, name, role] of [
+  // Everyone but Nia has done the welcome survey; Nia signs in for the first time.
+  for (const [key, name, role, onboarded = true] of [
     ['ada', 'Ada Lovelace', 'LEARNER'],
     ['bola', 'Bola Ade', 'LEARNER'],
     ['admin', 'Admin Person', 'ADMIN'],
+    ['nia', 'Nia Okafor', 'LEARNER', false],
   ]) {
     const user = await prisma.user.create({
       data: {
-        name, email: `${key}@e2e.local`, role, timeZone: 'UTC',
+        name, email: `${key}@e2e.local`, role, timeZone: 'UTC', onboardedAt: onboarded ? new Date() : null,
       },
     });
     await prisma.session.create({ data: { sessionToken: `e2e-${key}`, userId: user.id, expires } });
