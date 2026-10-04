@@ -1,6 +1,7 @@
 import prisma from './prismadb';
 import { estimatePathway, funEquivalent } from './estimate';
 import { getProgressByVideoId, isLessonDone } from './course';
+import { coverImage } from './covers';
 
 // Published quizzes, with what estimatePathway needs to count their minutes.
 export const PUBLISHED_QUIZ = {
@@ -29,7 +30,7 @@ export async function getShortSkills(userId) {
           videos: {
             orderBy: { order: 'asc' },
             select: {
-              id: true, duration: true, practiceMinutes: true, quizzes: QUIZ,
+              id: true, url: true, duration: true, practiceMinutes: true, quizzes: QUIZ,
             },
           },
         },
@@ -62,6 +63,7 @@ export async function getShortSkills(userId) {
         title: p.title,
         description: p.description,
         makeTitle: p.makeTitle,
+        cover: coverImage(p.imageUrl, videos.map((v) => v.url)),
         skill: p.skill,
         track: p.track,
         minutes: total,

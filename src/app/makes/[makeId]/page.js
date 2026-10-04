@@ -10,6 +10,7 @@ import ReportButton from '../../../components/makes/ReportButton';
 import { COMMENT_PRESETS } from '../../../lib/comments';
 import KudosButton from '../../../components/makes/KudosButton';
 import CommentThread from '../../../components/community/CommentThread';
+import SkillIcon from '../../../components/ui/SkillIcon';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +39,7 @@ export default async function MakePage({ params }) {
           />
         ) : (
           <div className="absolute inset-0 grid place-items-center" style={{ background: `${make.skill?.color || '#55616C'}22` }}>
-            <span className="h-16 w-16 rounded-lg" style={{ background: make.skill?.color || '#55616C' }} />
+            <SkillIcon skill={make.skill} size="lg" />
           </div>
         )}
       </div>

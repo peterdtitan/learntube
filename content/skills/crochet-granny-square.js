@@ -8,6 +8,7 @@ export default {
   description: 'Hold a hook, chain, single and double crochet, then make a classic granny square from a magic ring.',
   makeTitle: 'A finished granny square (or a few, ready to join)',
   skillId: 'knitting',
+  cover: 'v2S3aiIOBV4', // the video whose thumbnail is the skill's cover
   by: 'Hopeful Turns',
   modules: [
     {

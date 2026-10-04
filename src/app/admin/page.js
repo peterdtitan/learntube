@@ -8,6 +8,7 @@ import LibraryImport from '../../components/admin/LibraryImport';
 import { demoContentCount } from '../../lib/content/importPathway';
 import { importLibrarySkills, importLibraryTrack, removeDemo } from './content/actions';
 import shortSkills from '../../../content/skills';
+import SkillIcon from '../../components/ui/SkillIcon';
 
 // Imports can take a while on a cold database.
 export const maxDuration = 60;
@@ -24,7 +25,7 @@ export default async function AdminHome() {
   const pathways = await prisma.pathway.findMany({
     orderBy: { title: 'asc' },
     include: {
-      skill: { select: { name: true, color: true } },
+      skill: { select: { id: true, name: true, color: true } },
       units: { select: { videos: { select: { duration: true } } } },
     },
   });
@@ -43,7 +44,7 @@ export default async function AdminHome() {
               <li key={p.id}>
                 <Link href={`/admin/pathways/${p.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line bg-surface px-4 py-3 hover:border-accent">
                   <span className="flex items-center gap-2 font-bold">
-                    <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: p.skill?.color || '#9AA6B1' }} />
+                    <SkillIcon skill={p.skill} />
                     {p.title}
                   </span>
                   <span className="text-sm text-muted tabular-nums">

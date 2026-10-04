@@ -112,6 +112,7 @@ model Pathway {
   trackOrder    Int         @default(0)
   certification String? // e.g. "CompTIA A+ (220-1201 and 220-1202)"
   kind          PathwayKind @default(COURSE) // SKILL: a short, functional skill (20 hours at most)
+  imageUrl      String? // cover: YouTube thumbnail or admin upload; else the first lesson's thumbnail
   owner         User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   units         Unit[]
   videos        Video[]
@@ -467,6 +468,7 @@ model Track {
   skillId     String?
   skill       Skill?    @relation(fields: [skillId], references: [id], onDelete: SetNull)
   pathways    Pathway[]
+  imageUrl    String? // cover; else its first course's cover
 }
 
 enum PathwayKind {

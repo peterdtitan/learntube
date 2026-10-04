@@ -9,6 +9,7 @@ export default {
   description: 'Hold a chef’s knife safely, keep it sharp, and learn the cuts every recipe asks for: dice, mince, julienne and chiffonade.',
   makeTitle: 'A bowl of fresh salsa, every vegetable cut by you',
   skillId: 'cooking',
+  cover: 'YrHpeEwk_-U', // the video whose thumbnail is the skill's cover
   by: 'Kroger Culinary 411',
   modules: [
     {

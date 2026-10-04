@@ -7,6 +7,7 @@ import prisma from '../../lib/prismadb';
 import { getPathwayOverviews } from '../../lib/course';
 import PathwayCard from '../../components/home/PathwayCard';
 import cn from '../../lib/cn';
+import SkillIcon from '../../components/ui/SkillIcon';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Pathways · LearnTube' };
@@ -92,7 +93,7 @@ export default async function PathwaysPage({ searchParams = {} }) {
                     active ? 'border-accent bg-accent-soft font-bold text-accent' : 'border-line text-muted hover:text-ink',
                   )}
                 >
-                  {s.color && <span className="h-2 w-2 rounded-[2px]" style={{ background: s.color }} />}
+                  <SkillIcon skill={s} />
                   {s.name}
                 </Link>
               );

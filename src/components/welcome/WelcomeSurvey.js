@@ -5,9 +5,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import SubmitButton from '../admin/SubmitButton';
-import skillIcon from '../skills/skillIcons';
 import { GOALS } from '../../lib/recommend';
 import cn from '../../lib/cn';
+import SkillIcon from '../ui/SkillIcon';
 
 const DAYS = [
   { value: 2, label: 'Gentle' },
@@ -121,18 +121,13 @@ export default function WelcomeSurvey({
 
             {step === 0 && (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" role="group" aria-label="Interests">
-                {categories.map((c) => {
-                  const Icon = skillIcon(c.id);
-                  return (
-                    <Choice key={c.id} selected={interests.includes(c.id)} onClick={() => toggle(c.id)} className="flex-col items-start gap-2">
-                      <span className="grid h-10 w-10 place-items-center rounded-md text-white" style={{ background: c.color }}>
-                        <Icon size={20} aria-hidden="true" />
-                      </span>
-                      <span className="font-bold leading-snug">{c.name}</span>
-                      <span className="text-xs text-muted">{c.available ? `${c.available} to learn` : 'Coming soon'}</span>
-                    </Choice>
-                  );
-                })}
+                {categories.map((c) => (
+                  <Choice key={c.id} selected={interests.includes(c.id)} onClick={() => toggle(c.id)} className="flex-col items-start gap-2">
+                    <SkillIcon skill={c} size="md" />
+                    <span className="font-bold leading-snug">{c.name}</span>
+                    <span className="text-xs text-muted">{c.available ? `${c.available} to learn` : 'Coming soon'}</span>
+                  </Choice>
+                ))}
               </div>
             )}
 

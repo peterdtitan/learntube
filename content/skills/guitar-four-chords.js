@@ -9,6 +9,7 @@ export default {
   description: 'Tune up, hold the guitar, and learn D, A, E and E minor well enough to strum real songs.',
   makeTitle: 'A two-minute recording of you strumming a song with all four chords',
   skillId: 'guitar',
+  cover: 'p5Ln39q8cj4', // the video whose thumbnail is the skill's cover
   by: 'JustinGuitar',
   modules: [
     {

@@ -8,6 +8,7 @@ export default {
   description: 'From a slip knot to a finished garter-stitch scarf: cast on, knit, purl, fix mistakes and bind off.',
   makeTitle: 'A scarf you knitted yourself',
   skillId: 'knitting',
+  cover: '24lR2IRS57A', // the video whose thumbnail is the skill's cover
   by: 'Sheep & Stitch',
   modules: [
     {

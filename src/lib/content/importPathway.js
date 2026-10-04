@@ -76,8 +76,14 @@ export async function importPathway(plan, { publishQuizzes = false, track = {} }
   if (plan.problems.length) throw contentError(plan.problems);
   const existing = await prisma.pathway.findUnique({ where: { slug: plan.pathway.slug } });
   if (existing) {
-    // Re-link to its track even when the content is already there.
-    if (track.trackId) await prisma.pathway.update({ where: { id: existing.id }, data: track });
+    // Re-link to its track even when the content is already there, and fill in a cover if
+    // it has none (an admin's choice is never replaced).
+    const cover = !existing.imageUrl && plan.pathway.imageUrl
+      ? { imageUrl: plan.pathway.imageUrl }
+      : {};
+    if (track.trackId || cover.imageUrl) {
+      await prisma.pathway.update({ where: { id: existing.id }, data: { ...track, ...cover } });
+    }
     return { status: 'exists', pathwayId: existing.id };
   }
 
@@ -103,6 +109,11 @@ export async function importTrack(trackPlan, options = {}) {
     update: {},
     create: trackPlan.track,
   });
+  if (!track.imageUrl && trackPlan.track.imageUrl) {
+    await prisma.track.update({
+      where: { id: track.id }, data: { imageUrl: trackPlan.track.imageUrl },
+    });
+  }
   const courses = await inSequence(
     trackPlan.courses,
     (plan, trackOrder) => importPathway(plan, {

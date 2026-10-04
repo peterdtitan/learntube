@@ -10,6 +10,7 @@ export default {
   description: 'Enter and format data, write formulas, sort and filter, and turn numbers into charts and pivot tables, free in your browser.',
   makeTitle: 'A monthly budget with formulas and a chart',
   skillId: 'data',
+  cover: 'TENAbUa-R-w', // the video whose thumbnail is the skill's cover
   by: 'Kevin Stratvert',
   modules: [
     {

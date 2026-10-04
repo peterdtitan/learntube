@@ -2,9 +2,13 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { put } from '@vercel/blob';
 import prisma from '../../lib/prismadb';
 import { requireAdmin } from '../../lib/admin';
 import { parseYouTubeId } from '../../lib/youtube';
+import { thumbnailUrl } from '../../lib/covers';
+import { cleanPhoto } from '../../lib/photo';
+import { deletePhotos } from '../../lib/blob';
 
 // Every action re-checks the admin role: server actions are public endpoints,
 // so hiding the buttons is not enough.
@@ -63,12 +67,46 @@ export async function createPathway(prev, form) {
   return redirect(`/admin/pathways/${pathway.id}`);
 }
 
+const MAX_COVER_BYTES = 4 * 1024 * 1024;
+
+// The cover from the form: an uploaded image (re-encoded, metadata stripped), a lesson's
+// thumbnail, "auto" (the first lesson's thumbnail, worked out when shown) or "keep".
+async function coverFrom(form, current) {
+  const file = form.get('coverFile');
+  if (file && typeof file === 'object' && file.size > 0) {
+    if (file.size > MAX_COVER_BYTES) return { error: 'Cover images must be 4 MB or smaller.' };
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return { error: 'Image uploads aren’t set up here. Pick a lesson thumbnail instead.' };
+    }
+    const photo = await cleanPhoto(Buffer.from(await file.arrayBuffer()));
+    if (!photo) return { error: 'The cover must be a JPEG, PNG or WebP image.' };
+    const blob = await put(`covers/cover.${photo.ext}`, photo.buffer, {
+      access: 'public', addRandomSuffix: true, contentType: photo.contentType,
+    });
+    return { value: blob.url };
+  }
+  const choice = String(form.get('cover') ?? 'keep');
+  if (choice === 'keep') return { value: current };
+  if (choice === 'auto') return { value: null };
+  const url = thumbnailUrl(choice);
+  return url ? { value: url } : { error: 'Pick a cover from the list.' };
+}
+
 export async function updatePathway(prev, form) {
   await requireAdmin();
   const id = String(form.get('id'));
   const { data, error } = pathwayFields(form);
   if (error) return { error };
+  const existing = await prisma.pathway.findUnique({ where: { id }, select: { imageUrl: true } });
+  if (!existing) return { error: 'That pathway no longer exists.' };
+  const cover = await coverFrom(form, existing.imageUrl);
+  if (cover.error) return { error: cover.error };
+  data.imageUrl = cover.value;
   await prisma.pathway.update({ where: { id }, data });
+  // An uploaded cover that was replaced is no longer used anywhere.
+  if (existing.imageUrl && existing.imageUrl !== cover.value) {
+    await deletePhotos([existing.imageUrl]);
+  }
   refreshContent(id);
   return { ok: 'Saved.' };
 }

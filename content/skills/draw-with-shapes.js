@@ -9,6 +9,7 @@ export default {
   description: 'Loosen up your lines, draw boxes, spheres and cylinders in perspective, shade them, and build real objects from them.',
   makeTitle: 'A shaded drawing of an object from your home',
   skillId: 'drawing',
+  cover: '9r2SIYXQNgI', // the video whose thumbnail is the skill's cover
   by: 'The Pencil Room',
   modules: [
     {

@@ -18,6 +18,7 @@ const checkpoint = (title, questions) => ({ title, minutes: 15, questions });
 
 export default {
   slug: 'cybersecurity-expert',
+  cover: 'AIfIA7hEgrw',
   title: 'Cybersecurity Expert',
   description: 'Go from how computers work to defending networks, in three courses: IT Foundations, Networking and Security Operations. Short lessons, hands-on practice, and everything you need for CompTIA A+, Network+ and Security+.',
   makeTitle: 'Build and defend your own home lab, and be ready for the A+, Network+ and Security+ exams',
@@ -25,6 +26,7 @@ export default {
   courses: [
     {
       slug: 'cybersecurity-expert-it-foundations',
+      cover: 'AIfIA7hEgrw',
       title: 'IT Foundations',
       certification: 'CompTIA A+ (220-1201 and 220-1202)',
       description: 'How computers, phones, operating systems and small networks work, how to fix them, and how to keep them secure.',
@@ -59,6 +61,7 @@ export default {
     },
     {
       slug: 'cybersecurity-expert-networking',
+      cover: 'k7IOn3TiUc8',
       title: 'Networking',
       certification: 'CompTIA Network+ (N10-009)',
       description: 'How networks are designed, built, run, secured and fixed, from the OSI model and subnetting to routing, wireless and the cloud.',
@@ -82,6 +85,7 @@ export default {
     },
     {
       slug: 'cybersecurity-expert-security-operations',
+      cover: 'KiEptGbnEBc',
       title: 'Security Operations',
       certification: 'CompTIA Security+ (SY0-701)',
       description: 'Threats, architecture, operations and risk: how organizations defend themselves and how security analysts work day to day.',

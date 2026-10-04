@@ -8,13 +8,14 @@ import prisma from '../../../../lib/prismadb';
 import PathwayForm from '../../../../components/admin/PathwayForm';
 import ConfirmButton from '../../../../components/admin/ConfirmButton';
 import UnitAdder from '../../../../components/admin/UnitAdder';
-import { formatDuration } from '../../../../lib/youtube';
+import { formatDuration, parseYouTubeId } from '../../../../lib/youtube';
 import { estimatePathway, formatMinutes, funEquivalent } from '../../../../lib/estimate';
 import { createQuiz } from '../../quizzes/actions';
 import { publishPathwayQuizzes } from '../../content/actions';
 import {
   deletePathway, deleteUnit, moveLesson, moveUnit, renameUnit, updatePathway,
 } from '../../actions';
+import { thumbnailUrl } from '../../../../lib/covers';
 
 const QUIZ_SELECT = {
   select: {
@@ -86,6 +87,14 @@ export default async function EditPathway({ params }) {
     ? (await prisma.videoProgress.findMany({ where: { videoId: { in: lessonIds } }, distinct: ['userId'], select: { userId: true } })).length
     : 0;
 
+  // Each YouTube video once (split videos have several lessons), for the cover picker.
+  const covers = Object.values(pathway.units.flatMap((u) => u.videos).reduce((acc, v) => {
+    const videoId = parseYouTubeId(v.url);
+    if (videoId && !acc[videoId]) acc[videoId] = { videoId, title: v.title.replace(/ \(part \d+ of \d+\)$/, '') };
+    return acc;
+  }, {}));
+  const firstCover = thumbnailUrl(covers[0]?.videoId);
+
   const estimate = estimatePathway(pathway.units);
   const fun = funEquivalent(estimate.total, pathway.skillId);
 
@@ -98,7 +107,14 @@ export default async function EditPathway({ params }) {
 
       <section className="grid max-w-2xl gap-4">
         <h1 className="text-3xl font-bold">{pathway.title}</h1>
-        <PathwayForm action={updatePathway} pathway={pathway} skills={skills} submitLabel="Save details" />
+        <PathwayForm
+          action={updatePathway}
+          pathway={pathway}
+          skills={skills}
+          covers={covers}
+          autoCover={firstCover}
+          submitLabel="Save details"
+        />
       </section>
 
       <section className="grid max-w-2xl gap-1 rounded-lg border border-line bg-surface p-4">

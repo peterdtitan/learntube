@@ -1,4 +1,5 @@
 import prisma from './prismadb';
+import { coverImage } from './covers';
 
 const LESSONS_INCLUDE = {
   units: {
@@ -103,6 +104,7 @@ export async function getPathwayOverviews(userId, search = {}) {
       title: p.title,
       description: p.description,
       makeTitle: p.makeTitle,
+      cover: coverImage(p.imageUrl, lessons.map((v) => v.url)),
       skill: p.skill ? { id: p.skill.id, name: p.skill.name, color: p.skill.color } : null,
       certification: p.certification,
       track: p.track ? { ...p.track, order: p.trackOrder } : null,
@@ -127,10 +129,26 @@ export async function getSkills() {
   const skills = await prisma.skill.findMany({
     orderBy: { order: 'asc' },
     include: {
-      pathways: { select: { id: true, title: true, makeTitle: true } },
+      pathways: {
+        select: {
+          id: true,
+          title: true,
+          makeTitle: true,
+          imageUrl: true,
+          units: {
+            orderBy: { order: 'asc' },
+            take: 1,
+            select: { videos: { orderBy: { order: 'asc' }, take: 1, select: { url: true } } },
+          },
+        },
+      },
       tracks: {
         select: {
-          slug: true, title: true, makeTitle: true, _count: { select: { pathways: true } },
+          slug: true,
+          title: true,
+          makeTitle: true,
+          imageUrl: true,
+          _count: { select: { pathways: true } },
         },
       },
     },
@@ -140,9 +158,18 @@ export async function getSkills() {
     name: s.name,
     tier: s.tier,
     color: s.color,
-    pathways: s.pathways,
+    pathways: s.pathways.map((p) => ({
+      id: p.id,
+      title: p.title,
+      makeTitle: p.makeTitle,
+      cover: coverImage(p.imageUrl, p.units.flatMap((u) => u.videos.map((v) => v.url))),
+    })),
     tracks: s.tracks.map((t) => ({
-      slug: t.slug, title: t.title, makeTitle: t.makeTitle, courseCount: t._count.pathways,
+      slug: t.slug,
+      title: t.title,
+      makeTitle: t.makeTitle,
+      cover: t.imageUrl,
+      courseCount: t._count.pathways,
     })),
   }));
 }

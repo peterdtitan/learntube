@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import KudosButton from './KudosButton';
 import cn from '../../lib/cn';
+import SkillIcon from '../ui/SkillIcon';
 
 // compact: a horizontal row for feeds, where a full-width photo would crowd out everything else.
 export default function MakeCard({ make, compact = false }) {
@@ -35,7 +36,7 @@ export default function MakeCard({ make, compact = false }) {
             className="absolute inset-0 grid place-items-center"
             style={{ background: `${make.skill?.color || '#55616C'}22` }}
           >
-            <span className="h-10 w-10 rounded-md" style={{ background: make.skill?.color || '#55616C' }} />
+            <SkillIcon skill={make.skill} size="md" />
           </span>
         )}
       </Link>

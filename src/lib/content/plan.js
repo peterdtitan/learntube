@@ -1,4 +1,5 @@
 import { validateQuestionData } from '../quizGrade';
+import { thumbnailUrl } from '../covers';
 
 // Turns a pathway written as content files (see content/cybersecurity-expert) into the
 // lessons, modules and quizzes to store. Pure, so it can be checked in tests before import.
@@ -132,6 +133,7 @@ export function planPathway(def) {
       makeTitle: def.makeTitle,
       skillId: def.skillId,
       certification: def.certification || null,
+      imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
     },
     modules,
     problems,
@@ -148,6 +150,7 @@ export function planTrack(def) {
       description: def.description,
       makeTitle: def.makeTitle,
       skillId: def.skillId,
+      imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
     },
     courses,
     problems: courses.flatMap((c) => c.problems.map((p) => `${c.pathway.title}: ${p}`)),
@@ -207,6 +210,8 @@ export function planSkill(def) {
     return { title: mod.title, lessons, checkpoint: null };
   });
 
+  const lessonIds = def.modules.flatMap((m) => m.lessons.map((l) => l.id));
+  if (def.cover && !lessonIds.includes(def.cover)) problems.push(`${def.title}: the cover isn't one of its videos`);
   const plan = {
     pathway: {
       slug: def.slug,
@@ -216,6 +221,7 @@ export function planSkill(def) {
       skillId: def.skillId,
       certification: null,
       kind: 'SKILL',
+      imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
     },
     modules,
     problems,
