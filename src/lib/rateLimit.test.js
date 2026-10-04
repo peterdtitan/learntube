@@ -29,7 +29,7 @@ describe('waitMessage', () => {
 
 describe('LIMITS', () => {
   it('leaves room for the player saving progress through a long lesson', () => {
-    // One save every 5 seconds for 10 minutes is 120.
+    // Even the old 5-second save interval (120 in 10 minutes) fits.
     expect(LIMITS.progress.max / LIMITS.progress.windowSeconds).toBeGreaterThan(1 / 5);
   });
 });

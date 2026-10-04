@@ -6,7 +6,9 @@ import React, {
 import { getYouTubeId } from '../../lib/youtube';
 import loadYouTubeApi from '../../lib/youtubeApi';
 
-const PROGRESS_SAVE_INTERVAL_MS = 5000;
+// Pausing, hiding the tab and leaving the page also save, so this only covers a crash.
+// Every 15s keeps the busiest endpoint to a third of what 5s cost under load.
+const PROGRESS_SAVE_INTERVAL_MS = 15000;
 const LOOP_CHECK_MS = 200;
 const COMPLETE_THRESHOLD = 0.92;
 

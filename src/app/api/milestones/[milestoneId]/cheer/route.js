@@ -20,10 +20,9 @@ export async function POST(req, { params }) {
   if (!milestone) return error(404, 'Milestone not found.');
   if (milestone.userId === userId) return error(400, "You can't cheer your own milestone.");
 
-  await prisma.cheer.upsert({
-    where: { userId_milestoneId: { userId, milestoneId: milestone.id } },
-    update: {},
-    create: { userId, milestoneId: milestone.id },
+  await prisma.cheer.createMany({
+    data: [{ userId, milestoneId: milestone.id }],
+    skipDuplicates: true,
   });
   await notify('CHEER', { userId: milestone.userId, actorId: userId, milestoneId: milestone.id });
   return json({ cheered: true, cheerCount: await cheerCount(milestone.id) });

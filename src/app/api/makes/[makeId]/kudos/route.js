@@ -20,11 +20,8 @@ export async function POST(req, { params }) {
   if (!make || make.hiddenAt) return error(404, 'Make not found.');
   if (make.userId === userId) return error(400, "You can't give kudos to your own make.");
 
-  await prisma.kudos.upsert({
-    where: { userId_makeId: { userId, makeId: make.id } },
-    update: {},
-    create: { userId, makeId: make.id },
-  });
+  // One statement, so double taps and retries can't race each other into an error.
+  await prisma.kudos.createMany({ data: [{ userId, makeId: make.id }], skipDuplicates: true });
   await notify('KUDOS', { userId: make.userId, actorId: userId, makeId: make.id });
   return json({ gaveKudos: true, kudosCount: await countFor(make.id) });
 }

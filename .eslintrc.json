@@ -52,7 +52,11 @@
   },
   "ignorePatterns": [
     "dist/",
-    "build/"
+    "build/",
+    ".next-e2e/",
+    ".next-load/",
+    "playwright-report/",
+    "test-results/"
   ],
   "overrides": [
     {
@@ -87,6 +91,32 @@
           }
         ],
         "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "tests/**/*.{js,mjs}"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ],
+        "import/extensions": "off",
+        "import/prefer-default-export": "off",
+        "no-console": "off",
+        "no-await-in-loop": "off",
+        "no-restricted-syntax": "off",
+        "max-len": [
+          "error",
+          {
+            "code": 120,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true
+          }
+        ]
       }
     }
   ]

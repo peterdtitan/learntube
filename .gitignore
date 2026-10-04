@@ -37,3 +37,11 @@ next-env.d.ts
 GIT_PLAN.md
 .env*
 !.env.example
+
+# test runs
+/.next-e2e/
+/.next-load/
+/test-results/
+/playwright-report/
+/tests/e2e/.state.json
+/tests/load/results/

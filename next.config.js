@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Test builds go elsewhere so they never clash with a running `next dev`.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {
     // Make photos are stored in Vercel Blob.
     remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
