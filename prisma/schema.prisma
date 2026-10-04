@@ -34,6 +34,8 @@ model User {
   reports           Report[]
   notifications     Notification[]  @relation("recipient")
   notificationsSent Notification[]  @relation("actor")
+  quizAttempts      QuizAttempt[]
+  extraQuizTime     Boolean         @default(false) // accessibility: 1.5x time on timed quizzes
 }
 
 model Account {
@@ -108,6 +110,8 @@ model Pathway {
   milestones  Milestone[]
 }
 
+// Shown to learners as a module ("Week 1"). Lessons belong to it, plus an optional
+// checkpoint quiz halfway through and a game at the end.
 model Unit {
   id          String  @id @default(cuid())
   title       String
@@ -116,26 +120,29 @@ model Unit {
   pathwayId   String
   pathway     Pathway @relation(fields: [pathwayId], references: [id], onDelete: Cascade)
   videos      Video[]
+  quizzes     Quiz[]
 }
 
 model Video {
-  id           String          @id @default(cuid())
-  title        String
-  description  String?
-  url          String // full YouTube URL or video ID
-  duration     Int // seconds
-  order        Int             @default(0)
-  captionsLang String? // e.g. "en", passed to the YouTube player for CC
-  transcript   String? // plain-text transcript shown under the player
-  tryTask      String? // the hands-on step after watching, e.g. "Cast on 20 stitches"
-  starterCode  String? // HTML/CSS/JS the code sandbox opens with
-  pathway      Pathway?        @relation(fields: [pathwayId], references: [id])
-  pathwayId    String?
-  unit         Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  unitId       String?
-  progress     VideoProgress[]
-  notes        Note[]
-  makes        Make[]
+  id              String          @id @default(cuid())
+  title           String
+  description     String?
+  url             String // full YouTube URL or video ID
+  duration        Int // seconds
+  order           Int             @default(0)
+  captionsLang    String? // e.g. "en", passed to the YouTube player for CC
+  transcript      String? // plain-text transcript shown under the player
+  tryTask         String? // the hands-on step after watching, e.g. "Cast on 20 stitches"
+  starterCode     String? // HTML/CSS/JS the code sandbox opens with
+  practiceMinutes Int? // time to do the Try step; null means "estimate from the video"
+  quizzes         Quiz[]
+  pathway         Pathway?        @relation(fields: [pathwayId], references: [id])
+  pathwayId       String?
+  unit            Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  unitId          String?
+  progress        VideoProgress[]
+  notes           Note[]
+  makes           Make[]
 }
 
 model VideoProgress {
@@ -205,6 +212,7 @@ enum XpKind {
   WATCH
   TRY
   LOG
+  QUIZ
 }
 
 // Append-only XP ledger. sourceKey makes each award happen once, e.g. "try:<videoId>".
@@ -348,4 +356,90 @@ model RateLimit {
   count       Int      @default(0)
 
   @@index([windowStart])
+}
+
+enum QuizKind {
+  LESSON_CHECK // a few questions after one lesson
+  CHECKPOINT // timed, halfway through a module, with integrity tracking
+  MODULE_GAME // game rounds at the end of a module
+}
+
+enum QuestionType {
+  SINGLE
+  MULTI
+  TRUE_FALSE
+  ORDER
+  MATCH
+  TEXT
+  NUMBER
+}
+
+model Quiz {
+  id           String   @id @default(cuid())
+  kind         QuizKind
+  title        String?
+  videoId      String? // LESSON_CHECK
+  unitId       String? // CHECKPOINT and MODULE_GAME
+  afterVideoId String? // where a checkpoint sits; null puts it after the middle lesson
+  published    Boolean  @default(false)
+  timeLimitSec Int? // CHECKPOINT only
+  passPercent  Int      @default(70)
+  // Integrity penalties, in percentage points off the score (CHECKPOINT only).
+  leavePenalty Int      @default(3) // each time the learner leaves the quiz
+  awayPenalty  Int      @default(1) // each 10 seconds away
+  copyPenalty  Int      @default(2) // each copy or paste
+  maxPenalty   Int      @default(50)
+  timePenalty  Int      @default(1) // extra seconds taken off the clock per second away
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  video     Video?        @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  unit      Unit?         @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  @@unique([videoId, kind])
+  @@unique([unitId, kind])
+}
+
+// data holds the options and answer for the type; see src/lib/quizGrade.js.
+model Question {
+  id          String       @id @default(cuid())
+  quizId      String
+  order       Int          @default(0)
+  type        QuestionType
+  prompt      String
+  data        Json
+  explanation String?
+  aiDrafted   Boolean      @default(false)
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([quizId, order])
+}
+
+model QuizAttempt {
+  id          String    @id @default(cuid())
+  quizId      String
+  userId      String
+  startedAt   DateTime  @default(now())
+  deadlineAt  DateTime? // timed quizzes; already includes any extra time
+  submittedAt DateTime?
+  answers     Json?
+  score       Float? // before penalties, 0-100
+  penalty     Float     @default(0) // percentage points taken off
+  finalScore  Float? // after penalties, 0-100
+  passed      Boolean?
+  leaveCount  Int       @default(0)
+  awaySeconds Int       @default(0)
+  copyCount   Int       @default(0)
+  pasteCount  Int       @default(0)
+  events      Json? // integrity log: leaves, copies (with the text), pastes
+  results     Json? // per-question right/wrong, shown after submitting
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([quizId, userId, startedAt])
+  @@index([userId, submittedAt])
 }

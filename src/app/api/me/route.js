@@ -17,7 +17,7 @@ export async function GET() {
   return json(await getLearnerSummary(userId));
 }
 
-// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard?, displayName? }
+// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard?, displayName?, extraQuizTime? }
 export async function PATCH(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change your goal.');
@@ -50,6 +50,10 @@ export async function PATCH(req) {
       if (checked.error) return error(400, checked.error);
       data.displayName = checked.name;
     }
+  }
+  if (body.extraQuizTime !== undefined) {
+    if (typeof body.extraQuizTime !== 'boolean') return error(400, 'extraQuizTime must be true or false.');
+    data.extraQuizTime = body.extraQuizTime;
   }
   if (body.showOnLeaderboard !== undefined) {
     if (typeof body.showOnLeaderboard !== 'boolean') return error(400, 'showOnLeaderboard must be true or false.');
