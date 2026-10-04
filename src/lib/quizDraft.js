@@ -5,6 +5,8 @@ import { QUESTION_TYPES, validateQuestionData } from './quizGrade';
 // and marked aiDrafted, so an admin always reviews them before learners see them.
 
 const MODEL = 'claude-opus-5-5';
+// Under the page's 60s function limit, so a slow draft ends with a message, not a crash.
+const TIMEOUT_MS = 50000;
 // Far beyond any realistic module; past this, ask the admin to split it rather than
 // silently cutting the transcript short.
 const MAX_SOURCE_CHARS = 400000;
@@ -130,7 +132,7 @@ export async function draftQuestions({
     `<material>\n${material}\n</material>`,
   ].filter(Boolean).join('\n\n');
 
-  const client = new Anthropic();
+  const client = new Anthropic({ timeout: TIMEOUT_MS, maxRetries: 0 });
   let response;
   try {
     response = await client.beta.messages.create({
@@ -144,6 +146,9 @@ export async function draftQuestions({
       messages: [{ role: 'user', content: request }],
     });
   } catch (err) {
+    if (err instanceof Anthropic.APIConnectionTimeoutError) {
+      return { error: 'Drafting took too long. Try fewer questions, or one lesson at a time.' };
+    }
     if (err instanceof Anthropic.AuthenticationError) return { error: 'The ANTHROPIC_API_KEY was rejected.' };
     if (err instanceof Anthropic.RateLimitError) return { error: 'Too many drafts at once. Try again in a minute.' };
     if (err instanceof Anthropic.APIError) return { error: `Claude couldn’t draft right now (${err.status}). Try again.` };

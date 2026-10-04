@@ -13,8 +13,8 @@ import {
   deleteQuestion, deleteQuiz, draftWithAi, moveQuestion, saveQuestion, saveQuizSettings,
 } from '../actions';
 
-// AI drafts can take a while on long transcripts.
-export const maxDuration = 120;
+// AI drafts can take a while on long transcripts. 60s is the most the Vercel Hobby plan allows.
+export const maxDuration = 60;
 
 const KIND_LABEL = {
   LESSON_CHECK: 'Lesson quick check',
