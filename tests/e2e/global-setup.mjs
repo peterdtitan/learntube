@@ -33,7 +33,50 @@ export default async function globalSetup() {
     people[key] = { id: user.id, name, token: `e2e-${key}` };
   }
 
+  // Quizzes on the bread pathway's first module: a quick check after lesson one, a timed
+  // checkpoint and the module games.
+  const unit = course.bread.units[0];
+  const tf = (prompt, answer, order) => ({
+    type: 'TRUE_FALSE', prompt, data: { answer }, order,
+  });
+  const check = await prisma.quiz.create({
+    data: {
+      kind: 'LESSON_CHECK',
+      videoId: course.lessons[0].id,
+      published: true,
+      questions: { create: [tf('A starter needs regular feeding', true, 0), tf('Starters live in the freezer', false, 1)] },
+    },
+  });
+  const checkpoint = await prisma.quiz.create({
+    data: {
+      kind: 'CHECKPOINT',
+      unitId: unit.id,
+      title: 'Starter checkpoint',
+      published: true,
+      timeLimitSec: 300,
+      questions: {
+        create: [
+          tf('Flour and water make a starter', true, 0),
+          {
+            type: 'SINGLE', prompt: 'What does autolyse mean?', data: { options: ['Resting flour and water', 'Adding salt first'], answer: 0 }, order: 1,
+          },
+        ],
+      },
+    },
+  });
+  const gameQuiz = await prisma.quiz.create({
+    data: {
+      kind: 'MODULE_GAME',
+      unitId: unit.id,
+      published: true,
+      questions: { create: [tf('Bread needs time to rise', true, 0)] },
+    },
+  });
+
   writeFileSync(STATE_FILE, JSON.stringify({
+    quizzes: {
+      check: check.id, checkpoint: checkpoint.id, game: gameQuiz.id, unit: unit.id,
+    },
     people,
     bread: { id: course.bread.id, lessons: course.lessons.map((l) => l.id) },
     code: { id: course.code.id, lesson: course.codeLesson.id },
