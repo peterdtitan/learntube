@@ -102,7 +102,16 @@ export default function LessonForm({
         </Field>
       </div>
 
-      <Field id="ls-unit" label="Unit">
+      <div className="flex flex-wrap gap-4">
+        <Field id="ls-start" label="Start at" hint="Optional, e.g. 4:30.">
+          <input id="ls-start" name="startSec" inputMode="numeric" defaultValue={lesson?.startSec ? formatDuration(lesson.startSec) : ''} className={inputClass('w-28 tabular-nums')} />
+        </Field>
+        <Field id="ls-end" label="End at" hint="Set both to use part of a long video; the length fills itself.">
+          <input id="ls-end" name="endSec" inputMode="numeric" defaultValue={lesson?.endSec ? formatDuration(lesson.endSec) : ''} className={inputClass('w-28 tabular-nums')} />
+        </Field>
+      </div>
+
+      <Field id="ls-unit" label="Module">
         <select id="ls-unit" name="unitId" defaultValue={lesson?.unitId || defaultUnitId} className={inputClass()}>
           {units.map((u) => <option key={u.id} value={u.id}>{u.title}</option>)}
         </select>

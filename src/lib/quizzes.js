@@ -267,8 +267,12 @@ export function resultView(attempt, quiz) {
 }
 
 // Where the checkpoint sits in a module: after the chosen lesson, or the middle one.
+// Never lands between two parts of the same split video: it moves on to the last part.
 export function checkpointIndex(videos, afterVideoId) {
   if (!videos.length) return -1;
   const chosen = afterVideoId ? videos.findIndex((v) => v.id === afterVideoId) : -1;
-  return chosen >= 0 ? chosen : Math.ceil(videos.length / 2) - 1;
+  let index = chosen >= 0 ? chosen : Math.ceil(videos.length / 2) - 1;
+  const samePart = (a, b) => a && b && a.url && a.url === b.url && a.endSec && b.startSec;
+  while (samePart(videos[index], videos[index + 1])) index += 1;
+  return index;
 }
