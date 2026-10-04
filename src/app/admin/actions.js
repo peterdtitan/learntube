@@ -152,7 +152,11 @@ export async function saveLesson(prev, form) {
   const unitId = String(form.get('unitId'));
   const videoId = parseYouTubeId(String(form.get('url') ?? ''));
   if (!videoId) return { error: 'Paste a YouTube video link.' };
-  const duration = seconds(form.get('duration'));
+  // Optional clip: play only part of the video, so long videos can become short lessons.
+  const startSec = seconds(form.get('startSec'));
+  const endSec = seconds(form.get('endSec'));
+  if (endSec !== null && endSec <= (startSec || 0)) return { error: 'The clip must end after it starts.' };
+  const duration = endSec !== null ? endSec - (startSec || 0) : seconds(form.get('duration'));
   if (!duration) return { error: 'Add the video length, e.g. 6:05.' };
   const practiceRaw = String(form.get('practiceMinutes') ?? '').trim();
   const practiceMinutes = practiceRaw === '' ? null : Math.round(Number(practiceRaw));
@@ -185,6 +189,8 @@ export async function saveLesson(prev, form) {
     captionsLang: fields.captionsLang.value || 'en',
     starterCode: fields.starterCode.value,
     practiceMinutes,
+    startSec: startSec || null,
+    endSec,
   };
 
   if (id) {

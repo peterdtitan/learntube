@@ -28,6 +28,7 @@ function readYouTubeOk() {
 // Wraps the YouTube IFrame API. The ref exposes getCurrentTime() and seekTo(seconds).
 const VideoPlayer = forwardRef(({
   videoId, youtubeUrl, startAt = 0, captionsLang, duration, playbackRate = 1, loop,
+  clipStart = 0, clipEnd = null,
   onProgress, onComplete,
 }, ref) => {
   const containerRef = useRef(null);
@@ -39,6 +40,14 @@ const VideoPlayer = forwardRef(({
   callbacks.current = { onProgress, onComplete };
   const settings = useRef({ playbackRate, loop });
   settings.current = { playbackRate, loop };
+  // A lesson can be one part of a longer video; times stay in the video's own seconds.
+  const clip = useRef({ start: clipStart, end: clipEnd });
+  clip.current = { start: clipStart, end: clipEnd };
+  const watchedFraction = (t) => {
+    const { start, end } = clip.current;
+    const length = end ? end - start : duration;
+    return length ? (t - start) / length : 0;
+  };
   // Nothing from YouTube loads (and it sets no cookies) until the learner presses play.
   const [active, setActive] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -82,7 +91,11 @@ const VideoPlayer = forwardRef(({
         host: PLAYER_HOST,
         videoId: getYouTubeId(youtubeUrl),
         playerVars: {
-          start: Math.max(0, Math.floor(startAt)),
+          // Resume where they stopped if that's inside this clip, otherwise from its start.
+          start: Math.floor(
+            startAt > clipStart && (!clipEnd || startAt < clipEnd - 5) ? startAt : clipStart,
+          ),
+          ...(clipEnd ? { end: Math.ceil(clipEnd) } : {}),
           autoplay: autoplay.current ? 1 : 0,
           cc_load_policy: 1,
           cc_lang_pref: captionsLang || 'en',
@@ -126,13 +139,26 @@ const VideoPlayer = forwardRef(({
       });
     });
 
-    // Loop enforcement runs independently of progress saving so it stays responsive.
+    // Loop and clip-end enforcement run apart from progress saving so they stay responsive.
     const loopTimer = setInterval(() => {
-      const { loop: active } = settings.current;
-      if (!active || !readyRef.current) return;
+      if (!readyRef.current) return;
       const t = currentTime();
-      if (t !== null && (t >= active.end || t < active.start - 1)) {
+      if (t === null) return;
+      const { loop: active } = settings.current;
+      if (active && (t >= active.end || t < active.start - 1)) {
         playerRef.current.seekTo(active.start, true);
+        return;
+      }
+      // YouTube's end parameter only holds for the first play; scrubbing past it would
+      // run on into the next lesson's part of the video.
+      const { end } = clip.current;
+      if (!active && end && t > end + 0.5) {
+        playerRef.current.pauseVideo();
+        playerRef.current.seekTo(end, true);
+        if (!completedRef.current) {
+          completedRef.current = true;
+          callbacks.current.onComplete?.();
+        }
       }
     }, LOOP_CHECK_MS);
 
@@ -140,7 +166,7 @@ const VideoPlayer = forwardRef(({
       if (document.visibilityState !== 'hidden') return;
       const t = currentTime();
       if (t === null) return;
-      if (duration && t / duration >= COMPLETE_THRESHOLD && !completedRef.current) {
+      if (watchedFraction(t) >= COMPLETE_THRESHOLD && !completedRef.current) {
         completedRef.current = true;
         callbacks.current.onComplete?.();
       } else {

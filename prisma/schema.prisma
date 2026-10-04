@@ -91,23 +91,29 @@ model Skill {
   color    String // hex, shared by web and app
   order    Int       @default(0)
   pathways Pathway[]
+  tracks   Track[]
   xpEvents XpEvent[]
 }
 
 model Pathway {
-  id          String      @id @default(cuid())
-  title       String
-  description String?
-  makeTitle   String? // what the learner has made by the end
-  skillId     String?
-  skill       Skill?      @relation(fields: [skillId], references: [id], onDelete: SetNull)
-  ownerId     String?
-  owner       User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
-  units       Unit[]
-  videos      Video[]
-  makes       Make[]
-  xpEvents    XpEvent[]
-  milestones  Milestone[]
+  id            String      @id @default(cuid())
+  slug          String?     @unique // stable key for imported pathways, e.g. \"cybersecurity-expert\"
+  title         String
+  description   String?
+  makeTitle     String? // what the learner has made by the end
+  skillId       String?
+  skill         Skill?      @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  ownerId       String?
+  trackId       String? // set when the pathway is one course in a track (a program of courses)
+  track         Track?      @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  trackOrder    Int         @default(0)
+  certification String? // e.g. "CompTIA A+ (220-1201 and 220-1202)"
+  owner         User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  units         Unit[]
+  videos        Video[]
+  makes         Make[]
+  xpEvents      XpEvent[]
+  milestones    Milestone[]
 }
 
 // Shown to learners as a module ("Week 1"). Lessons belong to it, plus an optional
@@ -128,7 +134,9 @@ model Video {
   title           String
   description     String?
   url             String // full YouTube URL or video ID
-  duration        Int // seconds
+  duration        Int // seconds; for a clip, the clip's length
+  startSec        Int? // play only part of the video: from here...
+  endSec          Int? // ...to here, so every lesson stays short
   order           Int             @default(0)
   captionsLang    String? // e.g. "en", passed to the YouTube player for CC
   transcript      String? // plain-text transcript shown under the player
@@ -442,4 +450,17 @@ model QuizAttempt {
 
   @@index([quizId, userId, startedAt])
   @@index([userId, submittedAt])
+}
+
+// A program made of courses taken in order, e.g. "Cybersecurity Expert" = IT Foundations,
+// Networking, Security Operations. Each course is a Pathway with trackId and trackOrder.
+model Track {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String?
+  makeTitle   String? // what the learner can do by the end
+  skillId     String?
+  skill       Skill?    @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  pathways    Pathway[]
 }

@@ -54,11 +54,14 @@ export default async function LessonPage({ params }) {
   const index = orderedVideos.findIndex((v) => v.id === videoId);
   const prev = orderedVideos[index - 1];
   const next = orderedVideos[index + 1];
+  // An early part of a split video: the Try step and make come with its last part.
+  const continuesInNext = Boolean(lesson.endSec && next && next.url === lesson.url);
   const startAt = progress?.completed ? 0 : (progress?.stoppedAt || 0);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
+      {/* After the lesson on phones, beside it on wide screens. */}
+      <aside className="order-last lg:order-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
         <CourseSidebar
           pathway={pathway}
           units={units}
@@ -88,6 +91,8 @@ export default async function LessonPage({ params }) {
             url: lesson.url,
             title: lesson.title,
             duration: lesson.duration,
+            startSec: lesson.startSec,
+            endSec: lesson.endSec,
             captionsLang: lesson.captionsLang,
             tryTask: lesson.tryTask,
           }}
@@ -96,6 +101,7 @@ export default async function LessonPage({ params }) {
           initialWatched={Boolean(progress?.completed)}
           initialTriedAt={progress?.triedAt ? progress.triedAt.toISOString() : null}
           myMakes={myMakes}
+          showLog={!continuesInNext}
         />
 
         {check && (

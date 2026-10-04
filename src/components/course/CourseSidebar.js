@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Check, Gamepad2, Timer } from 'lucide-react';
+import {
+  Check, ChevronRight, Gamepad2, Timer,
+} from 'lucide-react';
 import ProgressBar from '../ui/ProgressBar';
 import { formatDuration } from '../../lib/youtube';
 import { isLessonDone } from '../../lib/course';
@@ -74,9 +76,16 @@ export default function CourseSidebar({
       </div>
       {units.map((unit, n) => {
         const m = byId[unit.id];
+        const current = unit.videos.some((v) => v.id === activeVideoId);
+        const done = unit.videos.filter((v) => isLessonDone(progressByVideoId[v.id])).length;
+        // Long courses would be hundreds of rows; only the module you're in starts open.
         return (
-          <div key={unit.id} className="grid gap-1">
-            <p className="px-3 text-xs font-bold uppercase tracking-widest text-muted">{`Week ${n + 1} · ${unit.title}`}</p>
+          <details key={unit.id} open={current} className="group grid gap-1">
+            <summary className="flex cursor-pointer list-none items-start gap-2 rounded-md px-3 py-1.5 hover:bg-sunken">
+              <ChevronRight size={14} className="mt-0.5 shrink-0 text-muted transition-transform group-open:rotate-90" aria-hidden="true" />
+              <span className="flex-1 text-xs font-bold uppercase tracking-widest text-muted">{`Week ${n + 1} · ${unit.title}`}</span>
+              <span className="shrink-0 text-xs tabular-nums text-muted">{`${done}/${unit.videos.length}`}</span>
+            </summary>
             {rows(unit.videos).map((row, i) => (
               <React.Fragment key={row.key}>
                 {row}
@@ -88,7 +97,7 @@ export default function CourseSidebar({
             {m?.game && (
               <QuizLink href={`/pathways/${pathway.id}/modules/${unit.id}/game`} icon={Gamepad2} title={m.game.title || 'Module games'} best={m.game.best} />
             )}
-          </div>
+          </details>
         );
       })}
       {unassignedVideos.length > 0 && <div className="grid gap-1">{rows(unassignedVideos)}</div>}

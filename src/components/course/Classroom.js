@@ -54,7 +54,7 @@ function Step({
 }
 
 export default function Classroom({
-  lesson, startAt, isSignedIn, initialWatched, initialTriedAt, myMakes,
+  lesson, startAt, isSignedIn, initialWatched, initialTriedAt, myMakes, showLog = true,
 }) {
   const router = useRouter();
   const playerRef = useRef(null);
@@ -82,9 +82,9 @@ export default function Classroom({
   const handleComplete = useCallback(async () => {
     setWatched(true);
     if (!isSignedIn) return;
-    const data = await saveProgress(lesson.id, lesson.duration, true);
+    const data = await saveProgress(lesson.id, lesson.endSec || lesson.duration, true);
     if (data?.xpAwarded) celebrate('Watched to the end', data.xpAwarded, data.milestones);
-  }, [lesson.id, lesson.duration, isSignedIn, celebrate]);
+  }, [lesson.id, lesson.endSec, lesson.duration, isSignedIn, celebrate]);
 
   const handleLoopClick = () => {
     const now = playerRef.current?.getCurrentTime();
@@ -128,6 +128,8 @@ export default function Classroom({
         youtubeUrl={lesson.url}
         startAt={startAt}
         duration={lesson.duration}
+        clipStart={lesson.startSec || 0}
+        clipEnd={lesson.endSec || null}
         captionsLang={lesson.captionsLang}
         playbackRate={rate}
         loop={loop}
@@ -168,6 +170,7 @@ export default function Classroom({
             )}
           </Step>
 
+          {showLog && (
           <Step number={3} title="Log what you made" xp={XP.LOG} done={myMakes.length > 0}>
             {myMakes.length > 0 && (
               <ul className="grid gap-1 text-[15px]">
@@ -198,6 +201,7 @@ export default function Classroom({
               <p className="text-[15px] text-muted">Sign in to keep a record of what you make.</p>
             )}
           </Step>
+          )}
         </ol>
       </section>
 
