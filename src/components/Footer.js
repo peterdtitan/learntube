@@ -25,7 +25,7 @@ export default function Footer() {
         </div>
         <nav aria-label="Footer" className="grid content-start gap-2 text-[15px]">
           <h2 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Learn</h2>
-          <Link href="/#skills" className="hover:text-accent">Skills</Link>
+          <Link href="/skills" className="hover:text-accent">Skills</Link>
           <Link href="/pathways" className="hover:text-accent">Pathways</Link>
           <Link href="/makes" className="hover:text-accent">Makes</Link>
           <Link href="/leaderboard" className="hover:text-accent">Leaderboard</Link>

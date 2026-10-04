@@ -15,7 +15,7 @@ import cn from '../lib/cn';
 import { initials } from '../lib/people';
 
 const LINKS = [
-  { href: '/#skills', label: 'Skills', match: (p) => p === '/' },
+  { href: '/skills', label: 'Skills', match: (p) => p.startsWith('/skills') },
   { href: '/pathways', label: 'Pathways', match: (p) => p.startsWith('/pathways') },
   { href: '/makes', label: 'Makes', match: (p) => p.startsWith('/makes') },
   { href: '/leaderboard', label: 'Leaderboard', match: (p) => p.startsWith('/leaderboard') },

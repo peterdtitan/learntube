@@ -6,14 +6,16 @@ import { formatDuration } from '../../lib/youtube';
 import ConfirmButton from '../../components/admin/ConfirmButton';
 import LibraryImport from '../../components/admin/LibraryImport';
 import { demoContentCount } from '../../lib/content/importPathway';
-import { importLibraryTrack, removeDemo } from './content/actions';
+import { importLibrarySkills, importLibraryTrack, removeDemo } from './content/actions';
+import shortSkills from '../../../content/skills';
 
 // Imports can take a while on a cold database.
 export const maxDuration = 60;
 
 export default async function AdminHome() {
-  const [demoCount, track] = await Promise.all([
+  const [demoCount, skillCount, track] = await Promise.all([
     demoContentCount(),
+    prisma.pathway.count({ where: { kind: 'SKILL', slug: { in: shortSkills.map((s) => s.slug) } } }),
     prisma.track.findUnique({
       where: { slug: 'cybersecurity-expert' },
       include: { _count: { select: { pathways: true } } },
@@ -66,6 +68,20 @@ export default async function AdminHome() {
           </p>
           {track && <p className="text-sm text-accent">{`Imported: ${track._count.pathways} of 3 courses.`}</p>}
           <LibraryImport action={importLibraryTrack} slug="cybersecurity-expert" imported={Boolean(track)} />
+        </div>
+        <div className="grid gap-2 border-t border-line pt-4">
+          <p className="font-bold">Short skills</p>
+          <p className="text-[15px] text-muted">
+            {`${shortSkills.length} skills you can pick up in under 15 hours: ${shortSkills.map((s) => s.title).join(' · ')}.`}
+          </p>
+          {skillCount > 0 && <p className="text-sm text-accent">{`Imported: ${skillCount} of ${shortSkills.length} skills.`}</p>}
+          <LibraryImport
+            action={importLibrarySkills}
+            slug="skills"
+            imported={skillCount > 0}
+            label="Import short skills"
+            againLabel="Import any missing skills"
+          />
         </div>
         {demoCount > 0 && (
           <form action={removeDemo} className="grid gap-2 border-t border-line pt-4">

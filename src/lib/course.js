@@ -57,7 +57,7 @@ function lessonSummary(video) {
 const MAX_TERMS = 6;
 
 // Every word has to appear somewhere: title, description, what you make, skill or a lesson title.
-export function pathwaySearchWhere({ q, skillId } = {}) {
+export function pathwaySearchWhere({ q, skillId, kind } = {}) {
   const terms = String(q || '')
     .trim()
     .split(/\s+/)
@@ -79,11 +79,12 @@ export function pathwaySearchWhere({ q, skillId } = {}) {
     };
   });
   if (skillId) and.push({ skillId });
+  if (kind) and.push({ kind });
   return and.length ? { AND: and } : {};
 }
 
 // Every pathway with lesson counts and, for a signed-in learner, where they are in it.
-// Started pathways come first. Pass { q, skillId } to search.
+// Started pathways come first. Pass { q, skillId } to search, { kind } for courses or skills.
 export async function getPathwayOverviews(userId, search = {}) {
   const pathways = await prisma.pathway.findMany({
     where: pathwaySearchWhere(search),

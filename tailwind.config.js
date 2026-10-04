@@ -33,6 +33,12 @@ module.exports = {
       borderRadius: {
         sm: radius.sm, md: radius.md, lg: radius.lg, pill: radius.pill,
       },
+      keyframes: {
+        caret: { '0%, 49%': { opacity: '1' }, '50%, 100%': { opacity: '0' } },
+      },
+      animation: {
+        caret: 'caret 1s steps(1) infinite',
+      },
     },
   },
   plugins: [

@@ -112,6 +112,14 @@ export async function importTrack(trackPlan, options = {}) {
   return { trackId: track.id, courses };
 }
 
+// Short skills (planSkill), each its own pathway. Safe to run again: existing ones are
+// left as they are.
+export async function importSkills(plans, options = {}) {
+  const problems = plans.flatMap((p) => p.problems);
+  if (problems.length) throw contentError(problems);
+  return inSequence(plans, (plan) => importPathway(plan, options));
+}
+
 // The sample pathways the old seed created (owned by the seed user), and that user.
 export async function removeDemoContent() {
   const owner = await prisma.user.findUnique({ where: { email: DEMO_OWNER_EMAIL } });
