@@ -26,7 +26,13 @@ test('an admin builds a pathway that learners can then find', async ({ page, sig
   await page.getByLabel('Try it yourself').fill('Cast on 40 stitches');
   await page.getByRole('button', { name: 'Add lesson' }).click();
   await expect(page).toHaveURL(/\/admin\/pathways\/[a-z0-9]+$/);
-  await expect(page.getByText('Long-tail cast on')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Long-tail cast on' })).toBeVisible();
+
+  // Any lesson's thumbnail can be the cover.
+  await page.getByLabel('Use a lesson\'s thumbnail').selectOption('dQw4w9WgXcQ');
+  await expect(page.getByAltText('Cover preview')).toHaveAttribute('src', /dQw4w9WgXcQ/);
+  await page.getByRole('button', { name: 'Save details' }).click();
+  await expect(page.getByText('Saved.')).toBeVisible();
 
   await signInAs('bola');
   await page.goto('/pathways?q=beanie');

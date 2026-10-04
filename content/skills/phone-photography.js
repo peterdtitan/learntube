@@ -8,6 +8,7 @@ export default {
   description: 'The basics of light and composition, people and everyday scenes, and editing on your phone with free apps.',
   makeTitle: 'A set of five edited photos you’re proud of',
   skillId: 'photography',
+  cover: '_ZYGsx1i5L8', // the video whose thumbnail is the skill's cover
   by: 'Jamie Windsor',
   modules: [
     {

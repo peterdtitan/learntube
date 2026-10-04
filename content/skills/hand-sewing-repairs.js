@@ -9,6 +9,7 @@ export default {
   description: 'Thread a needle, learn the three stitches that matter, and fix buttons, hems and holes in your own clothes.',
   makeTitle: 'Three clothes you mended yourself',
   skillId: 'sewing',
+  cover: 'Du6gq3ks0SQ', // the video whose thumbnail is the skill's cover
   by: 'Sewn Company',
   modules: [
     {

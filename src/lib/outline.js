@@ -2,6 +2,7 @@ import prisma from './prismadb';
 import { getProgressByVideoId, isLessonDone } from './course';
 import { estimateModule, estimatePathway, funEquivalent } from './estimate';
 import { checkpointIndex } from './quizzes';
+import { coverImage } from './covers';
 
 const PUBLISHED = {
   where: { published: true },
@@ -98,6 +99,7 @@ export async function getPathwayOutline(pathwayId, userId) {
       makeTitle: pathway.makeTitle,
       certification: pathway.certification,
       kind: pathway.kind,
+      cover: coverImage(pathway.imageUrl, lessons.map((v) => v.url)),
       skill: pathway.skill
         ? { id: pathway.skill.id, name: pathway.skill.name, color: pathway.skill.color }
         : null,

@@ -13,6 +13,7 @@ export default {
   description: 'Write HTML and CSS from scratch in a free code editor and build a personal web page that works on phones.',
   makeTitle: 'Your own personal web page',
   skillId: 'software-engineering',
+  cover: 'ZPMtug9qExk', // the video whose thumbnail is the skill's cover
   by: 'Kevin Stratvert',
   modules: [
     {

@@ -7,6 +7,8 @@ import { useTheme } from 'next-themes';
 import Button from '../ui/Button';
 import { palette } from '../../design/tokens';
 import cn from '../../lib/cn';
+import SkillIcon from '../ui/SkillIcon';
+import Cover from '../ui/Cover';
 
 // three.js only loads on this page, after the rest of the page is interactive.
 const ShelfScene = dynamic(() => import('./ShelfScene'), { ssr: false });
@@ -33,8 +35,9 @@ function SkillPanel({ skill }) {
   if (track) {
     return (
       <div className="grid content-start gap-3 rounded-lg border border-line bg-surface p-5 shadow-sm" aria-live="polite">
+        <Cover src={track.cover} skill={skill} sizes="300px" className="rounded-md" />
         <div className="flex items-center gap-2.5">
-          <span className="h-3 w-3 shrink-0 rounded-[4px]" style={{ background: skill.color }} />
+          <SkillIcon skill={skill} size="sm" />
           <h2 className="text-[22px] font-bold">{skill.name}</h2>
         </div>
         <div>
@@ -49,8 +52,9 @@ function SkillPanel({ skill }) {
   }
   return (
     <div className="grid content-start gap-3 rounded-lg border border-line bg-surface p-5 shadow-sm" aria-live="polite">
+      <Cover src={pathway?.cover} skill={skill} sizes="300px" className="rounded-md" />
       <div className="flex items-center gap-2.5">
-        <span className="h-3 w-3 shrink-0 rounded-[4px]" style={{ background: skill.color }} />
+        <SkillIcon skill={skill} size="sm" />
         <h2 className="text-[22px] font-bold">{skill.name}</h2>
       </div>
       {pathway ? (
@@ -124,7 +128,7 @@ export default function SkillShelf({ skills }) {
                   skill.id === selected.id && 'border-accent ring-1 ring-inset ring-accent',
                 )}
               >
-                <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: skill.color }} />
+                <SkillIcon skill={skill} />
                 {skill.name}
                 {!skill.pathways.length && <span className="text-xs text-muted">soon</span>}
               </button>

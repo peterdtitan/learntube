@@ -2,6 +2,7 @@ import prisma from './prismadb';
 import { getPathwayOutline } from './outline';
 import { estimatePathway, funEquivalent } from './estimate';
 import { PUBLISHED_QUIZ as QUIZ } from './skills';
+import { coverImage } from './covers';
 
 // A track (program) and its courses in order, with time to learn and progress for each.
 export async function getTrackOverview(slug, userId) {
@@ -33,6 +34,7 @@ export async function getTrackOverview(slug, userId) {
       description: track.description,
       makeTitle: track.makeTitle,
       skill: track.skill,
+      cover: track.imageUrl || courses[0]?.cover || null,
     },
     courses,
     minutes,
@@ -60,12 +62,15 @@ export async function getProgramCards(userId) {
           id: true,
           title: true,
           certification: true,
+          imageUrl: true,
           units: {
+            orderBy: { order: 'asc' },
             select: {
               quizzes: QUIZ,
               videos: {
+                orderBy: { order: 'asc' },
                 select: {
-                  id: true, duration: true, practiceMinutes: true, quizzes: QUIZ,
+                  id: true, url: true, duration: true, practiceMinutes: true, quizzes: QUIZ,
                 },
               },
             },
@@ -90,6 +95,10 @@ export async function getProgramCards(userId) {
       title: t.title,
       description: t.description,
       skill: t.skill,
+      cover: t.imageUrl || coverImage(
+        t.pathways[0]?.imageUrl,
+        t.pathways[0] ? lessonsOf(t.pathways[0]).map((v) => v.url) : [],
+      ),
       minutes,
       fun: funEquivalent(minutes, t.skill?.id),
       courses: t.pathways.map((p) => ({

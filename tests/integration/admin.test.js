@@ -17,6 +17,24 @@ async function redirectOf(promise) {
 }
 
 describe('admin server actions', () => {
+  it('set a pathway cover from a lesson, back to automatic, or keep it', async () => {
+    signIn(await makeUser({ admin: true }));
+    const pathway = await prisma.pathway.create({ data: { title: 'Knit a Hat' } });
+    const save = (cover) => actions.updatePathway(null, formData({
+      id: pathway.id, title: 'Knit a Hat', skillId: '', description: '', makeTitle: '', cover,
+    }));
+    const stored = async () => (await prisma.pathway.findUnique({ where: { id: pathway.id } })).imageUrl;
+
+    expect(await save('QkrIZBLZEXw')).toEqual({ ok: 'Saved.' });
+    expect(await stored()).toBe('https://i.ytimg.com/vi/QkrIZBLZEXw/hqdefault.jpg');
+    expect(await save('keep')).toEqual({ ok: 'Saved.' });
+    expect(await stored()).toBe('https://i.ytimg.com/vi/QkrIZBLZEXw/hqdefault.jpg');
+    expect(await save('https://evil.example/x.jpg')).toHaveProperty('error');
+    expect(await stored()).toBe('https://i.ytimg.com/vi/QkrIZBLZEXw/hqdefault.jpg');
+    expect(await save('auto')).toEqual({ ok: 'Saved.' });
+    expect(await stored()).toBeNull();
+  });
+
   it('refuse learners, even if they forge the request', async () => {
     signIn(await makeUser());
     await expect(actions.createPathway(null, formData({ title: 'Hack' }))).rejects.toThrow('Admins only.');

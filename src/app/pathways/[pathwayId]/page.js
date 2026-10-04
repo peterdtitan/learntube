@@ -12,6 +12,8 @@ import { formatDuration } from '../../../lib/youtube';
 import Button from '../../../components/ui/Button';
 import ProgressBar from '../../../components/ui/ProgressBar';
 import cn from '../../../lib/cn';
+import SkillIcon from '../../../components/ui/SkillIcon';
+import Cover from '../../../components/ui/Cover';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,27 +62,30 @@ export default async function PathwayPage({ params }) {
         </Link>
       )}
 
-      <header className="grid gap-4">
-        {pathway.skill && (
+      <header className="grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
+        <div className="grid gap-4">
+          {pathway.skill && (
           <span className="inline-flex items-center gap-2 justify-self-start rounded-pill border border-line px-3 py-1 text-sm text-muted">
-            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: pathway.skill.color }} />
+            <SkillIcon skill={pathway.skill} />
             {pathway.skill.name}
           </span>
-        )}
-        <h1 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-tight">{pathway.title}</h1>
-        {pathway.certification && (
+          )}
+          <h1 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-tight">{pathway.title}</h1>
+          {pathway.certification && (
           <p className="flex items-center gap-2 text-[17px] font-bold text-xp">
             <Award size={18} aria-hidden="true" />
             {`Prepares you for ${pathway.certification}`}
           </p>
-        )}
-        {pathway.description && <p className="max-w-[60ch] text-lg text-muted">{pathway.description}</p>}
-        {pathway.makeTitle && (
+          )}
+          {pathway.description && <p className="max-w-[60ch] text-lg text-muted">{pathway.description}</p>}
+          {pathway.makeTitle && (
           <p className="text-[17px]">
             <span className="text-muted">By the end you’ll have made: </span>
             <strong>{pathway.makeTitle}</strong>
           </p>
-        )}
+          )}
+        </div>
+        <Cover src={pathway.cover} skill={pathway.skill} priority sizes="(min-width: 768px) 340px, 100vw" className="rounded-lg border border-line shadow-md" />
       </header>
 
       <section aria-labelledby="time-heading" className="grid gap-4 rounded-lg border border-line bg-surface p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">

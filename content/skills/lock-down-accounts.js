@@ -9,6 +9,7 @@ export default {
   description: 'Strong passwords, a password manager, two-factor sign-in and passkeys, spotting phishing, and backing up what matters.',
   makeTitle: 'Your five most important accounts secured, with a written checklist',
   skillId: 'cybersecurity',
+  cover: 'ExAEb1MizVA', // the video whose thumbnail is the skill's cover
   by: 'IBM Technology',
   modules: [
     {

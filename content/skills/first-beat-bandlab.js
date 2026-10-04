@@ -9,6 +9,7 @@ export default {
   description: 'Use BandLab’s free browser studio to program drums, write chords and a bass line, and mix a finished beat.',
   makeTitle: 'A one-minute beat, mixed and shared',
   skillId: 'music-production',
+  cover: 'S96P06ml8Cg', // the video whose thumbnail is the skill's cover
   by: 'BandLab',
   modules: [
     {
