@@ -1,4 +1,3 @@
-
 export const LEGAL = {
   company: 'Elev8r Software Ltd.',
   country: 'Nigeria',
