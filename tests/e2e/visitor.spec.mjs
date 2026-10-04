@@ -35,6 +35,20 @@ test.describe('a visitor who is not signed in', () => {
     await expect(page.getByRole('button', { name: 'Sign in to track practice' })).toBeVisible();
   });
 
+  test('nothing loads from YouTube, and no YouTube cookies are set, until play is pressed', async ({ page, context }) => {
+    const { bread } = state();
+    const youtubeRequests = [];
+    page.on('request', (r) => { if (/youtube\.com|youtube-nocookie\.com|ytimg\.com/.test(new URL(r.url()).hostname)) youtubeRequests.push(r.url()); });
+    await page.goto(lessonUrl(bread.id, bread.lessons[0]));
+    await expect(page.getByRole('button', { name: /Play the lesson video/ })).toBeVisible();
+    await page.waitForTimeout(1500);
+    expect(youtubeRequests).toEqual([]);
+    expect((await context.cookies()).filter((c) => c.domain.includes('youtube'))).toEqual([]);
+
+    await page.getByRole('button', { name: /Play the lesson video/ }).click();
+    await expect(page.locator('iframe[title="YouTube video player"]')).toHaveAttribute('src', /^https:\/\/www\.youtube-nocookie\.com\/embed\//);
+  });
+
   test('gets a real 404 for pages that do not exist', async ({ page }) => {
     const res = await page.goto('/pathways/nope');
     expect(res.status()).toBe(404);

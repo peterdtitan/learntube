@@ -1,16 +1,29 @@
 'use client';
 
 import React, {
-  forwardRef, useEffect, useImperativeHandle, useRef,
+  forwardRef, useEffect, useImperativeHandle, useRef, useState,
 } from 'react';
+import Image from 'next/image';
+import { Play } from 'lucide-react';
 import { getYouTubeId } from '../../lib/youtube';
-import loadYouTubeApi from '../../lib/youtubeApi';
+import loadYouTubeApi, { PLAYER_HOST } from '../../lib/youtubeApi';
 
 // Pausing, hiding the tab and leaving the page also save, so this only covers a crash.
 // Every 15s keeps the busiest endpoint to a third of what 5s cost under load.
 const PROGRESS_SAVE_INTERVAL_MS = 15000;
 const LOOP_CHECK_MS = 200;
 const COMPLETE_THRESHOLD = 0.92;
+// Remembers that this browser has chosen to play YouTube videos (and so accepted YouTube's
+// cookies); later lessons then load the player straight away.
+const YOUTUBE_OK = 'learntube:youtube-ok';
+
+function readYouTubeOk() {
+  try {
+    return window.localStorage.getItem(YOUTUBE_OK) === '1';
+  } catch {
+    return false;
+  }
+}
 
 // Wraps the YouTube IFrame API. The ref exposes getCurrentTime() and seekTo(seconds).
 const VideoPlayer = forwardRef(({
@@ -26,6 +39,23 @@ const VideoPlayer = forwardRef(({
   callbacks.current = { onProgress, onComplete };
   const settings = useRef({ playbackRate, loop });
   settings.current = { playbackRate, loop };
+  // Nothing from YouTube loads (and it sets no cookies) until the learner presses play.
+  const [active, setActive] = useState(false);
+  const [thumbFailed, setThumbFailed] = useState(false);
+  const autoplay = useRef(false);
+  useEffect(() => {
+    if (readYouTubeOk()) setActive(true);
+  }, []);
+
+  const activate = () => {
+    try {
+      window.localStorage.setItem(YOUTUBE_OK, '1');
+    } catch {
+      // Without storage, the next lesson just asks again.
+    }
+    autoplay.current = true;
+    setActive(true);
+  };
 
   const currentTime = () => {
     const t = playerRef.current?.getCurrentTime?.();
@@ -40,6 +70,7 @@ const VideoPlayer = forwardRef(({
   }));
 
   useEffect(() => {
+    if (!active) return undefined;
     let cancelled = false;
     completedRef.current = false;
     readyRef.current = false;
@@ -48,9 +79,11 @@ const VideoPlayer = forwardRef(({
       if (cancelled || !YT || !containerRef.current) return;
 
       playerRef.current = new YT.Player(containerRef.current, {
+        host: PLAYER_HOST,
         videoId: getYouTubeId(youtubeUrl),
         playerVars: {
           start: Math.max(0, Math.floor(startAt)),
+          autoplay: autoplay.current ? 1 : 0,
           cc_load_policy: 1,
           cc_lang_pref: captionsLang || 'en',
           rel: 0,
@@ -61,6 +94,9 @@ const VideoPlayer = forwardRef(({
           onReady: () => {
             readyRef.current = true;
             playerRef.current.setPlaybackRate(settings.current.playbackRate);
+            // The learner pressed our play button; don't make them press YouTube's too.
+            if (autoplay.current) playerRef.current.playVideo();
+            autoplay.current = false;
           },
           onStateChange: (event) => {
             const { PLAYING, PAUSED, ENDED } = YT.PlayerState;
@@ -126,15 +162,38 @@ const VideoPlayer = forwardRef(({
     };
     // Re-create the player only when the lesson itself changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoId]);
+  }, [videoId, active]);
 
   useEffect(() => {
     if (readyRef.current) playerRef.current.setPlaybackRate(playbackRate);
   }, [playbackRate]);
 
+  const youtubeId = getYouTubeId(youtubeUrl);
   return (
-    <div className="relative aspect-video w-full max-w-full overflow-hidden rounded-lg bg-black shadow-md">
-      <div ref={containerRef} className="absolute inset-0 h-full w-full" />
+    <div data-testid="player" className="relative aspect-video w-full max-w-full overflow-hidden rounded-lg bg-black shadow-md">
+      {active ? (
+        <div ref={containerRef} className="absolute inset-0 h-full w-full" />
+      ) : (
+        <button type="button" onClick={activate} className="group absolute inset-0 grid place-items-center text-white">
+          {youtubeId && !thumbFailed && (
+            <Image
+              onError={() => setThumbFailed(true)}
+              src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 900px, 100vw"
+              className="object-cover opacity-80 transition-opacity group-hover:opacity-100"
+            />
+          )}
+          <span className="relative grid h-16 w-16 place-items-center rounded-full bg-accent text-on-accent shadow-lg transition-transform group-hover:scale-105">
+            <Play size={28} fill="currentColor" aria-hidden="true" />
+          </span>
+          <span className="sr-only">Play the lesson video</span>
+          <span className="absolute inset-x-0 bottom-0 bg-black/60 px-3 py-2 text-left text-xs">
+            Plays from YouTube, which may set cookies once you press play.
+          </span>
+        </button>
+      )}
     </div>
   );
 });
