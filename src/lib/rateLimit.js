@@ -15,6 +15,10 @@ export const LIMITS = {
   settings: { max: 30, windowSeconds: 600 },
   deleteAccount: { max: 5, windowSeconds: 3600 },
   videoCheck: { max: 120, windowSeconds: 600 },
+  quizStart: { max: 30, windowSeconds: 600 },
+  quizEvents: { max: 600, windowSeconds: 600 }, // sent as they happen during a checkpoint
+  quizSubmit: { max: 60, windowSeconds: 600 },
+  quizDraft: { max: 30, windowSeconds: 3600 }, // AI drafts cost money
 };
 
 // Windows line up with the clock, so every request in one window shares a row.

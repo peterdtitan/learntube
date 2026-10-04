@@ -8,14 +8,15 @@ const PRACTICE_KINDS = ['TRY', 'LOG'];
 
 // One award per sourceKey, so replaying a video or re-marking a step never pays twice.
 // Returns the created event, or null if it was already awarded.
-// context ({ pathwayId, skillId }) records where it was earned, for leaderboards.
+// context ({ pathwayId, skillId }) records where it was earned, for leaderboards;
+// context.amount overrides the usual XP for the kind (quizzes vary by type).
 export async function awardXp(userId, kind, sourceKey, context = {}) {
   try {
     return await prisma.xpEvent.create({
       data: {
         userId,
         kind,
-        amount: XP[kind],
+        amount: context.amount ?? XP[kind],
         sourceKey,
         pathwayId: context.pathwayId || null,
         skillId: context.skillId || null,
