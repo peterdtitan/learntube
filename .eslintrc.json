@@ -39,7 +39,8 @@
       {
         "allow": [
           "_count",
-          "_sum"
+          "_sum",
+          "_max"
         ]
       }
     ],
