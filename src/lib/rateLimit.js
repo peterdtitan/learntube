@@ -3,7 +3,7 @@ import prisma from './prismadb';
 // Per learner and action: at most `max` requests in each `windowSeconds` window. Set well
 // above what someone learning ever does; they're there to stop scripts and runaway clients.
 export const LIMITS = {
-  progress: { max: 300, windowSeconds: 600 }, // the player saves every few seconds
+  progress: { max: 300, windowSeconds: 600 }, // the player saves every 15s, and on pause
   note: { max: 300, windowSeconds: 600 }, // autosave while typing
   try: { max: 60, windowSeconds: 600 },
   upload: { max: 20, windowSeconds: 3600 },

@@ -64,13 +64,15 @@ export function pathwaySearchWhere({ q, skillId } = {}) {
     .filter(Boolean)
     .slice(0, MAX_TERMS);
   const and = terms.map((term) => {
-    const has = { contains: term, mode: 'insensitive' };
+    // Prisma passes the text into LIKE as is, so % and _ would act as wildcards.
+    const has = { contains: term.replace(/[\\%_]/g, '\\$&'), mode: 'insensitive' };
     return {
       OR: [
         { title: has },
         { description: has },
         { makeTitle: has },
         { skill: { name: has } },
+        { units: { some: { title: has } } },
         { units: { some: { videos: { some: { title: has } } } } },
         { videos: { some: { title: has } } },
       ],

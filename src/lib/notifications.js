@@ -12,12 +12,11 @@ export async function notify(kind, {
     actorId, makeId, milestoneId, preset,
   });
   try {
-    await prisma.notification.upsert({
-      where: { userId_key: { userId, key } },
-      update: {},
-      create: {
+    await prisma.notification.createMany({
+      data: [{
         userId, actorId, kind, key, makeId, milestoneId, preset,
-      },
+      }],
+      skipDuplicates: true,
     });
   } catch (err) {
     console.error('notify failed', err); // eslint-disable-line no-console

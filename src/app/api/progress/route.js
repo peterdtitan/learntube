@@ -17,6 +17,11 @@ export async function POST(req) {
   if (!body) return new Response('Bad Request', { status: 400 });
   const { videoId, stoppedAt, completed } = body;
   if (!videoId || typeof stoppedAt !== 'number') return new Response('Bad Request', { status: 400 });
+  // The lesson may have been deleted while someone still had it open.
+  const video = await prisma.video.findUnique({
+    where: { id: String(videoId) }, select: { id: true },
+  });
+  if (!video) return Response.json({ error: 'Lesson not found.' }, { status: 404 });
 
   const upsert = await prisma.videoProgress.upsert({
     where: { userId_videoId: { userId: session.user.id, videoId } },

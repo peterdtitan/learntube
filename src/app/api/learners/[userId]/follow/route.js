@@ -20,10 +20,9 @@ export async function POST(req, { params }) {
   });
   if (!target) return error(404, 'Learner not found.');
 
-  await prisma.follow.upsert({
-    where: { followerId_followingId: { followerId: viewerId, followingId: target.id } },
-    update: {},
-    create: { followerId: viewerId, followingId: target.id },
+  await prisma.follow.createMany({
+    data: [{ followerId: viewerId, followingId: target.id }],
+    skipDuplicates: true,
   });
   await notify('FOLLOW', { userId: target.id, actorId: viewerId });
   return json({ following: true, followers: await followerCount(target.id) });

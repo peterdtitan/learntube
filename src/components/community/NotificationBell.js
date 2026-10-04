@@ -5,23 +5,34 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
 
-// Rechecks on every page change and when the tab comes back into focus; no polling.
+const RECHECK_MS = 30000;
+const cache = { at: 0, unread: 0 };
+
+// Rechecks when the tab comes back into focus and on page changes, at most every 30s
+// (always on /notifications, which marks everything read). No polling.
 export default function NotificationBell() {
   const pathname = usePathname();
-  const [unread, setUnread] = useState(0);
+  const [unread, setUnread] = useState(cache.unread);
 
   useEffect(() => {
     let cancelled = false;
-    const load = async () => {
+    const load = async (force) => {
+      if (!force && Date.now() - cache.at < RECHECK_MS) {
+        setUnread(cache.unread);
+        return;
+      }
       try {
         const res = await fetch('/api/notifications/unread');
-        if (res.ok && !cancelled) setUnread((await res.json()).unread);
+        if (!res.ok) return;
+        cache.unread = (await res.json()).unread;
+        cache.at = Date.now();
+        if (!cancelled) setUnread(cache.unread);
       } catch {
         // The badge is a nicety; leave it as it was.
       }
     };
-    load();
-    const onVisible = () => { if (document.visibilityState === 'visible') load(); };
+    load(pathname?.startsWith('/notifications'));
+    const onVisible = () => { if (document.visibilityState === 'visible') load(true); };
     document.addEventListener('visibilitychange', onVisible);
     return () => {
       cancelled = true;
