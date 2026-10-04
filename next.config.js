@@ -3,8 +3,12 @@ const nextConfig = {
   // Test builds go elsewhere so they never clash with a running `next dev`.
   distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {
-    // Make photos are stored in Vercel Blob.
-    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
+    // Make photos are in Vercel Blob; lesson thumbnails come from YouTube's image CDN and are
+    // fetched by the server, so a learner's browser doesn't contact YouTube before they press play.
+    remotePatterns: [
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' },
+    ],
   },
   experimental: {
     // @vercel/blob depends on undici, whose syntax Next 14.0's bundler can't parse.

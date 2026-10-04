@@ -6,7 +6,7 @@ import SubmitButton from './SubmitButton';
 import {
   Field, FormMessage, inputClass, textareaClass,
 } from './fields';
-import loadYouTubeApi from '../../lib/youtubeApi';
+import loadYouTubeApi, { PLAYER_HOST } from '../../lib/youtubeApi';
 import { formatDuration } from '../../lib/youtube';
 
 // Loads the video in an off-screen player just long enough to read its length.
@@ -27,6 +27,7 @@ async function measureDuration(videoId) {
     };
     const timer = setTimeout(() => finish(null), 10000);
     player = new YT.Player(target, {
+      host: PLAYER_HOST,
       videoId,
       events: {
         onReady: () => {

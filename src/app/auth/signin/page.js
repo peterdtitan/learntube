@@ -1,5 +1,7 @@
 import React from 'react';
+import Link from 'next/link';
 import GoogleSignInButton from './GoogleSignInButton';
+import { LEGAL } from '../../../lib/legal';
 
 export const metadata = { title: 'Sign in · LearnTube' };
 
@@ -17,6 +19,13 @@ export default function SignIn({ searchParams }) {
         New here? Signing in creates your account.
       </p>
       <GoogleSignInButton callbackUrl={safeCallback(searchParams?.callbackUrl)} />
+      <p className="text-sm text-muted">
+        {`By continuing you confirm you’re ${LEGAL.minimumAge} or older and agree to the `}
+        <Link href="/terms" className="font-bold text-accent">Terms</Link>
+        {' and '}
+        <Link href="/privacy" className="font-bold text-accent">Privacy policy</Link>
+        .
+      </p>
     </div>
   );
 }

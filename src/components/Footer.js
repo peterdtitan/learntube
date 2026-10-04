@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { RiInstagramLine, RiTwitterXLine } from 'react-icons/ri';
 import { FaLinkedinIn } from 'react-icons/fa';
+import { LEGAL } from '../lib/legal';
 
 const SOCIALS = [
   { href: 'https://www.linkedin.com/in/peterokorafor', label: 'LinkedIn', Icon: FaLinkedinIn },
@@ -41,9 +42,12 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <p className="mx-auto max-w-7xl px-4 pb-8 text-xs text-muted sm:px-6 lg:px-8">
-        {`© ${new Date().getFullYear()} MadHouse Inc.`}
-      </p>
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-5 gap-y-2 px-4 pb-8 text-xs text-muted sm:px-6 lg:px-8">
+        <span>{`© ${new Date().getFullYear()} ${LEGAL.company}`}</span>
+        <Link href="/privacy" className="hover:text-ink">Privacy</Link>
+        <Link href="/terms" className="hover:text-ink">Terms</Link>
+        <a href={`mailto:${LEGAL.contactEmail}`} className="hover:text-ink">{LEGAL.contactEmail}</a>
+      </div>
     </footer>
   );
 }

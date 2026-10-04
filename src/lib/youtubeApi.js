@@ -19,3 +19,6 @@ export default function loadYouTubeApi() {
 
   return apiPromise;
 }
+
+// YouTube's privacy-enhanced mode: no YouTube cookies until the viewer presses play.
+export const PLAYER_HOST = 'https://www.youtube-nocookie.com';
