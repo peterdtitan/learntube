@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import sharp from 'sharp';
+import { put } from '@vercel/blob';
 import {
   call, makeUser, prisma, signIn,
 } from './helpers.mjs';
@@ -37,11 +39,28 @@ describe('photo uploads', () => {
   const file = (type, bytes = 10) => new File([new Uint8Array(bytes)], 'photo', { type });
   const form = (f) => { const fd = new FormData(); if (f) fd.append('file', f); return fd; };
 
-  it('accepts JPEG, PNG and WebP up to 8 MB', async () => {
+  it('stores a re-encoded copy with the location and other metadata removed', async () => {
+    signIn(await makeUser());
+    const withGpsAndName = await sharp({
+      create: {
+        width: 64, height: 48, channels: 3, background: '#82B0A2',
+      },
+    }).jpeg().withExif({ IFD0: { Artist: 'Ada Lovelace', Copyright: 'taken at home' } }).toBuffer();
+    const res = await call(uploads.POST, {
+      form: form(new File([withGpsAndName], 'IMG_0001.jpg', { type: 'image/jpeg' })),
+    });
+    expect(res.status).toBe(201);
+    expect(res.data.url).toMatch(/\.public\.blob\.vercel-storage\.com\/makes\/.*\.jpg$/);
+
+    const [, stored, options] = put.mock.calls.at(-1);
+    expect(options.contentType).toBe('image/jpeg');
+    expect((await sharp(stored).metadata()).exif).toBeUndefined();
+  });
+
+  it('judges the file by its contents, not the type the browser claims', async () => {
     signIn(await makeUser());
     const res = await call(uploads.POST, { form: form(file('image/png')) });
-    expect(res.status).toBe(201);
-    expect(res.data.url).toMatch(/\.public\.blob\.vercel-storage\.com\//);
+    expect(res.status).toBe(400);
   });
 
   it('refuses other types, big files and empty forms', async () => {

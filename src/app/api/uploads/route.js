@@ -1,11 +1,12 @@
 import { put } from '@vercel/blob';
 import { error, json, requireUserId } from '../../../lib/api';
 import { rateLimit } from '../../../lib/rateLimit';
+import { cleanPhoto } from '../../../lib/photo';
 
 const MAX_BYTES = 8 * 1024 * 1024;
-const TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 
 // POST /api/uploads (multipart, field "file"): stores a make photo and returns its public URL.
+// The stored copy is re-encoded with its location and other metadata removed.
 export async function POST(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to upload a photo.');
@@ -23,14 +24,16 @@ export async function POST(req) {
   }
   const file = form.get('file');
   if (!file || typeof file === 'string') return error(400, 'Choose a photo to upload.');
-  const ext = TYPES[file.type];
-  if (!ext) return error(400, 'Photos must be JPEG, PNG or WebP.');
   if (file.size > MAX_BYTES) return error(400, 'Photos must be 8 MB or smaller.');
 
-  const blob = await put(`makes/${userId}/photo.${ext}`, file, {
+  // The browser's stated type isn't trusted; sharp reads the actual file.
+  const photo = await cleanPhoto(Buffer.from(await file.arrayBuffer()));
+  if (!photo) return error(400, 'Photos must be JPEG, PNG or WebP.');
+
+  const blob = await put(`makes/${userId}/photo.${photo.ext}`, photo.buffer, {
     access: 'public',
     addRandomSuffix: true,
-    contentType: file.type,
+    contentType: photo.contentType,
   });
   return json({ url: blob.url }, 201);
 }
