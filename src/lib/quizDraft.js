@@ -132,7 +132,13 @@ export async function draftQuestions({
     `<material>\n${material}\n</material>`,
   ].filter(Boolean).join('\n\n');
 
-  const client = new Anthropic({ timeout: TIMEOUT_MS, maxRetries: 0 });
+  // Keys that aren't tied to a workspace (sk-ant-usr-…) must name one on every request.
+  const workspace = process.env.ANTHROPIC_WORKSPACE_ID;
+  const client = new Anthropic({
+    timeout: TIMEOUT_MS,
+    maxRetries: 0,
+    ...(workspace ? { defaultHeaders: { 'anthropic-workspace-id': workspace } } : {}),
+  });
   let response;
   try {
     response = await client.beta.messages.create({
@@ -148,6 +154,10 @@ export async function draftQuestions({
   } catch (err) {
     if (err instanceof Anthropic.APIConnectionTimeoutError) {
       return { error: 'Drafting took too long. Try fewer questions, or one lesson at a time.' };
+    }
+    // Admin-only page, so the API's own reason is safe and more useful than a status code.
+    if (err instanceof Anthropic.BadRequestError) {
+      return { error: `Claude rejected the request: ${err.error?.error?.message || err.message}` };
     }
     if (err instanceof Anthropic.AuthenticationError) return { error: 'The ANTHROPIC_API_KEY was rejected.' };
     if (err instanceof Anthropic.RateLimitError) return { error: 'Too many drafts at once. Try again in a minute.' };
