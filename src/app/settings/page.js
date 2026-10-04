@@ -9,6 +9,7 @@ import GoalPicker from '../../components/practice/GoalPicker';
 import LeaderboardToggle from '../../components/community/LeaderboardToggle';
 import DisplayNameForm from './DisplayNameForm';
 import DeleteAccount from './DeleteAccount';
+import ExtraTimeToggle from './ExtraTimeToggle';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Settings · LearnTube' };
@@ -30,7 +31,12 @@ export default async function SettingsPage() {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-      name: true, email: true, displayName: true, weeklyGoal: true, showOnLeaderboard: true,
+      name: true,
+      email: true,
+      displayName: true,
+      weeklyGoal: true,
+      showOnLeaderboard: true,
+      extraQuizTime: true,
     },
   });
 
@@ -48,6 +54,10 @@ export default async function SettingsPage() {
       <Section title="Practice">
         <GoalPicker goal={user.weeklyGoal} />
         <LeaderboardToggle initialShown={user.showOnLeaderboard} />
+      </Section>
+
+      <Section title="Quizzes">
+        <ExtraTimeToggle initialOn={user.extraQuizTime} />
       </Section>
 
       <Section title="Delete your account">
