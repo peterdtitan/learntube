@@ -15,6 +15,8 @@ import { getCommunityPulse } from '../lib/community';
 import { comingSoon, recommend } from '../lib/recommend';
 import { firstName, publicName } from '../lib/people';
 import SkillShelf from '../components/home/SkillShelf';
+import HeroStage from '../components/home/HeroStage';
+import SkillCarousel from '../components/home/SkillCarousel';
 import PathwayCard from '../components/home/PathwayCard';
 import CommunityPulse from '../components/home/CommunityPulse';
 import SkillCard from '../components/skills/SkillCard';
@@ -44,15 +46,14 @@ function Section({
   );
 }
 
-function SignInCard() {
+function SignInBanner() {
   return (
-    <Card as="aside" className="grid content-start gap-3">
-      <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Join the community</h3>
-      <p className="text-[15px]">
-        Sign in to get skills picked for you, save your place in every lesson, earn XP for
-        practising, and share what you make.
+    <Card as="aside" className="flex flex-wrap items-center justify-between gap-4 border-accent bg-accent-soft">
+      <p className="max-w-[60ch] text-[17px]">
+        <strong>Join the community.</strong>
+        {' Sign in to get skills picked for you, save your place in every lesson, earn XP for practising, and share what you make.'}
       </p>
-      <Button href="/auth/signin" size="sm" className="justify-self-start">Sign in with Google</Button>
+      <Button href="/auth/signin">Sign in with Google</Button>
     </Card>
   );
 }
@@ -97,22 +98,45 @@ export default async function HomePage({ searchParams = {} }) {
   const interestNames = skills.filter((s) => me?.interests.includes(s.id)).map((s) => s.name);
   const started = pathways.filter((p) => p.started).slice(0, 3);
   const justJoined = searchParams.welcome === '1';
+  const carousel = items.map((i) => ({
+    key: `${i.kind}-${i.id}`,
+    href: i.kind === 'program' ? `/tracks/${i.slug}` : `/pathways/${i.id}`,
+    title: i.title,
+    cover: i.cover,
+    skill: i.skill,
+    minutes: i.minutes,
+    kind: i.kind,
+  }));
+  const explore = carousel.length > 2 && (
+    <Section
+      title="Spin through every skill"
+      sub="Each short skill takes under 15 hours. Programs go all the way to a certification."
+      action={<Link href="/skills" className="text-sm font-bold text-accent hover:underline">See them all</Link>}
+    >
+      <SkillCarousel items={carousel} />
+    </Section>
+  );
 
   let greeting = 'Learn a skill by making something.';
   if (me) greeting = justJoined ? 'You’re all set, star.' : `Welcome back, ${firstName(publicName(me))}.`;
 
   return (
     <div className="grid gap-12">
-      <header className="grid max-w-[60ch] gap-3 pt-2">
-        <h1 className="text-[clamp(2.25rem,5.4vw,3.75rem)] font-bold leading-[1.02]">{greeting}</h1>
-        <p className="text-lg leading-relaxed text-muted">
-          {me
-            ? 'Pick up a short skill, keep your streak going, and see what everyone else is making.'
-            : 'Free YouTube lessons, put in order. Watch a short step, try it with your own hands, and share what you made with people learning alongside you.'}
-        </p>
-      </header>
-
-      <SkillShelf skills={skills} />
+      <HeroStage>
+        <header className="grid max-w-[56ch] gap-4">
+          <h1 className="text-[clamp(2.25rem,5.4vw,3.75rem)] font-bold leading-[1.02]">{greeting}</h1>
+          <p className="text-lg leading-relaxed text-muted">
+            {me
+              ? 'Pick up a short skill, keep your streak going, and see what everyone else is making.'
+              : 'Free YouTube lessons, put in order. Watch a short step, try it with your own hands, and share what you made with people learning alongside you.'}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button href="/skills">Browse skills</Button>
+            {!me && <Button href="/auth/signin" variant="ghost">Sign in with Google</Button>}
+          </div>
+        </header>
+        <SkillShelf skills={skills} />
+      </HeroStage>
 
       {me && (
         <Section
@@ -160,18 +184,16 @@ export default async function HomePage({ searchParams = {} }) {
             {summary && <WeekCard summary={summary} />}
           </div>
         </Section>
-      ) : (
+      ) : explore}
+
+      {me && explore}
+
+      {!me && (
         <Section
-          title="Popular short skills"
-          sub="Each one takes under 15 hours and ends with something you made."
-          action={<Link href="/skills" className="text-sm font-bold text-accent hover:underline">All skills</Link>}
+          title="How a lesson works"
+          sub="The same three steps whether you're learning to knit or to code. Most XP comes from doing, not watching."
         >
-          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {more.slice(0, 2).map((item) => <Item key={item.id} item={item} signedIn={false} />)}
-            </div>
-            <SignInCard />
-          </div>
+          <LessonSteps />
         </Section>
       )}
 
@@ -179,24 +201,16 @@ export default async function HomePage({ searchParams = {} }) {
         <CommunityPulse stats={pulse.stats} feed={pulse.feed} />
       </Section>
 
-      <Section
-        title="How a lesson works"
-        sub="The same three steps whether you're learning to knit or to code. Most XP comes from doing, not watching."
-      >
-        <LessonSteps />
-      </Section>
-
-      {me && more.length > 0 && started.length > 0 && (
+      {me && (
         <Section
-          title="Also popular"
-          sub="What other learners are picking up."
-          action={<Link href="/skills" className="text-sm font-bold text-accent hover:underline">All skills</Link>}
+          title="How a lesson works"
+          sub="The same three steps whether you're learning to knit or to code. Most XP comes from doing, not watching."
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {more.map((item) => <Item key={item.id} item={item} signedIn />)}
-          </div>
+          <LessonSteps />
         </Section>
       )}
+
+      {!me && <SignInBanner />}
 
       <Section title="Recent makes" sub="What learners have finished lately.">
         {makes.length ? (
