@@ -35,9 +35,19 @@ module.exports = {
       },
       keyframes: {
         caret: { '0%, 49%': { opacity: '1' }, '50%, 100%': { opacity: '0' } },
+        bob: {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0) rotate(var(--tilt, 0deg))' },
+          '50%': { transform: 'translate3d(0, -10px, 0) rotate(calc(var(--tilt, 0deg) * -1))' },
+        },
+        drift: {
+          '0%': { transform: 'perspective(500px) rotateX(62deg) translateY(0)' },
+          '100%': { transform: 'perspective(500px) rotateX(62deg) translateY(48px)' },
+        },
       },
       animation: {
         caret: 'caret 1s steps(1) infinite',
+        bob: 'bob 6s ease-in-out infinite',
+        drift: 'drift 4s linear infinite',
       },
     },
   },
