@@ -99,7 +99,7 @@ export async function createUnit(prev, form) {
     data: { pathwayId, title: title.value, order: (last?.order ?? -1) + 1 },
   });
   refreshContent(pathwayId);
-  return { ok: 'Unit added.' };
+  return { ok: 'Module added.' };
 }
 
 export async function renameUnit(form) {
@@ -154,6 +154,11 @@ export async function saveLesson(prev, form) {
   if (!videoId) return { error: 'Paste a YouTube video link.' };
   const duration = seconds(form.get('duration'));
   if (!duration) return { error: 'Add the video length, e.g. 6:05.' };
+  const practiceRaw = String(form.get('practiceMinutes') ?? '').trim();
+  const practiceMinutes = practiceRaw === '' ? null : Math.round(Number(practiceRaw));
+  if (practiceMinutes !== null && !(practiceMinutes >= 0 && practiceMinutes <= 600)) {
+    return { error: 'Practice time is minutes, from 0 to 600.' };
+  }
 
   const fields = {
     title: text(form, 'title', { required: true, max: 160 }),
@@ -179,6 +184,7 @@ export async function saveLesson(prev, form) {
     transcript: fields.transcript.value,
     captionsLang: fields.captionsLang.value || 'en',
     starterCode: fields.starterCode.value,
+    practiceMinutes,
   };
 
   if (id) {
