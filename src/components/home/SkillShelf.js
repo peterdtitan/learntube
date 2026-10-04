@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 
@@ -62,7 +62,7 @@ function SkillPanel({ skill }) {
           <p className="text-sm text-muted">
             {skill.pathways.length === 1 ? pathway.title : `${skill.pathways.length} pathways`}
           </p>
-          <Button href={`/pathways/${pathway.id}`}>Start pathway</Button>
+          <Button href={`/pathways/${pathway.id}`}>Start learning</Button>
         </>
       ) : (
         <>
@@ -80,6 +80,9 @@ export default function SkillShelf({ skills }) {
   const [hoveredId, setHoveredId] = useState(null);
   const { resolvedTheme } = useTheme();
   const { accent } = palette[resolvedTheme === 'dark' ? 'dark' : 'light'];
+  // Stable between renders: the scene rebuilds whenever this array changes, so a new
+  // one on every hover would tear down and recreate the WebGL scene.
+  const onShelf = useMemo(() => shelfSkills(skills), [skills]);
 
   const selected = skills.find((s) => s.id === selectedId) || firstLive;
   const hovered = skills.find((s) => s.id === hoveredId);
@@ -90,7 +93,7 @@ export default function SkillShelf({ skills }) {
       <div className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_300px]">
         <div className="relative h-[300px] sm:h-[360px] lg:h-[420px]">
           <ShelfScene
-            skills={shelfSkills(skills)}
+            skills={onShelf}
             selectedId={selected.id}
             accent={accent}
             onSelect={setSelectedId}
