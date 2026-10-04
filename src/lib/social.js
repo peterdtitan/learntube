@@ -44,6 +44,18 @@ async function listMilestones(userIds, viewerId, limit) {
   return rows.map((m) => serializeMilestone({ ...m, cheers: m.cheers || [] }, viewerId));
 }
 
+// Recent milestones from learners who show up publicly (the leaderboard setting), for the
+// home page's community feed.
+export async function listPublicMilestones(viewerId, limit) {
+  const rows = await prisma.milestone.findMany({
+    where: { user: { showOnLeaderboard: true } },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+    include: MILESTONE_INCLUDE(viewerId),
+  });
+  return rows.map((m) => serializeMilestone({ ...m, cheers: m.cheers || [] }, viewerId));
+}
+
 // Makes and milestones from people the viewer follows, newest first.
 export async function getFollowingFeed(viewerId, limit = 30) {
   const ids = await followingIds(viewerId);
