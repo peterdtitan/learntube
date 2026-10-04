@@ -154,6 +154,77 @@ export function planTrack(def) {
   };
 }
 
+// Time to learn once imported with quizzes published: video, practice, quick checks
+// (2 min each) and each module's games (5 min). Matches src/lib/estimate.js.
+export function planMinutes(plan) {
+  const lessons = plan.modules.flatMap((m) => m.lessons);
+  return Math.round(lessons.reduce((n, l) => n + l.duration / 60 + (l.practiceMinutes ?? 5)
+    + (l.check ? 2 : 0), 0)
+    + plan.modules.reduce((n, m) => n + 5
+      + (m.checkpoint ? Math.ceil(m.checkpoint.timeLimitSec / 60) : 0), 0));
+}
+
+// A short skill is capped so it stays something you can pick up in a few weeks.
+export const MAX_SKILL_HOURS = 20;
+const SKILL_PART_TRY = 'Follow along with this part as you watch, then carry on to the next part.';
+
+// def: { slug, title, description, makeTitle, skillId, by?, modules: [{ title, lessons:
+//   [{ id, title, seconds, from?, to?, by?, try, minutes, questions? }] }] }
+// `seconds` is the whole video's length; from/to (seconds) use just part of it. Anything
+// longer than 10 minutes is split into parts, like the courses.
+export function planSkill(def) {
+  const problems = [];
+  const modules = def.modules.map((mod) => {
+    const lessons = mod.lessons.flatMap((lesson) => {
+      const where = `"${lesson.title}" (${lesson.id})`;
+      if (!/^[\w-]{11}$/.test(lesson.id || '')) problems.push(`${where}: not a YouTube video id`);
+      if (!lesson.try?.trim()) problems.push(`${where}: no Try task`);
+      const from = lesson.from || 0;
+      const to = lesson.to || lesson.seconds;
+      if (!(to > from) || to > lesson.seconds) problems.push(`${where}: bad from/to`);
+      const clips = splitIntoClips(to - from)
+        .map((c) => ({ start: from + c.start, end: from + c.end }));
+      const whole = from === 0 && to === lesson.seconds && clips.length === 1;
+      return clips.map((clip, c) => {
+        const last = c === clips.length - 1;
+        return {
+          title: clips.length > 1 ? `${lesson.title} (part ${c + 1} of ${clips.length})` : lesson.title,
+          description: `Video by ${lesson.by || def.by}`,
+          url: `https://www.youtube.com/watch?v=${lesson.id}`,
+          startSec: whole ? null : clip.start,
+          endSec: whole ? null : clip.end,
+          duration: clip.end - clip.start,
+          tryTask: last ? lesson.try : SKILL_PART_TRY,
+          practiceMinutes: last ? lesson.minutes ?? null : 2,
+          check: last && lesson.questions?.length
+            ? checkQuestions(lesson.questions, where, problems)
+            : null,
+        };
+      });
+    });
+    if (!lessons.length) problems.push(`"${mod.title}": no lessons`);
+    if (!lessons.some((l) => l.check)) problems.push(`"${mod.title}": no questions for its games`);
+    return { title: mod.title, lessons, checkpoint: null };
+  });
+
+  const plan = {
+    pathway: {
+      slug: def.slug,
+      title: def.title,
+      description: def.description,
+      makeTitle: def.makeTitle,
+      skillId: def.skillId,
+      certification: null,
+      kind: 'SKILL',
+    },
+    modules,
+    problems,
+  };
+  const hours = planMinutes(plan) / 60;
+  if (hours > MAX_SKILL_HOURS) problems.push(`${def.title}: about ${Math.round(hours)} hours; a short skill is ${MAX_SKILL_HOURS} at most`);
+  return plan;
+}
+
 export function planSummary(plan) {
   const lessons = plan.modules.flatMap((m) => m.lessons);
   const questions = lessons.reduce((n, l) => n + (l.check?.length || 0), 0)
@@ -164,5 +235,6 @@ export function planSummary(plan) {
     videoHours: Math.round(lessons.reduce((s, l) => s + l.duration, 0) / 360) / 10,
     longestLesson: Math.max(...lessons.map((l) => l.duration)),
     questions,
+    hours: Math.round(planMinutes(plan) / 6) / 10,
   };
 }

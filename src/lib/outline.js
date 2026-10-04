@@ -97,6 +97,7 @@ export async function getPathwayOutline(pathwayId, userId) {
       description: pathway.description,
       makeTitle: pathway.makeTitle,
       certification: pathway.certification,
+      kind: pathway.kind,
       skill: pathway.skill
         ? { id: pathway.skill.id, name: pathway.skill.name, color: pathway.skill.color }
         : null,

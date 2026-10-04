@@ -27,12 +27,12 @@ export default async function PathwaysPage({ searchParams = {} }) {
   const q = String(searchParams.q || '').trim().slice(0, MAX_QUERY);
 
   const skills = await prisma.skill.findMany({
-    where: { pathways: { some: {} } },
+    where: { pathways: { some: { kind: 'COURSE' } } },
     orderBy: { order: 'asc' },
     select: { id: true, name: true, color: true },
   });
   const skill = skills.find((s) => s.id === searchParams.skill) || null;
-  const pathways = await getPathwayOverviews(userId, { q, skillId: skill?.id });
+  const pathways = await getPathwayOverviews(userId, { q, skillId: skill?.id, kind: 'COURSE' });
   const searching = Boolean(q || skill);
   // Courses that belong to a program, grouped so the program can be shown first.
   const tracks = Object.values(pathways.reduce((acc, p) => {

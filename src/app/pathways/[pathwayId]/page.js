@@ -55,7 +55,9 @@ export default async function PathwayPage({ params }) {
           <span>{` · Course ${track.position + 1} of ${track.courses.length}`}</span>
         </nav>
       ) : (
-        <Link href="/pathways" className="text-sm text-muted hover:text-ink">← All pathways</Link>
+        <Link href={pathway.kind === 'SKILL' ? '/skills' : '/pathways'} className="text-sm text-muted hover:text-ink">
+          {pathway.kind === 'SKILL' ? '← All skills' : '← All pathways'}
+        </Link>
       )}
 
       <header className="grid gap-4">
