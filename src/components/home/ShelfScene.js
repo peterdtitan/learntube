@@ -96,6 +96,14 @@ const BUILDERS = {
     add(g, new THREE.TorusGeometry(0.3, 0.025, 8, 40), mat(0xF3F5F7, 0.5), 0.31, 0.34).rotation.y = Math.PI / 2;
     add(g, new THREE.BoxGeometry(0.08, 0.26, 0.08), mat(DARK), -0.12, 0.13);
   },
+  cybersecurity(g) {
+    // A padlock: body, keyhole and shackle.
+    add(g, new THREE.BoxGeometry(0.62, 0.5, 0.26), mat(0x4338CA, 0.45), 0, 0.25);
+    add(g, new THREE.CylinderGeometry(0.06, 0.06, 0.02, 20), mat(DARK), 0, 0.3, 0.135).rotation.x = Math.PI / 2;
+    add(g, new THREE.BoxGeometry(0.04, 0.1, 0.02), mat(DARK), 0, 0.22, 0.135);
+    add(g, new THREE.TorusGeometry(0.2, 0.045, 12, 32, Math.PI), mat(0xB8C2CC, 0.3), 0, 0.5);
+    [-1, 1].forEach((s) => add(g, new THREE.CylinderGeometry(0.045, 0.045, 0.08, 12), mat(0xB8C2CC, 0.3), s * 0.2, 0.49));
+  },
   'music-production': (g) => {
     add(g, new THREE.TorusGeometry(0.34, 0.035, 12, 40, Math.PI), mat(0x3A3F55), 0, 0.2);
     [-1, 1].forEach((s) => {

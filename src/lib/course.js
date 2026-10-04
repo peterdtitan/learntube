@@ -87,7 +87,7 @@ export function pathwaySearchWhere({ q, skillId } = {}) {
 export async function getPathwayOverviews(userId, search = {}) {
   const pathways = await prisma.pathway.findMany({
     where: pathwaySearchWhere(search),
-    include: { skill: true, ...LESSONS_INCLUDE },
+    include: { skill: true, track: { select: { slug: true, title: true } }, ...LESSONS_INCLUDE },
     orderBy: { title: 'asc' },
   });
   const lessonIds = pathways.flatMap((p) => orderLessons(p).map((v) => v.id));
@@ -103,6 +103,8 @@ export async function getPathwayOverviews(userId, search = {}) {
       description: p.description,
       makeTitle: p.makeTitle,
       skill: p.skill ? { id: p.skill.id, name: p.skill.name, color: p.skill.color } : null,
+      certification: p.certification,
+      track: p.track ? { ...p.track, order: p.trackOrder } : null,
       lessonCount: lessons.length,
       seconds: lessons.reduce((sum, v) => sum + v.duration, 0),
       doneCount,
@@ -112,15 +114,25 @@ export async function getPathwayOverviews(userId, search = {}) {
     };
   });
 
+  // Started pathways first; courses in a track stay in their order.
   return overviews
     .filter((o) => o.lessonCount > 0)
-    .sort((a, b) => Number(b.started) - Number(a.started));
+    .sort((a, b) => Number(b.started) - Number(a.started)
+      || (a.track?.title || a.title).localeCompare(b.track?.title || b.title)
+      || (a.track?.order ?? 0) - (b.track?.order ?? 0));
 }
 
 export async function getSkills() {
   const skills = await prisma.skill.findMany({
     orderBy: { order: 'asc' },
-    include: { pathways: { select: { id: true, title: true, makeTitle: true } } },
+    include: {
+      pathways: { select: { id: true, title: true, makeTitle: true } },
+      tracks: {
+        select: {
+          slug: true, title: true, makeTitle: true, _count: { select: { pathways: true } },
+        },
+      },
+    },
   });
   return skills.map((s) => ({
     id: s.id,
@@ -128,5 +140,8 @@ export async function getSkills() {
     tier: s.tier,
     color: s.color,
     pathways: s.pathways,
+    tracks: s.tracks.map((t) => ({
+      slug: t.slug, title: t.title, makeTitle: t.makeTitle, courseCount: t._count.pathways,
+    })),
   }));
 }

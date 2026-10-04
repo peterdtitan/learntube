@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import {
-  Check, Clock, Gamepad2, Sparkles, Timer,
+  ArrowRight, Award, Check, Clock, Gamepad2, Sparkles, Timer,
 } from 'lucide-react';
 import { authOptions } from '../../../lib/auth';
 import { getPathwayOutline } from '../../../lib/outline';
@@ -41,14 +41,22 @@ export default async function PathwayPage({ params }) {
   const outline = await getPathwayOutline(params.pathwayId, session?.user?.id || null);
   if (!outline || !outline.lessonCount) notFound();
   const {
-    pathway, estimate, modules, lessonCount, doneCount, nextLessonId,
+    pathway, track, estimate, modules, lessonCount, doneCount, nextLessonId,
   } = outline;
+  const nextCourse = track ? track.courses[track.position + 1] : null;
   const started = doneCount > 0;
   const lessonHref = (id) => `/pathways/${pathway.id}/learn/${id}`;
 
   return (
     <div className="mx-auto grid max-w-4xl gap-8">
-      <Link href="/pathways" className="text-sm text-muted hover:text-ink">← All pathways</Link>
+      {track ? (
+        <nav aria-label="Breadcrumb" className="text-sm text-muted">
+          <Link href={`/tracks/${track.slug}`} className="hover:text-ink">{`← ${track.title}`}</Link>
+          <span>{` · Course ${track.position + 1} of ${track.courses.length}`}</span>
+        </nav>
+      ) : (
+        <Link href="/pathways" className="text-sm text-muted hover:text-ink">← All pathways</Link>
+      )}
 
       <header className="grid gap-4">
         {pathway.skill && (
@@ -58,6 +66,12 @@ export default async function PathwayPage({ params }) {
           </span>
         )}
         <h1 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-tight">{pathway.title}</h1>
+        {pathway.certification && (
+          <p className="flex items-center gap-2 text-[17px] font-bold text-xp">
+            <Award size={18} aria-hidden="true" />
+            {`Prepares you for ${pathway.certification}`}
+          </p>
+        )}
         {pathway.description && <p className="max-w-[60ch] text-lg text-muted">{pathway.description}</p>}
         {pathway.makeTitle && (
           <p className="text-[17px]">
@@ -141,6 +155,17 @@ export default async function PathwayPage({ params }) {
           ))}
         </ol>
       </section>
+
+      {nextCourse && (
+        <Link href={`/pathways/${nextCourse.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface p-5 hover:border-accent">
+          <span className="grid gap-0.5">
+            <span className="text-sm font-bold uppercase tracking-widest text-muted">{`Next in ${track.title}`}</span>
+            <span className="text-xl font-bold">{nextCourse.title}</span>
+            {nextCourse.certification && <span className="text-sm text-muted">{nextCourse.certification}</span>}
+          </span>
+          <ArrowRight size={22} className="text-accent" aria-hidden="true" />
+        </Link>
+      )}
     </div>
   );
 }

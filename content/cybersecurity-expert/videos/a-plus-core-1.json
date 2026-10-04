@@ -1,0 +1,383 @@
+{
+ "source": "Professor Messer, https://www.youtube.com/playlist?list=PLG49S3nxzAnnes8ZGI-OBlKEukHCX46N8",
+ "videos": [
+  {
+   "id": "AIfIA7hEgrw",
+   "title": "How to Pass Your CompTIA A+ Exams in 2026",
+   "objective": null,
+   "seconds": 922
+  },
+  {
+   "id": "zODZ0i-Iark",
+   "title": "Laptop Hardware",
+   "objective": "1.1",
+   "seconds": 1002
+  },
+  {
+   "id": "Iis2-_89YvQ",
+   "title": "Connecting Mobile Devices",
+   "objective": "1.2",
+   "seconds": 368
+  },
+  {
+   "id": "14iM8lLBS0c",
+   "title": "Mobile Device Accessories",
+   "objective": "1.2",
+   "seconds": 438
+  },
+  {
+   "id": "1LADZLBV3vo",
+   "title": "Mobile Device Networks",
+   "objective": "1.3",
+   "seconds": 614
+  },
+  {
+   "id": "NhGi9M4JP7g",
+   "title": "Mobile Device Management",
+   "objective": "1.3",
+   "seconds": 511
+  },
+  {
+   "id": "RRFjKXxYJdM",
+   "title": "Introduction to IP",
+   "objective": "2.1",
+   "seconds": 1144
+  },
+  {
+   "id": "_qGlbfZ44hg",
+   "title": "Common Ports",
+   "objective": "2.1",
+   "seconds": 772
+  },
+  {
+   "id": "aTuaEk5hnAs",
+   "title": "Wireless Network Technologies",
+   "objective": "2.2",
+   "seconds": 436
+  },
+  {
+   "id": "Z-9mkqi2ELI",
+   "title": "Network Services",
+   "objective": "2.3",
+   "seconds": 1023
+  },
+  {
+   "id": "lAHqO9sDVy4",
+   "title": "DNS Configuration",
+   "objective": "2.4",
+   "seconds": 1098
+  },
+  {
+   "id": "HwUqCZFx6wk",
+   "title": "DHCP",
+   "objective": "2.4",
+   "seconds": 645
+  },
+  {
+   "id": "Z1wPgxsx4GI",
+   "title": "VLANs and VPNs",
+   "objective": "2.4",
+   "seconds": 452
+  },
+  {
+   "id": "0hd6_bx0ydo",
+   "title": "Network Devices",
+   "objective": "2.5",
+   "seconds": 1081
+  },
+  {
+   "id": "yubEz-ZEVwY",
+   "title": "IPv4 and IPv6",
+   "objective": "2.6",
+   "seconds": 525
+  },
+  {
+   "id": "nU5ko6cQWmc",
+   "title": "Assigning IP Addresses",
+   "objective": "2.6",
+   "seconds": 506
+  },
+  {
+   "id": "iN2QnGFl06E",
+   "title": "Internet Connection Types",
+   "objective": "2.7",
+   "seconds": 453
+  },
+  {
+   "id": "PBEXIMeqRNY",
+   "title": "Network Types",
+   "objective": "2.7",
+   "seconds": 286
+  },
+  {
+   "id": "CHQQgjtrhYU",
+   "title": "Network Tools",
+   "objective": "2.8",
+   "seconds": 708
+  },
+  {
+   "id": "xOyialyd4JU",
+   "title": "Display Types",
+   "objective": "3.1",
+   "seconds": 553
+  },
+  {
+   "id": "fmrWo8swzyU",
+   "title": "Display Attributes",
+   "objective": "3.1",
+   "seconds": 709
+  },
+  {
+   "id": "29X5Ho3m2KU",
+   "title": "Network Cables",
+   "objective": "3.2",
+   "seconds": 734
+  },
+  {
+   "id": "1w42VC2_JYo",
+   "title": "568A and 568B Colors",
+   "objective": "3.2",
+   "seconds": 341
+  },
+  {
+   "id": "poQdq2APqic",
+   "title": "Optical Fiber",
+   "objective": "3.2",
+   "seconds": 254
+  },
+  {
+   "id": "JGuVE-3CvT4",
+   "title": "Peripheral Cables",
+   "objective": "3.2",
+   "seconds": 539
+  },
+  {
+   "id": "FK1b4stA2hk",
+   "title": "Video Cables",
+   "objective": "3.2",
+   "seconds": 414
+  },
+  {
+   "id": "YM4pig2XYCo",
+   "title": "Storage Cables",
+   "objective": "3.2",
+   "seconds": 250
+  },
+  {
+   "id": "3GkSvmeuhe8",
+   "title": "Adapters and Converters",
+   "objective": "3.2",
+   "seconds": 245
+  },
+  {
+   "id": "VO8C3lrWlVU",
+   "title": "Copper Connectors",
+   "objective": "3.2",
+   "seconds": 513
+  },
+  {
+   "id": "Qxbp-c23cYY",
+   "title": "Fiber Connectors",
+   "objective": "3.2",
+   "seconds": 169
+  },
+  {
+   "id": "JylKt1N6o0I",
+   "title": "An Overview of Memory",
+   "objective": "3.3",
+   "seconds": 518
+  },
+  {
+   "id": "HU-qsVtpnM0",
+   "title": "Memory Technologies",
+   "objective": "3.3",
+   "seconds": 524
+  },
+  {
+   "id": "UfLNl8-c9VM",
+   "title": "Storage Devices",
+   "objective": "3.4",
+   "seconds": 894
+  },
+  {
+   "id": "5E16qftlfRY",
+   "title": "RAID",
+   "objective": "3.4",
+   "seconds": 488
+  },
+  {
+   "id": "dbxM_LFMXpw",
+   "title": "Motherboards",
+   "objective": "3.5",
+   "seconds": 378
+  },
+  {
+   "id": "QvPX1XJwJH8",
+   "title": "Motherboard Expansion Slots",
+   "objective": "3.5",
+   "seconds": 434
+  },
+  {
+   "id": "UjJwjjwa6Q0",
+   "title": "Motherboard Connections",
+   "objective": "3.5",
+   "seconds": 345
+  },
+  {
+   "id": "O5wA53NYv1M",
+   "title": "Motherboard Compatibility",
+   "objective": "3.5",
+   "seconds": 209
+  },
+  {
+   "id": "TgUxAM8rjyg",
+   "title": "The BIOS",
+   "objective": "3.5",
+   "seconds": 282
+  },
+  {
+   "id": "QfJkU0vD3gg",
+   "title": "BIOS Settings",
+   "objective": "3.5",
+   "seconds": 1169
+  },
+  {
+   "id": "qLSV_lpM_Mk",
+   "title": "HSM and TPM",
+   "objective": "3.5",
+   "seconds": 467
+  },
+  {
+   "id": "4RPVQQd2sOM",
+   "title": "CPU Features",
+   "objective": "3.5",
+   "seconds": 313
+  },
+  {
+   "id": "KtipbKR8rqo",
+   "title": "Expansion Cards",
+   "objective": "3.5",
+   "seconds": 377
+  },
+  {
+   "id": "qC306MGytR8",
+   "title": "Cooling",
+   "objective": "3.5",
+   "seconds": 397
+  },
+  {
+   "id": "gK0SYCnWoIM",
+   "title": "Computer Power",
+   "objective": "3.6",
+   "seconds": 931
+  },
+  {
+   "id": "ctAOL7WyEUY",
+   "title": "Multifunction Devices",
+   "objective": "3.7",
+   "seconds": 865
+  },
+  {
+   "id": "hp2DfL6KxwA",
+   "title": "Laser Printer Maintenance",
+   "objective": "3.8",
+   "seconds": 450
+  },
+  {
+   "id": "qIIiTWNnWuQ",
+   "title": "Inkjet Printers",
+   "objective": "3.8",
+   "seconds": 209
+  },
+  {
+   "id": "yRjKpaQQw1k",
+   "title": "Inkjet Printer Maintenance",
+   "objective": "3.8",
+   "seconds": 234
+  },
+  {
+   "id": "izk4zbSkUTg",
+   "title": "Thermal Printers",
+   "objective": "3.8",
+   "seconds": 219
+  },
+  {
+   "id": "emKON9CAjks",
+   "title": "Thermal Printer Maintenance",
+   "objective": "3.8",
+   "seconds": 256
+  },
+  {
+   "id": "wkSlTGmPlWU",
+   "title": "Impact Printers",
+   "objective": "3.8",
+   "seconds": 379
+  },
+  {
+   "id": "KCLqKxFsEOM",
+   "title": "Impact Printer Maintenance",
+   "objective": "3.8",
+   "seconds": 191
+  },
+  {
+   "id": "xXOIdDWUNGU",
+   "title": "Virtualization Concepts",
+   "objective": "4.1",
+   "seconds": 345
+  },
+  {
+   "id": "wPB_C7hOY-8",
+   "title": "Virtualization Services",
+   "objective": "4.1",
+   "seconds": 683
+  },
+  {
+   "id": "KZxAY5ssUxc",
+   "title": "Cloud Models",
+   "objective": "4.2",
+   "seconds": 588
+  },
+  {
+   "id": "XzNnFbY0dMQ",
+   "title": "Cloud Characteristics",
+   "objective": "4.2",
+   "seconds": 410
+  },
+  {
+   "id": "HgeURynWn_w",
+   "title": "Troubleshooting Hardware",
+   "objective": "5.1",
+   "seconds": 1515
+  },
+  {
+   "id": "aVIuyHCNPCE",
+   "title": "Troubleshooting Storage Devices",
+   "objective": "5.2",
+   "seconds": 1024
+  },
+  {
+   "id": "KXZu72i1eX8",
+   "title": "Troubleshooting Display Issues",
+   "objective": "5.3",
+   "seconds": 1132
+  },
+  {
+   "id": "huQwiY4kiko",
+   "title": "Troubleshooting Mobile Devices",
+   "objective": "5.4",
+   "seconds": 1072
+  },
+  {
+   "id": "VBDS_kOHhVk",
+   "title": "Troubleshooting Networks",
+   "objective": "5.5",
+   "seconds": 915
+  },
+  {
+   "id": "_BhO_nYod0o",
+   "title": "Troubleshooting Printers",
+   "objective": "5.6",
+   "seconds": 715
+  }
+ ]
+}

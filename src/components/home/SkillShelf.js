@@ -16,8 +16,37 @@ const TIERS = [
   { id: 'SCREEN', label: 'Made on a screen' },
 ];
 
+// The 3D shelf has five places per row; skills with lessons go there first. The buttons
+// below list every skill, so the shelf never limits what can be learned.
+const SHELF_PLACES = 5;
+const live = (s) => s.pathways.length > 0;
+function shelfSkills(skills) {
+  return TIERS.flatMap((tier) => skills
+    .filter((s) => s.tier === tier.id)
+    .sort((a, b) => Number(live(b)) - Number(live(a)))
+    .slice(0, SHELF_PLACES));
+}
+
 function SkillPanel({ skill }) {
   const [pathway] = skill.pathways;
+  const [track] = skill.tracks || [];
+  if (track) {
+    return (
+      <div className="grid content-start gap-3 rounded-lg border border-line bg-surface p-5 shadow-sm" aria-live="polite">
+        <div className="flex items-center gap-2.5">
+          <span className="h-3 w-3 shrink-0 rounded-[4px]" style={{ background: skill.color }} />
+          <h2 className="text-[22px] font-bold">{skill.name}</h2>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-muted">Program</p>
+          <p className="text-[17px] font-bold">{track.title}</p>
+        </div>
+        {track.makeTitle && <p className="text-[15px] text-muted">{track.makeTitle}</p>}
+        <p className="text-sm text-muted">{`${track.courseCount} courses, taken in order`}</p>
+        <Button href={`/tracks/${track.slug}`}>See the program</Button>
+      </div>
+    );
+  }
   return (
     <div className="grid content-start gap-3 rounded-lg border border-line bg-surface p-5 shadow-sm" aria-live="polite">
       <div className="flex items-center gap-2.5">
@@ -61,7 +90,7 @@ export default function SkillShelf({ skills }) {
       <div className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_300px]">
         <div className="relative h-[300px] sm:h-[360px] lg:h-[420px]">
           <ShelfScene
-            skills={skills}
+            skills={shelfSkills(skills)}
             selectedId={selected.id}
             accent={accent}
             onSelect={setSelectedId}
