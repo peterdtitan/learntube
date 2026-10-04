@@ -6,7 +6,7 @@ config({ quiet: true });
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
-  migrations: { path: 'prisma/migrations', seed: 'node prisma/seed.js' },
+  migrations: { path: 'prisma/migrations', seed: 'npx vite-node prisma/seed.mjs' },
   // Migrations need a direct connection; Neon's pooled URL (DATABASE_URL on Vercel) can't run them.
   datasource: { url: process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL },
 });

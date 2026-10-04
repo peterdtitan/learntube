@@ -16,6 +16,13 @@ export async function getPathwayOutline(pathwayId, userId) {
     where: { id: pathwayId },
     include: {
       skill: true,
+      track: {
+        select: {
+          slug: true,
+          title: true,
+          pathways: { orderBy: { trackOrder: 'asc' }, select: { id: true, title: true, certification: true } },
+        },
+      },
       units: {
         orderBy: { order: 'asc' },
         include: {
@@ -89,10 +96,17 @@ export async function getPathwayOutline(pathwayId, userId) {
       title: pathway.title,
       description: pathway.description,
       makeTitle: pathway.makeTitle,
+      certification: pathway.certification,
       skill: pathway.skill
         ? { id: pathway.skill.id, name: pathway.skill.name, color: pathway.skill.color }
         : null,
     },
+    track: pathway.track ? {
+      slug: pathway.track.slug,
+      title: pathway.track.title,
+      courses: pathway.track.pathways,
+      position: pathway.track.pathways.findIndex((p) => p.id === pathway.id),
+    } : null,
     estimate: { ...estimate, fun: funEquivalent(estimate.total, skillId) },
     modules,
     lessonCount: lessons.length,

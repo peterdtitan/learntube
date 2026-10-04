@@ -34,6 +34,16 @@ export default async function PathwaysPage({ searchParams = {} }) {
   const skill = skills.find((s) => s.id === searchParams.skill) || null;
   const pathways = await getPathwayOverviews(userId, { q, skillId: skill?.id });
   const searching = Boolean(q || skill);
+  // Courses that belong to a program, grouped so the program can be shown first.
+  const tracks = Object.values(pathways.reduce((acc, p) => {
+    if (!p.track) return acc;
+    acc[p.track.slug] = acc[p.track.slug]
+      || { slug: p.track.slug, title: p.track.title, items: [] };
+    acc[p.track.slug].items.push(p);
+    return acc;
+  }, {})).map((t) => ({
+    ...t, courses: [...t.items].sort((a, b) => a.track.order - b.track.order).map((p) => p.title),
+  }));
 
   let summary = `${pathways.length} ${pathways.length === 1 ? 'pathway' : 'pathways'}`;
   if (q) summary += ` matching “${q}”`;
@@ -96,6 +106,18 @@ export default async function PathwaysPage({ searchParams = {} }) {
           {summary}
           <Link href="/pathways" className="font-bold text-accent">Clear</Link>
         </p>
+      )}
+
+      {!searching && tracks.length > 0 && (
+        <section aria-labelledby="programs-heading" className="grid gap-3">
+          <h2 id="programs-heading" className="text-sm font-bold uppercase tracking-widest text-muted">Programs</h2>
+          {tracks.map((t) => (
+            <Link key={t.slug} href={`/tracks/${t.slug}`} className="grid gap-1 rounded-lg border border-line bg-surface p-5 hover:border-accent">
+              <span className="text-2xl font-bold">{t.title}</span>
+              <span className="text-[15px] text-muted">{`${t.courses.length} courses: ${t.courses.join(' → ')}`}</span>
+            </Link>
+          ))}
+        </section>
       )}
 
       {pathways.length ? (

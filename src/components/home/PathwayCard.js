@@ -1,21 +1,30 @@
 import React from 'react';
+import Link from 'next/link';
+import { Award } from 'lucide-react';
 import Button from '../ui/Button';
 import Card from '../ui/Card';
 import ProgressBar from '../ui/ProgressBar';
 import { formatDuration } from '../../lib/youtube';
+import { formatMinutes } from '../../lib/estimate';
 
 export default function PathwayCard({ pathway, signedIn }) {
   const {
     id, title, skill, makeTitle, lessonCount, seconds, doneCount, started, nextLesson, firstLesson,
+    certification, track,
   } = pathway;
   const finished = lessonCount > 0 && doneCount === lessonCount;
   const lesson = nextLesson || firstLesson;
 
-  let progressLabel = `${lessonCount} lessons · ${Math.round(seconds / 60)} min`;
+  let progressLabel = `${lessonCount} lessons · ${formatMinutes(seconds / 60)} of video`;
   if (signedIn && started) progressLabel = `${doneCount} of ${lessonCount} lessons done`;
 
   return (
     <Card as="article" className="grid min-w-0 gap-4">
+      {track && (
+        <Link href={`/tracks/${track.slug}`} className="-mb-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-accent">
+          {`${track.title} · Course ${track.order + 1}`}
+        </Link>
+      )}
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-xl font-bold">{title}</h3>
         {skill && (
@@ -25,6 +34,13 @@ export default function PathwayCard({ pathway, signedIn }) {
           </span>
         )}
       </header>
+
+      {certification && (
+        <p className="-mt-2 flex items-center gap-1.5 text-sm font-bold text-xp">
+          <Award size={15} aria-hidden="true" />
+          {certification}
+        </p>
+      )}
 
       {makeTitle && (
         <p className="flex flex-wrap items-baseline gap-x-2 text-[15px]">

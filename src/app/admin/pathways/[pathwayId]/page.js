@@ -11,6 +11,7 @@ import UnitAdder from '../../../../components/admin/UnitAdder';
 import { formatDuration } from '../../../../lib/youtube';
 import { estimatePathway, formatMinutes, funEquivalent } from '../../../../lib/estimate';
 import { createQuiz } from '../../quizzes/actions';
+import { publishPathwayQuizzes } from '../../content/actions';
 import {
   deletePathway, deleteUnit, moveLesson, moveUnit, renameUnit, updatePathway,
 } from '../../actions';
@@ -112,7 +113,18 @@ export default async function EditPathway({ params }) {
       </section>
 
       <section className="grid gap-4">
-        <h2 className="text-2xl font-bold">Modules and lessons</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-2xl font-bold">Modules and lessons</h2>
+          <span className="flex flex-wrap gap-2">
+            {[[true, 'Publish all quizzes'], [false, 'Unpublish all']].map(([published, label]) => (
+              <form key={label} action={publishPathwayQuizzes}>
+                <input type="hidden" name="pathwayId" value={pathway.id} />
+                <input type="hidden" name="published" value={String(published)} />
+                <button type="submit" className="h-9 rounded-pill border border-line px-4 text-sm font-bold hover:bg-sunken">{label}</button>
+              </form>
+            ))}
+          </span>
+        </div>
         <p className="max-w-2xl text-[15px] text-muted">
           Each module is a week. Give lessons a quick check, and each module a timed checkpoint
           (it sits halfway through) and end-of-module games.
@@ -139,7 +151,11 @@ export default async function EditPathway({ params }) {
               {unit.videos.map((v) => (
                 <li key={v.id} className="flex flex-wrap items-center gap-2 rounded-md px-2 py-1.5 odd:bg-canvas">
                   <Link href={`/admin/lessons/${v.id}`} className="min-w-0 flex-1 truncate text-[15px] hover:text-accent">{v.title}</Link>
-                  <span className="text-sm tabular-nums text-muted">{formatDuration(v.duration)}</span>
+                  <span className="text-sm tabular-nums text-muted">
+                    {v.endSec ? `${formatDuration(v.startSec || 0)}–${formatDuration(v.endSec)} · ` : ''}
+                    {formatDuration(v.duration)}
+                  </span>
+                  {v.duration > 600 && <span className="rounded-pill bg-xp-soft px-2 text-xs font-bold text-xp">Over 10 min</span>}
                   {!v.tryTask && <span className="rounded-pill bg-xp-soft px-2 text-xs font-bold text-xp">No Try step</span>}
                   <QuizButton kind="LESSON_CHECK" videoId={v.id} quiz={v.quizzes.find((q) => q.kind === 'LESSON_CHECK')} icon={Sparkles} label="Quick check" />
                   <MoveButtons action={moveLesson} id={v.id} label={v.title} />

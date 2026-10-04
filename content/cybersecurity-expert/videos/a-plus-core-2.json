@@ -1,0 +1,449 @@
+{
+ "source": "Professor Messer, https://www.youtube.com/playlist?list=PLG49S3nxzAnn7PDGQ17m5AYbDRhnW7vOb",
+ "videos": [
+  {
+   "id": "IhcZqUs1IF8",
+   "title": "Operating Systems Overview",
+   "objective": "1.1",
+   "seconds": 779
+  },
+  {
+   "id": "lwCu2rpXP1E",
+   "title": "File Systems",
+   "objective": "1.1",
+   "seconds": 351
+  },
+  {
+   "id": "SoDrALxWWTg",
+   "title": "Installing Operating Systems",
+   "objective": "1.2",
+   "seconds": 1010
+  },
+  {
+   "id": "KUD7v9nHiL4",
+   "title": "Upgrading Windows",
+   "objective": "1.2",
+   "seconds": 514
+  },
+  {
+   "id": "B7JZ6rfH06Q",
+   "title": "An Overview of Windows",
+   "objective": "1.3",
+   "seconds": 549
+  },
+  {
+   "id": "uvreKWR__FA",
+   "title": "Windows Features",
+   "objective": "1.3",
+   "seconds": 534
+  },
+  {
+   "id": "iyUyHTelPeQ",
+   "title": "Task Manager",
+   "objective": "1.4",
+   "seconds": 292
+  },
+  {
+   "id": "e0KInDq-6Pw",
+   "title": "The Microsoft Management Console",
+   "objective": "1.4",
+   "seconds": 940
+  },
+  {
+   "id": "kLIUVFTTdcA",
+   "title": "Additional Windows Tools",
+   "objective": "1.4",
+   "seconds": 745
+  },
+  {
+   "id": "iLgAwxmTSzI",
+   "title": "Windows Command Line Tools",
+   "objective": "1.5",
+   "seconds": 1867
+  },
+  {
+   "id": "FOaw5aPO0ZI",
+   "title": "The Windows Network Command Line",
+   "objective": "1.5",
+   "seconds": 1200
+  },
+  {
+   "id": "AhGWshIRcKw",
+   "title": "The Windows Control Panel",
+   "objective": "1.6",
+   "seconds": 1389
+  },
+  {
+   "id": "0qfZtEZCvn0",
+   "title": "Windows Settings",
+   "objective": "1.6",
+   "seconds": 394
+  },
+  {
+   "id": "1OlbYiS-xHY",
+   "title": "Windows Network Technologies",
+   "objective": "1.7",
+   "seconds": 517
+  },
+  {
+   "id": "ZmtkzwzVDaE",
+   "title": "Configuring Windows Firewall",
+   "objective": "1.7",
+   "seconds": 392
+  },
+  {
+   "id": "wA0BV7FzH9Q",
+   "title": "Windows IP Address Configuration",
+   "objective": "1.7",
+   "seconds": 405
+  },
+  {
+   "id": "Ir1Yhigsdtw",
+   "title": "Windows Network Connections",
+   "objective": "1.7",
+   "seconds": 788
+  },
+  {
+   "id": "6Xg4VbEfx88",
+   "title": "macOS Overview",
+   "objective": "1.8",
+   "seconds": 684
+  },
+  {
+   "id": "vhf6FMK1BOk",
+   "title": "macOS System Preferences",
+   "objective": "1.8",
+   "seconds": 396
+  },
+  {
+   "id": "J5aZyz-ng7A",
+   "title": "macOS Features",
+   "objective": "1.8",
+   "seconds": 677
+  },
+  {
+   "id": "cpc3bHzWKG4",
+   "title": "Linux",
+   "objective": "1.9",
+   "seconds": 671
+  },
+  {
+   "id": "ig0X_dR68Ac",
+   "title": "Linux Commands Part 1",
+   "objective": "1.9",
+   "seconds": 2131
+  },
+  {
+   "id": "rtL8aKAFlqc",
+   "title": "Linux Commands Part 2",
+   "objective": "1.9",
+   "seconds": 1290
+  },
+  {
+   "id": "G2Equ2pG7aY",
+   "title": "Installing Applications",
+   "objective": "1.10",
+   "seconds": 987
+  },
+  {
+   "id": "FTRbdIjK1DU",
+   "title": "Cloud Productivity Tools",
+   "objective": "1.11",
+   "seconds": 347
+  },
+  {
+   "id": "ZseOfNiOaYM",
+   "title": "Physical Security",
+   "objective": "2.1",
+   "seconds": 606
+  },
+  {
+   "id": "X1v63NhrcP4",
+   "title": "Physical Access Security",
+   "objective": "2.1",
+   "seconds": 517
+  },
+  {
+   "id": "xU_OoSXTVHA",
+   "title": "Logical Security",
+   "objective": "2.1",
+   "seconds": 638
+  },
+  {
+   "id": "4U0WRPkDPhM",
+   "title": "Authentication and Access",
+   "objective": "2.1",
+   "seconds": 725
+  },
+  {
+   "id": "zAArPlmVssU",
+   "title": "Defender Antivirus",
+   "objective": "2.2",
+   "seconds": 301
+  },
+  {
+   "id": "VecgTIZTG1g",
+   "title": "Windows Firewall",
+   "objective": "2.2",
+   "seconds": 320
+  },
+  {
+   "id": "SR7tw10W5YU",
+   "title": "Windows Security Settings",
+   "objective": "2.2",
+   "seconds": 825
+  },
+  {
+   "id": "GuWMKVTMD7k",
+   "title": "Active Directory",
+   "objective": "2.2",
+   "seconds": 1660
+  },
+  {
+   "id": "oQV7ZLu25KI",
+   "title": "Wireless Encryption",
+   "objective": "2.3",
+   "seconds": 379
+  },
+  {
+   "id": "zj9bqo_s0yE",
+   "title": "Authentication Methods",
+   "objective": "2.3",
+   "seconds": 478
+  },
+  {
+   "id": "lB5VwnsUG3E",
+   "title": "Malware",
+   "objective": "2.4",
+   "seconds": 1043
+  },
+  {
+   "id": "u2oKe31twIU",
+   "title": "Anti-malware Tools",
+   "objective": "2.4",
+   "seconds": 766
+  },
+  {
+   "id": "9xtzpbY1n9I",
+   "title": "Social Engineering",
+   "objective": "2.5",
+   "seconds": 817
+  },
+  {
+   "id": "00dFDSv03EQ",
+   "title": "Denial of Service",
+   "objective": "2.5",
+   "seconds": 292
+  },
+  {
+   "id": "STiRgWoRtI4",
+   "title": "On-Path Attacks",
+   "objective": "2.5",
+   "seconds": 422
+  },
+  {
+   "id": "H3mG-ovnXJc",
+   "title": "Zero-Day Attacks",
+   "objective": "2.5",
+   "seconds": 198
+  },
+  {
+   "id": "JEBzY5QjYAY",
+   "title": "Password Attacks",
+   "objective": "2.5",
+   "seconds": 624
+  },
+  {
+   "id": "3cgrALf45zs",
+   "title": "Insider Threats",
+   "objective": "2.5",
+   "seconds": 150
+  },
+  {
+   "id": "yAt4DO8dUNM",
+   "title": "SQL Injection Attacks",
+   "objective": "2.5",
+   "seconds": 378
+  },
+  {
+   "id": "BIO49rnHCQM",
+   "title": "Cross-site Scripting",
+   "objective": "2.5",
+   "seconds": 474
+  },
+  {
+   "id": "8HoIOlYk82g",
+   "title": "Business Email Compromise",
+   "objective": "2.5",
+   "seconds": 359
+  },
+  {
+   "id": "iw3aytkhi_I",
+   "title": "Supply Chain Attacks",
+   "objective": "2.5",
+   "seconds": 484
+  },
+  {
+   "id": "bReDIugJDyA",
+   "title": "Security Vulnerabilities",
+   "objective": "2.5",
+   "seconds": 527
+  },
+  {
+   "id": "job81SfpQNU",
+   "title": "Removing Malware",
+   "objective": "2.6",
+   "seconds": 690
+  },
+  {
+   "id": "6OR_EiHoG8k",
+   "title": "Security Best Practices",
+   "objective": "2.7",
+   "seconds": 915
+  },
+  {
+   "id": "WNWFV4r_6Wk",
+   "title": "Mobile Device Security",
+   "objective": "2.8",
+   "seconds": 628
+  },
+  {
+   "id": "VCQpo2pas1o",
+   "title": "Data Destruction",
+   "objective": "2.9",
+   "seconds": 364
+  },
+  {
+   "id": "pq_CKhYYYVQ",
+   "title": "Securing a SOHO Network",
+   "objective": "2.10",
+   "seconds": 903
+  },
+  {
+   "id": "aIcO1ZMj92U",
+   "title": "Browser Security",
+   "objective": "2.11",
+   "seconds": 1136
+  },
+  {
+   "id": "qIenQsBAg2U",
+   "title": "Troubleshooting Windows",
+   "objective": "3.1",
+   "seconds": 1050
+  },
+  {
+   "id": "F5NxaV7t6Bc",
+   "title": "Troubleshooting Mobile Devices",
+   "objective": "3.2",
+   "seconds": 690
+  },
+  {
+   "id": "_nsBbRwyNMo",
+   "title": "Troubleshooting Mobile Device Security",
+   "objective": "3.3",
+   "seconds": 736
+  },
+  {
+   "id": "OCLOLvwgdMY",
+   "title": "Troubleshooting Security Issues",
+   "objective": "3.4",
+   "seconds": 616
+  },
+  {
+   "id": "EzjHn6vvrsI",
+   "title": "Ticketing Systems",
+   "objective": "4.1",
+   "seconds": 828
+  },
+  {
+   "id": "aYp60Y9_bbg",
+   "title": "Asset Management",
+   "objective": "4.1",
+   "seconds": 291
+  },
+  {
+   "id": "LVNSo06uPqM",
+   "title": "Document Types",
+   "objective": "4.1",
+   "seconds": 449
+  },
+  {
+   "id": "AhcQlR73Bo4",
+   "title": "Change Management",
+   "objective": "4.2",
+   "seconds": 1302
+  },
+  {
+   "id": "xJc7-KM-Fsk",
+   "title": "Managing Backups",
+   "objective": "4.3",
+   "seconds": 901
+  },
+  {
+   "id": "sDlVVU3oAlA",
+   "title": "Managing Electrostatic Discharge",
+   "objective": "4.4",
+   "seconds": 328
+  },
+  {
+   "id": "JZ5Ht_wzyt8",
+   "title": "Safety Procedures",
+   "objective": "4.4",
+   "seconds": 285
+  },
+  {
+   "id": "FqWHM4Sws1M",
+   "title": "Environmental Impacts",
+   "objective": "4.5",
+   "seconds": 388
+  },
+  {
+   "id": "jKhIYQioCE8",
+   "title": "Incident Response",
+   "objective": "4.6",
+   "seconds": 403
+  },
+  {
+   "id": "FnRB3yS_Qxo",
+   "title": "Privacy, Licensing, and Policies",
+   "objective": "4.6",
+   "seconds": 655
+  },
+  {
+   "id": "8kKg8RJHAFQ",
+   "title": "Professionalism",
+   "objective": "4.7",
+   "seconds": 287
+  },
+  {
+   "id": "1mIkDOfjd_I",
+   "title": "Communication",
+   "objective": "4.7",
+   "seconds": 421
+  },
+  {
+   "id": "nJKUP1twjbY",
+   "title": "Scripting Languages",
+   "objective": "4.8",
+   "seconds": 360
+  },
+  {
+   "id": "YTi7jALWueg",
+   "title": "Scripting Use Cases",
+   "objective": "4.8",
+   "seconds": 509
+  },
+  {
+   "id": "B-xa0hjmuAs",
+   "title": "Remote Access",
+   "objective": "4.9",
+   "seconds": 769
+  },
+  {
+   "id": "oofb6ROU7LM",
+   "title": "Managing AI",
+   "objective": "4.10",
+   "seconds": 638
+  }
+ ]
+}

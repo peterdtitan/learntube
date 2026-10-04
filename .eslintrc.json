@@ -79,7 +79,7 @@
     },
     {
       "files": [
-        "prisma/**/*.js",
+        "prisma/**/*.{js,mjs}",
         "scripts/**/*.{js,mjs}",
         "*.config.js",
         "*.config.mjs"
@@ -91,7 +91,8 @@
             "devDependencies": true
           }
         ],
-        "no-console": "off"
+        "no-console": "off",
+        "import/extensions": "off"
       }
     },
     {
@@ -118,6 +119,16 @@
             "ignoreTemplateLiterals": true
           }
         ]
+      }
+    },
+    {
+      "files": [
+        "content/**/*.js"
+      ],
+      "rules": {
+        "quote-props": "off",
+        "import/no-anonymous-default-export": "off",
+        "max-len": "off"
       }
     }
   ]

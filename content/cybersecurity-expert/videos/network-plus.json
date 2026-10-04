@@ -1,0 +1,527 @@
+{
+ "source": "Professor Messer, https://www.youtube.com/playlist?list=PLG49S3nxzAnl_tQe3kvnmeMid0mjF8Le8",
+ "videos": [
+  {
+   "id": "k7IOn3TiUc8",
+   "title": "How to Pass Your CompTIA N10-009 Network+ Exam",
+   "objective": null,
+   "seconds": 460
+  },
+  {
+   "id": "AYgXr1dynKU",
+   "title": "Understanding the OSI Model",
+   "objective": "1.1",
+   "seconds": 831
+  },
+  {
+   "id": "iqjj4ZSPV08",
+   "title": "Networking Devices",
+   "objective": "1.2",
+   "seconds": 871
+  },
+  {
+   "id": "9uDpWfMbAdQ",
+   "title": "Networking Functions",
+   "objective": "1.2",
+   "seconds": 805
+  },
+  {
+   "id": "HzF7sg6Nx0c",
+   "title": "Designing the Cloud",
+   "objective": "1.3",
+   "seconds": 589
+  },
+  {
+   "id": "wI2x6eGF1Yg",
+   "title": "Cloud Models",
+   "objective": "1.3",
+   "seconds": 323
+  },
+  {
+   "id": "ueth6WvFVMU",
+   "title": "Introduction to IP",
+   "objective": "1.4",
+   "seconds": 850
+  },
+  {
+   "id": "jX1pobYmZdE",
+   "title": "Common Ports",
+   "objective": "1.4",
+   "seconds": 1222
+  },
+  {
+   "id": "5BahWbszVAY",
+   "title": "Other Useful Protocols",
+   "objective": "1.4",
+   "seconds": 506
+  },
+  {
+   "id": "9Vx-awO6qfc",
+   "title": "Network Communication",
+   "objective": "1.4",
+   "seconds": 235
+  },
+  {
+   "id": "NeTwL-040ds",
+   "title": "Wireless Networking",
+   "objective": "1.5",
+   "seconds": 397
+  },
+  {
+   "id": "BxpRuARS56g",
+   "title": "Ethernet Standards",
+   "objective": "1.5",
+   "seconds": 244
+  },
+  {
+   "id": "qLsNZSaj35E",
+   "title": "Optical Fiber",
+   "objective": "1.5",
+   "seconds": 235
+  },
+  {
+   "id": "zoefzxHIfPc",
+   "title": "Copper Cabling",
+   "objective": "1.5",
+   "seconds": 441
+  },
+  {
+   "id": "0aMmwkiuT0o",
+   "title": "Network Transceivers",
+   "objective": "1.5",
+   "seconds": 292
+  },
+  {
+   "id": "PNoqhs5QvFw",
+   "title": "Fiber Connectors",
+   "objective": "1.5",
+   "seconds": 236
+  },
+  {
+   "id": "Ca6rzoQm15w",
+   "title": "Copper Connectors",
+   "objective": "1.5",
+   "seconds": 211
+  },
+  {
+   "id": "3ARTjvpZCoQ",
+   "title": "Network Topologies",
+   "objective": "1.6",
+   "seconds": 282
+  },
+  {
+   "id": "vVEL1LokboE",
+   "title": "Network Architectures",
+   "objective": "1.6",
+   "seconds": 293
+  },
+  {
+   "id": "94dcHJfEAIo",
+   "title": "Binary Math",
+   "objective": "1.7",
+   "seconds": 555
+  },
+  {
+   "id": "JNNcyZ_VE2A",
+   "title": "IPv4 Addressing",
+   "objective": "1.7",
+   "seconds": 666
+  },
+  {
+   "id": "XVIOtj-Z9m0",
+   "title": "Classful Subnetting",
+   "objective": "1.7",
+   "seconds": 658
+  },
+  {
+   "id": "p5NJ5Jt6oJo",
+   "title": "IPv4 Subnet Masks",
+   "objective": "1.7",
+   "seconds": 540
+  },
+  {
+   "id": "cYQOMifDlKI",
+   "title": "Calculating IPv4 Subnets and Hosts",
+   "objective": "1.7",
+   "seconds": 586
+  },
+  {
+   "id": "P1ROXMLjL04",
+   "title": "Magic Number Subnetting",
+   "objective": "1.7",
+   "seconds": 1269
+  },
+  {
+   "id": "I3LBYMXBhus",
+   "title": "Seven Second Subnetting",
+   "objective": "1.7",
+   "seconds": 1023
+  },
+  {
+   "id": "A6tPNGEfOzc",
+   "title": "Software Defined Networking",
+   "objective": "1.8",
+   "seconds": 416
+  },
+  {
+   "id": "eBhqN6d6lRU",
+   "title": "Virtual Extensible LAN",
+   "objective": "1.8",
+   "seconds": 317
+  },
+  {
+   "id": "jlMwWL4yalM",
+   "title": "Zero Trust",
+   "objective": "1.8",
+   "seconds": 401
+  },
+  {
+   "id": "n6jIaKWixF4",
+   "title": "Infrastructure as Code",
+   "objective": "1.8",
+   "seconds": 500
+  },
+  {
+   "id": "CpLznUxkzg8",
+   "title": "IPv6 Addressing",
+   "objective": "1.8",
+   "seconds": 830
+  },
+  {
+   "id": "23a6_qexTvs",
+   "title": "Static Routing",
+   "objective": "2.1",
+   "seconds": 441
+  },
+  {
+   "id": "YRZxshxI1xs",
+   "title": "Dynamic Routing",
+   "objective": "2.1",
+   "seconds": 552
+  },
+  {
+   "id": "hU9bbmFhKxk",
+   "title": "Routing Technologies",
+   "objective": "2.1",
+   "seconds": 970
+  },
+  {
+   "id": "UILwCNOC5EI",
+   "title": "Network Address Translation",
+   "objective": "2.1",
+   "seconds": 422
+  },
+  {
+   "id": "ATbzbST_OIw",
+   "title": "VLANs and Trunking",
+   "objective": "2.2",
+   "seconds": 749
+  },
+  {
+   "id": "dno_MRp57UQ",
+   "title": "Interface Configurations",
+   "objective": "2.2",
+   "seconds": 400
+  },
+  {
+   "id": "Jm0BOz1Ur28",
+   "title": "Spanning Tree Protocol",
+   "objective": "2.2",
+   "seconds": 366
+  },
+  {
+   "id": "_VwpcLiBkAQ",
+   "title": "Wireless Technologies",
+   "objective": "2.3",
+   "seconds": 514
+  },
+  {
+   "id": "YEDutqG4C4U",
+   "title": "Wireless Networking",
+   "objective": "2.3",
+   "seconds": 714
+  },
+  {
+   "id": "8ExS_LYAe-M",
+   "title": "Network Types",
+   "objective": "2.3",
+   "seconds": 281
+  },
+  {
+   "id": "YNcobcHXnnY",
+   "title": "Wireless Encryption",
+   "objective": "2.3",
+   "seconds": 203
+  },
+  {
+   "id": "7NLsuBIvVVA",
+   "title": "Installing Networks",
+   "objective": "2.4",
+   "seconds": 700
+  },
+  {
+   "id": "Ok0XpAzwCVQ",
+   "title": "Power",
+   "objective": "2.4",
+   "seconds": 439
+  },
+  {
+   "id": "v7AIXZi7pyA",
+   "title": "Environmental Factors",
+   "objective": "2.4",
+   "seconds": 209
+  },
+  {
+   "id": "CEZyq-fBn3w",
+   "title": "Network Documentation",
+   "objective": "3.1",
+   "seconds": 642
+  },
+  {
+   "id": "E8423-hdsHg",
+   "title": "Life Cycle Management",
+   "objective": "3.1",
+   "seconds": 497
+  },
+  {
+   "id": "cbHcjzlLjuc",
+   "title": "Configuration Management",
+   "objective": "3.1",
+   "seconds": 319
+  },
+  {
+   "id": "We5MkaEJOs0",
+   "title": "SNMP",
+   "objective": "3.2",
+   "seconds": 538
+  },
+  {
+   "id": "ieqSi5Aicxc",
+   "title": "Logs and Monitoring",
+   "objective": "3.2",
+   "seconds": 786
+  },
+  {
+   "id": "zIX_SzezCi0",
+   "title": "Network Solutions",
+   "objective": "3.2",
+   "seconds": 417
+  },
+  {
+   "id": "NaXMohP4-vU",
+   "title": "Disaster Recovery",
+   "objective": "3.3",
+   "seconds": 729
+  },
+  {
+   "id": "dsvNPjK0ihM",
+   "title": "Network Redundancy",
+   "objective": "3.3",
+   "seconds": 246
+  },
+  {
+   "id": "b7fiXM3vO18",
+   "title": "DHCP",
+   "objective": "3.4",
+   "seconds": 531
+  },
+  {
+   "id": "Zu70w3YTtpg",
+   "title": "Configuring DHCP",
+   "objective": "3.4",
+   "seconds": 618
+  },
+  {
+   "id": "A6WVj82by3Y",
+   "title": "IPv6 and SLAAC",
+   "objective": "3.4",
+   "seconds": 293
+  },
+  {
+   "id": "S4s3vgm4h84",
+   "title": "An Overview of DNS",
+   "objective": "3.4",
+   "seconds": 1014
+  },
+  {
+   "id": "qAyVND44jaE",
+   "title": "DNS Records",
+   "objective": "3.4",
+   "seconds": 544
+  },
+  {
+   "id": "9MwHexC3Fkc",
+   "title": "Time Protocols",
+   "objective": "3.4",
+   "seconds": 302
+  },
+  {
+   "id": "tm7i0zEitPQ",
+   "title": "VPNs",
+   "objective": "3.5",
+   "seconds": 414
+  },
+  {
+   "id": "QbEDRTjcom4",
+   "title": "Remote Access",
+   "objective": "3.5",
+   "seconds": 472
+  },
+  {
+   "id": "51W4Fhds7DQ",
+   "title": "Security Concepts",
+   "objective": "4.1",
+   "seconds": 786
+  },
+  {
+   "id": "enyRd-8m8SI",
+   "title": "Authentication",
+   "objective": "4.1",
+   "seconds": 766
+  },
+  {
+   "id": "qIQQKCv6P_s",
+   "title": "Security Technologies",
+   "objective": "4.1",
+   "seconds": 435
+  },
+  {
+   "id": "5KjXu7SvU6E",
+   "title": "Regulatory Compliance",
+   "objective": "4.1",
+   "seconds": 241
+  },
+  {
+   "id": "DsOzQLX5cg4",
+   "title": "Segmentation Enforcement",
+   "objective": "4.1",
+   "seconds": 370
+  },
+  {
+   "id": "x8dIr6JYkjA",
+   "title": "Denial of Service",
+   "objective": "4.2",
+   "seconds": 418
+  },
+  {
+   "id": "hcaGiWteVTM",
+   "title": "VLAN Hopping",
+   "objective": "4.2",
+   "seconds": 395
+  },
+  {
+   "id": "ttLNYwt-aq0",
+   "title": "MAC Flooding",
+   "objective": "4.2",
+   "seconds": 490
+  },
+  {
+   "id": "2QijB5GtNE4",
+   "title": "ARP and DNS Poisoning",
+   "objective": "4.2",
+   "seconds": 448
+  },
+  {
+   "id": "6AcRzyPuOL8",
+   "title": "Rogue Services",
+   "objective": "4.2",
+   "seconds": 368
+  },
+  {
+   "id": "sF0uBtavItI",
+   "title": "Social Engineering",
+   "objective": "4.2",
+   "seconds": 656
+  },
+  {
+   "id": "rnfViZdGfmA",
+   "title": "Malware",
+   "objective": "4.2",
+   "seconds": 401
+  },
+  {
+   "id": "TZUh1qF6ypI",
+   "title": "Device Security",
+   "objective": "4.3",
+   "seconds": 543
+  },
+  {
+   "id": "ORRcLSS9_Ps",
+   "title": "Security Rules",
+   "objective": "4.3",
+   "seconds": 623
+  },
+  {
+   "id": "dovuPm3dGhc",
+   "title": "Network Troubleshooting Methodology",
+   "objective": "5.1",
+   "seconds": 484
+  },
+  {
+   "id": "L6P6ovTEPvU",
+   "title": "Cable Issues",
+   "objective": "5.2",
+   "seconds": 880
+  },
+  {
+   "id": "7b4RkdITO4Q",
+   "title": "Interface Issues",
+   "objective": "5.2",
+   "seconds": 569
+  },
+  {
+   "id": "_IeIUxDe1fo",
+   "title": "Hardware Issues",
+   "objective": "5.2",
+   "seconds": 454
+  },
+  {
+   "id": "rUONzfO11m8",
+   "title": "Switching Issues",
+   "objective": "5.3",
+   "seconds": 598
+  },
+  {
+   "id": "pbOi48USeVw",
+   "title": "Routing and IP Issues",
+   "objective": "5.3",
+   "seconds": 577
+  },
+  {
+   "id": "FVxENIjdAJk",
+   "title": "Performance Issues",
+   "objective": "5.4",
+   "seconds": 438
+  },
+  {
+   "id": "UO3G_OJhBS4",
+   "title": "Wireless Issues",
+   "objective": "5.4",
+   "seconds": 561
+  },
+  {
+   "id": "b81_GeoN12I",
+   "title": "Software Tools",
+   "objective": "5.5",
+   "seconds": 449
+  },
+  {
+   "id": "iYojIK1173k",
+   "title": "Command Line Tools",
+   "objective": "5.5",
+   "seconds": 1079
+  },
+  {
+   "id": "ytcAqNxkI9I",
+   "title": "Hardware Tools",
+   "objective": "5.5",
+   "seconds": 520
+  },
+  {
+   "id": "3-KakmVmEpo",
+   "title": "Basic Network Device Commands",
+   "objective": "5.5",
+   "seconds": 536
+  }
+ ]
+}
