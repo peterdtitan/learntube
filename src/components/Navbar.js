@@ -71,6 +71,11 @@ function AccountMenu({ user }) {
           <Link role="menuitem" href="/settings" onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] hover:bg-sunken">
             Settings
           </Link>
+          {user.isAdmin && (
+            <Link role="menuitem" href="/admin" onClick={() => setOpen(false)} className="block rounded-sm px-3 py-2 text-[15px] font-bold text-accent hover:bg-sunken">
+              Admin
+            </Link>
+          )}
           <button role="menuitem" type="button" onClick={() => signOut()} className="block w-full rounded-sm px-3 py-2 text-left text-[15px] hover:bg-sunken">
             Sign out
           </button>

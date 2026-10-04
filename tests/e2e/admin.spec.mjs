@@ -15,8 +15,8 @@ test('an admin builds a pathway that learners can then find', async ({ page, sig
   await page.getByRole('button', { name: 'Create pathway' }).click();
   await expect(page).toHaveURL(/\/admin\/pathways\/[a-z0-9]+$/);
 
-  await page.getByLabel('New unit').fill('Casting on');
-  await page.getByRole('button', { name: 'Add unit' }).click();
+  await page.getByLabel('New module').fill('Casting on');
+  await page.getByRole('button', { name: 'Add module' }).click();
   await page.getByRole('link', { name: '+ Add a lesson' }).click();
 
   // Typing the link fires a YouTube lookup on blur; it may fail offline, which is fine.

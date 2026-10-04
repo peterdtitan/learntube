@@ -109,6 +109,9 @@ export default function LessonForm({
       <Field id="ls-try" label="Try it yourself" hint="The hands-on step after watching, e.g. “Cast on 20 stitches”.">
         <input id="ls-try" name="tryTask" required maxLength={300} defaultValue={lesson?.tryTask || ''} className={inputClass()} />
       </Field>
+      <Field id="ls-practice" label="Practice time (minutes)" hint="How long the Try step takes. Leave blank to estimate 1.5× the video.">
+        <input id="ls-practice" name="practiceMinutes" inputMode="numeric" defaultValue={lesson?.practiceMinutes ?? ''} className={inputClass('w-28 tabular-nums')} />
+      </Field>
       <Field id="ls-desc" label="Short description">
         <input id="ls-desc" name="description" maxLength={600} defaultValue={lesson?.description || ''} className={inputClass()} />
       </Field>
