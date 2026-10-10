@@ -29,6 +29,9 @@ export default function TowerScene({
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.shadowMap.enabled = true;
+    // setSize(…, false) leaves the CSS size alone, so without this the canvas shows at its
+    // pixel size: twice the stage on dense screens, cropped to the top-left quarter.
+    renderer.domElement.className = 'block h-full w-full';
     stage.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
