@@ -11,7 +11,7 @@ import { timeAgo } from '../../lib/notificationText';
 import cn from '../../lib/cn';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Notifications · LearnTube' };
+export const metadata = { title: 'Notifications · Skillreps' };
 
 const ICONS = {
   KUDOS: Heart, COMMENT: MessageCircle, FOLLOW: UserPlus, CHEER: PartyPopper,

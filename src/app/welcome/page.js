@@ -7,7 +7,7 @@ import WelcomeSurvey from '../../components/welcome/WelcomeSurvey';
 import { saveWelcome, skipWelcome } from './actions';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Welcome · LearnTube' };
+export const metadata = { title: 'Welcome · Skillreps' };
 
 export default async function WelcomePage() {
   const session = await getServerSession(authOptions);

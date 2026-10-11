@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../components/ui/Button';
 
-export const metadata = { title: 'Page not found · LearnTube' };
+export const metadata = { title: 'Page not found · Skillreps' };
 
 export default function NotFound() {
   return (

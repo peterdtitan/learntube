@@ -5,16 +5,16 @@ import Link from 'next/link';
 import LegalPage, { Mail, Section } from '../../components/legal/LegalPage';
 import { LEGAL } from '../../lib/legal';
 
-export const metadata = { title: 'Terms of use · LearnTube' };
+export const metadata = { title: 'Terms of use · Skillreps' };
 
 export default function Terms() {
   return (
     <LegalPage
       title="Terms of use"
-      intro={`The rules for using LearnTube, run by ${LEGAL.company}, ${LEGAL.country}. By signing in you agree to them.`}
+      intro={`The rules for using Skillreps, run by ${LEGAL.company}, ${LEGAL.country}. By signing in you agree to them.`}
       other={{ href: '/privacy', label: 'privacy policy' }}
     >
-      <Section id="who" title="Who can use LearnTube">
+      <Section id="who" title="Who can use Skillreps">
         <p>
           {`You need to be ${LEGAL.minimumAge} or older, or older where local law requires, and to sign in with a Google account that is yours. Keep that account secure; what happens under it is your responsibility.`}
         </p>
@@ -24,7 +24,7 @@ export default function Terms() {
         <p>
           Every video belongs to its YouTube creator and plays through YouTube’s own player, so
           YouTube’s terms apply to it. We choose and order lessons; we don’t copy or change them.
-          If you made a video and want it removed from LearnTube, email
+          If you made a video and want it removed from Skillreps, email
           {' '}
           <Mail />
           {' '}
@@ -47,7 +47,7 @@ export default function Terms() {
       <Section id="content" title="What you post">
         <ul>
           <li>You keep ownership of your makes, photos and notes.</li>
-          <li>You allow us to store them and show the public parts (makes, photos, milestones) on LearnTube, for as long as you keep them here.</li>
+          <li>You allow us to store them and show the public parts (makes, photos, milestones) on Skillreps, for as long as you keep them here.</li>
           <li>Only post photos you took or have permission to share, and nothing showing other people without their consent.</li>
           <li>Nothing illegal, sexual, violent, hateful, or that shares anyone’s personal information.</li>
         </ul>
@@ -76,7 +76,7 @@ export default function Terms() {
 
       <Section id="liability" title="Our responsibility">
         <p>
-          {`LearnTube is free and provided as it is. We work to keep it running and accurate but can’t promise it will always be available or error-free. As far as the law allows, ${LEGAL.company} isn’t liable for indirect losses or for injuries from practising a skill. Nothing here limits rights you have under consumer law.`}
+          {`Skillreps is free and provided as it is. We work to keep it running and accurate but can’t promise it will always be available or error-free. As far as the law allows, ${LEGAL.company} isn’t liable for indirect losses or for injuries from practising a skill. Nothing here limits rights you have under consumer law.`}
         </p>
       </Section>
 

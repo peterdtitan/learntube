@@ -13,7 +13,7 @@ import Card from '../../components/ui/Card';
 import LeaderboardToggle from '../../components/community/LeaderboardToggle';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Dashboard · LearnTube' };
+export const metadata = { title: 'Dashboard · Skillreps' };
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);

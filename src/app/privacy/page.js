@@ -5,13 +5,13 @@ import Link from 'next/link';
 import LegalPage, { Mail, Section } from '../../components/legal/LegalPage';
 import { LEGAL } from '../../lib/legal';
 
-export const metadata = { title: 'Privacy policy · LearnTube' };
+export const metadata = { title: 'Privacy policy · Skillreps' };
 
 export default function Privacy() {
   return (
     <LegalPage
       title="Privacy policy"
-      intro={`What LearnTube collects, why, who else handles it, and how to delete it. LearnTube is run by ${LEGAL.company}, ${LEGAL.country}.`}
+      intro={`What Skillreps collects, why, who else handles it, and how to delete it. Skillreps is run by ${LEGAL.company}, ${LEGAL.country}.`}
       other={{ href: '/terms', label: 'terms of use' }}
     >
       <Section id="collect" title="What we collect">
@@ -38,7 +38,7 @@ export default function Privacy() {
 
       <Section id="use" title="What we use it for">
         <p>
-          Only to run LearnTube: saving your progress, showing your makes and notifications, ranking
+          Only to run Skillreps: saving your progress, showing your makes and notifications, ranking
           leaderboards, grading quizzes and keeping the community safe. No ads, no selling or
           sharing your data with advertisers, and no analytics or tracking tools.
         </p>
@@ -82,7 +82,7 @@ export default function Privacy() {
 
       <Section id="children" title="Children">
         <p>
-          {`LearnTube is for people aged ${LEGAL.minimumAge} and over, or older where local law requires. If you think a child under ${LEGAL.minimumAge} has an account, email us and we will delete it.`}
+          {`Skillreps is for people aged ${LEGAL.minimumAge} and over, or older where local law requires. If you think a child under ${LEGAL.minimumAge} has an account, email us and we will delete it.`}
         </p>
       </Section>
 

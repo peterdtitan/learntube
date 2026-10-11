@@ -1,4 +1,6 @@
-# LearnTube
+# Skillreps
+
+The Skillreps learning app (formerly LearnTube), an Elev8r product. The landing site lives in the separate `skillreps-site` project.
 
 Free YouTube videos organized into bite-sized, unit-by-unit learning pathways —
 pick a skill, follow the units, and pick up where you left off.

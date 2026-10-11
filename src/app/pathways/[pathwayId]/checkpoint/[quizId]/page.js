@@ -7,7 +7,7 @@ import { getQuizForLearner } from '../../../../../lib/quizzes';
 import CheckpointRunner from '../../../../../components/quiz/CheckpointRunner';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Checkpoint · LearnTube' };
+export const metadata = { title: 'Checkpoint · Skillreps' };
 
 export default async function CheckpointPage({ params }) {
   const session = await getServerSession(authOptions);

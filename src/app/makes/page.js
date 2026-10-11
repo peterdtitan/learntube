@@ -10,7 +10,7 @@ import Button from '../../components/ui/Button';
 import cn from '../../lib/cn';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Makes · LearnTube' };
+export const metadata = { title: 'Makes · Skillreps' };
 
 function Empty({ title, body, action }) {
   return (

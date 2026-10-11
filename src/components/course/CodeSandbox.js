@@ -62,7 +62,7 @@ function writeDraft(lessonId, value) {
 }
 
 // The preview is a sandboxed iframe without allow-same-origin, so learner code runs in an
-// opaque origin: it can't read LearnTube's cookies, storage or page.
+// opaque origin: it can't read Skillreps's cookies, storage or page.
 export default function CodeSandbox({ lessonId, starterCode }) {
   const starter = starterCode || DEFAULT_STARTER;
   const [code, setCode] = useState(starter);

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Load test: simulates N signed-in learners using LearnTube at once against a local
+// Load test: simulates N signed-in learners using Skillreps at once against a local
 // production build, and reports latency and errors per endpoint.
 //
 //   node tests/load/run.mjs --users 100            build, seed, start 1 server, run

@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const overview = await getTrackOverview(params.slug, null);
-  return { title: overview ? `${overview.track.title} · LearnTube` : 'LearnTube' };
+  return { title: overview ? `${overview.track.title} · Skillreps` : 'Skillreps' };
 }
 
 export default async function TrackPage({ params }) {
@@ -112,7 +112,7 @@ export default async function TrackPage({ params }) {
 
       <p className="text-sm text-muted">
         Lessons are free videos by Professor Messer on YouTube, put in order with hands-on tasks and
-        practice questions. LearnTube isn’t affiliated with CompTIA; exams are booked and paid for
+        practice questions. Skillreps isn’t affiliated with CompTIA; exams are booked and paid for
         through CompTIA.
       </p>
     </div>

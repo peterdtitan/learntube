@@ -9,7 +9,7 @@ import Typewriter from '../../components/skills/Typewriter';
 import SkillsBrowser from '../../components/skills/SkillsBrowser';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Skills · LearnTube' };
+export const metadata = { title: 'Skills · Skillreps' };
 
 export default async function SkillsPage() {
   const session = await getServerSession(authOptions);

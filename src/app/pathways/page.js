@@ -10,7 +10,7 @@ import cn from '../../lib/cn';
 import SkillIcon from '../../components/ui/SkillIcon';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Pathways · LearnTube' };
+export const metadata = { title: 'Pathways · Skillreps' };
 
 const MAX_QUERY = 80;
 

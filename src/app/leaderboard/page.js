@@ -9,7 +9,7 @@ import cn from '../../lib/cn';
 import { initials } from '../../lib/people';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Leaderboard · LearnTube' };
+export const metadata = { title: 'Leaderboard · Skillreps' };
 
 function Tabs({ label, current, options }) {
   return (

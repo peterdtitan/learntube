@@ -12,7 +12,7 @@ import DeleteAccount from './DeleteAccount';
 import ExtraTimeToggle from './ExtraTimeToggle';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Settings · LearnTube' };
+export const metadata = { title: 'Settings · Skillreps' };
 
 function Section({ title, children }) {
   return (

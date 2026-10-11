@@ -61,7 +61,7 @@ const SCHEMA = {
   },
 };
 
-const SYSTEM = `You write quiz questions for LearnTube, where people learn practical skills (cooking, knitting, coding and more) from YouTube lessons.
+const SYSTEM = `You write quiz questions for Skillreps, where people learn practical skills (cooking, knitting, coding and more) from YouTube lessons.
 
 Question types and the fields each one uses:
 - SINGLE: options (2-5) and answer (index of the right option)

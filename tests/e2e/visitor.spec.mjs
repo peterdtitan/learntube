@@ -5,7 +5,7 @@ import {
 test.describe('a visitor who is not signed in', () => {
   test('can browse the home page and pathways', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/LearnTube/);
+    await expect(page).toHaveTitle(/Skillreps/);
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
 
     await page.goto('/pathways');

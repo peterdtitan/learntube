@@ -12,7 +12,7 @@ export default function GlobalError({ error, reset }) {
       }}
       >
         <main style={{ maxWidth: 480 }}>
-          <h1 style={{ fontSize: 28, margin: '0 0 12px' }}>LearnTube couldn’t load.</h1>
+          <h1 style={{ fontSize: 28, margin: '0 0 12px' }}>Skillreps couldn’t load.</h1>
           <p style={{ color: '#55616C', fontSize: 17, lineHeight: 1.5 }}>
             Something went wrong on our side. Your progress is saved.
           </p>
