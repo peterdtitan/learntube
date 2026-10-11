@@ -25,9 +25,13 @@ const body = atkinsonHyperlegible({
   display: 'swap',
 });
 
+const DESCRIPTION = 'Free YouTube lessons, put in order. Watch a short step, try it with your own hands, and earn XP for what you make. An Elev8r product.';
+
 export const metadata = {
-  title: 'LearnTube',
-  description: 'Free YouTube lessons, put in order. Watch a step, try it yourself, and keep a record of what you made.',
+  title: 'Skillreps · Learn a skill by making something',
+  description: DESCRIPTION,
+  applicationName: 'Skillreps',
+  openGraph: { siteName: 'Skillreps', title: 'Skillreps', description: DESCRIPTION },
 };
 
 export default function RootLayout({ children }) {

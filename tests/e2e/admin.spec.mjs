@@ -10,7 +10,7 @@ test('an admin builds a pathway that learners can then find', async ({ page, sig
   await signInAs('admin');
   await page.goto('/admin/pathways/new');
   await page.getByLabel('Title').fill('Knit a Beanie');
-  await page.getByLabel('Skill').selectOption('knitting');
+  await page.getByLabel('Skill', { exact: true }).selectOption('knitting');
   await page.getByLabel('You\'ll make').fill('A ribbed beanie');
   await page.getByRole('button', { name: 'Create pathway' }).click();
   await expect(page).toHaveURL(/\/admin\/pathways\/[a-z0-9]+$/);

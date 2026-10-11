@@ -10,6 +10,7 @@ import ThemeSwitcher from '../app/ThemeSwitcher';
 import Button from './ui/Button';
 import Pill from './ui/Pill';
 import useLearnerSummary from './useLearnerSummary';
+import Wordmark from './ui/Logo';
 import NotificationBell from './community/NotificationBell';
 import cn from '../lib/cn';
 import { initials } from '../lib/people';
@@ -104,9 +105,8 @@ export default function Navbar() {
   return (
     <header ref={menuRef} className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="font-display text-[22px] font-bold tracking-tight">
-          Learn
-          <span className="text-accent">Tube</span>
+        <Link href="/" aria-label="Skillreps home" className="text-[22px]">
+          <Wordmark />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-6 md:flex">

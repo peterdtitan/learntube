@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAdmin } from '../../lib/admin';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Admin · LearnTube', robots: { index: false } };
+export const metadata = { title: 'Admin · Skillreps', robots: { index: false } };
 
 export default async function AdminLayout({ children }) {
   if (!(await getAdmin())) notFound();

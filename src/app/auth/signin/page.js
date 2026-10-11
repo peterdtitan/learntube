@@ -3,7 +3,7 @@ import Link from 'next/link';
 import GoogleSignInButton from './GoogleSignInButton';
 import { LEGAL } from '../../../lib/legal';
 
-export const metadata = { title: 'Sign in · LearnTube' };
+export const metadata = { title: 'Sign in · Skillreps' };
 
 // Only same-site paths are allowed as a return destination.
 function safeCallback(value) {

@@ -7,7 +7,7 @@ import { getGameQuestions } from '../../../../../../lib/quizzes';
 import ModuleGame from '../../../../../../components/quiz/ModuleGame';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Module games · LearnTube' };
+export const metadata = { title: 'Module games · Skillreps' };
 
 export default async function GamePage({ params }) {
   const unit = await prisma.unit.findFirst({

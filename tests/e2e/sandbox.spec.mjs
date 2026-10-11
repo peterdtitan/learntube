@@ -15,7 +15,7 @@ test('the code sandbox runs code and shows console output', async ({ page, signI
   await editor.fill('<h2 id="out">Hi</h2><script>console.log("sum", 2 + 3); document.cookie;</script>');
   await editor.press('Control+Enter');
   await expect(consoleBox).toContainText('sum 5');
-  // Learner code runs in an opaque origin, so LearnTube's cookies are out of reach.
+  // Learner code runs in an opaque origin, so Skillreps's cookies are out of reach.
   await expect(consoleBox).toContainText('SecurityError');
   await expect(page.frameLocator('iframe[title="Code preview"]').locator('#out')).toHaveText('Hi');
 
