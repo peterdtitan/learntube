@@ -23,3 +23,44 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Device frames for app screenshots on the landing page. */
+@layer components {
+  .device-phone {
+    border-radius: 2.6rem;
+    padding: 0.55rem;
+    background: #0d1114;
+    box-shadow: 0 0 0 1px #2b343b inset, 0 40px 80px -20px rgb(17 22 27 / 0.45);
+  }
+
+  .device-phone > div {
+    border-radius: 2.1rem;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .device-lid {
+    border-radius: 1.1rem 1.1rem 0.35rem 0.35rem;
+    padding: 0.6rem 0.6rem 0.9rem;
+    background: #0d1114;
+    box-shadow: 0 0 0 1px #2b343b inset;
+  }
+
+  .device-lid > div {
+    border-radius: 0.45rem;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .device-base {
+    height: 0.9rem;
+    margin: 0 -6%;
+    border-radius: 0 0 1.2rem 1.2rem;
+    background: linear-gradient(#cfd5da, #9aa3aa);
+    box-shadow: 0 30px 60px -20px rgb(17 22 27 / 0.45);
+  }
+}
+
+main:has(> .bleed) + footer {
+  margin-top: 0;
+}

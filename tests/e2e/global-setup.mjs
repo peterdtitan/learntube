@@ -38,12 +38,13 @@ export default async function globalSetup() {
 
   const people = {};
   const expires = new Date(Date.now() + 7 * 86400000);
-  // Everyone but Nia has done the welcome survey; Nia signs in for the first time.
+  // Everyone but Nia and Tobi has done the welcome survey; they sign in for the first time.
   for (const [key, name, role, onboarded = true] of [
     ['ada', 'Ada Lovelace', 'LEARNER'],
     ['bola', 'Bola Ade', 'LEARNER'],
     ['admin', 'Admin Person', 'ADMIN'],
     ['nia', 'Nia Okafor', 'LEARNER', false],
+    ['tobi', 'Tobi Bello', 'LEARNER', false],
   ]) {
     const user = await prisma.user.create({
       data: {

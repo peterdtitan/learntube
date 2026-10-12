@@ -6,7 +6,11 @@ test.describe('a visitor who is not signed in', () => {
   test('can browse the home page and pathways', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Skillreps/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Learn a skill by making something.' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+    // Skill cards on the landing open the real skill, no account needed.
+    await page.getByRole('link', { name: 'Knit a swatch' }).click();
+    await expect(page.getByRole('link', { name: '← All skills' })).toBeVisible();
 
     await page.goto('/pathways');
     await expect(page.getByRole('heading', { name: 'Bake Your First Loaf' })).toBeVisible();

@@ -38,3 +38,29 @@ test('anyone can browse short skills and filter them', async ({ page }) => {
   await page.getByRole('link', { name: 'Knit a swatch' }).click();
   await expect(page.getByRole('link', { name: '← All skills' })).toBeVisible();
 });
+
+test('interests ticked on the landing page carry through sign-in into the survey', async ({ page, context, signInAs }) => {
+  // Google itself is out of reach in tests; stop at the hand-off and check what was saved.
+  await context.route(/accounts\.google\.com/, (route) => route.abort());
+  await page.goto('/');
+  const picker = page.getByRole('group', { name: 'What would you like to learn?' });
+  await picker.getByRole('checkbox', { name: 'Knitting & Crochet' }).click();
+  await page.getByRole('button', { name: 'Start with 1 picked' }).click();
+  await expect.poll(async () => (await context.cookies()).find((c) => c.name === 'skillreps_picks')?.value)
+    .toBe('knitting');
+
+  await signInAs('tobi');
+  await context.addCookies([{ name: 'skillreps_picks', value: 'knitting', url: page.url() }]);
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/welcome$/);
+  // Interests are already answered, so the survey opens on the next question.
+  await expect(page.getByRole('heading', { name: 'What brings you here?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page.getByRole('checkbox', { name: /Knitting & Crochet/ })).toBeChecked();
+  await page.getByRole('button', { name: /^Continue/ }).click();
+  await page.getByRole('radio', { name: /Something fun for me/ }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('button', { name: 'Show me where to start' }).click();
+  await expect(page.getByText('Because you’re into Knitting & Crochet.')).toBeVisible();
+  expect((await context.cookies()).some((c) => c.name === 'skillreps_picks')).toBe(false);
+});

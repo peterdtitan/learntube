@@ -1,11 +1,13 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth/next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { authOptions } from '../../lib/auth';
 import prisma from '../../lib/prismadb';
 import { GOAL_IDS } from '../../lib/recommend';
+import { PICKS_COOKIE } from '../../lib/picks';
 
 const MAX_INTERESTS = 20;
 
@@ -32,6 +34,7 @@ export async function saveWelcome(form) {
       ...(Number.isInteger(days) && days >= 2 && days <= 5 ? { weeklyGoal: days } : {}),
     },
   });
+  cookies().delete(PICKS_COOKIE);
   revalidatePath('/', 'layout');
   redirect('/?welcome=1');
 }
@@ -40,6 +43,7 @@ export async function saveWelcome(form) {
 export async function skipWelcome() {
   const userId = await signedInUserId();
   await prisma.user.update({ where: { id: userId }, data: { onboardedAt: new Date() } });
+  cookies().delete(PICKS_COOKIE);
   revalidatePath('/', 'layout');
   redirect('/');
 }

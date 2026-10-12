@@ -10,6 +10,21 @@ export const PUBLISHED_QUIZ = {
 };
 const QUIZ = PUBLISHED_QUIZ;
 
+// Skill categories to pick interests from. Ones with something to learn come first.
+export async function getInterestCategories() {
+  const skills = await prisma.skill.findMany({
+    orderBy: { order: 'asc' },
+    select: {
+      id: true, name: true, color: true, _count: { select: { pathways: true } },
+    },
+  });
+  return skills
+    .map((s) => ({
+      id: s.id, name: s.name, color: s.color, available: s._count.pathways,
+    }))
+    .sort((a, b) => Number(b.available > 0) - Number(a.available > 0));
+}
+
 // Short skills (Pathway.kind SKILL) with time to learn, how many people are learning each,
 // and the viewer's progress. One query for the content, one for learners, one for progress.
 export async function getShortSkills(userId) {

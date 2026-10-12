@@ -13,6 +13,15 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => { throw Object.assign(new Error('NEXT_NOT_FOUND'), { notFound: true }); }),
 }));
 
+// Cookies live in a Map per test; tests can read globalThis.testCookies.
+vi.mock('next/headers', () => ({
+  cookies: () => ({
+    get: (name) => (globalThis.testCookies.has(name) ? { name, value: globalThis.testCookies.get(name) } : undefined),
+    set: (name, value) => globalThis.testCookies.set(name, value),
+    delete: (name) => globalThis.testCookies.delete(name),
+  }),
+}));
+
 vi.mock('@vercel/blob', () => ({
   put: vi.fn(async (path) => ({ url: `https://test.public.blob.vercel-storage.com/${path}` })),
   del: vi.fn(async () => {}),
@@ -20,6 +29,7 @@ vi.mock('@vercel/blob', () => ({
 
 beforeEach(async () => {
   globalThis.testSession = null;
+  globalThis.testCookies = new Map();
   const { resetDb } = await import('./helpers.mjs');
   await resetDb();
 });

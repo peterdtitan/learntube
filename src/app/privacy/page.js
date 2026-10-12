@@ -56,7 +56,9 @@ export default function Privacy() {
 
       <Section id="cookies" title="Cookies and storage">
         <p>
-          We set one cookie, to keep you signed in; the site can’t work without it. Your browser also
+          We set one cookie, to keep you signed in; the site can’t work without it. If you tick
+          interests on the home page before signing in, a second cookie holds them for up to a day
+          so the welcome questions can start with them; it’s removed once you answer. Your browser also
           remembers your light or dark theme, any code you write in the sandbox, and that you’ve
           chosen to play YouTube videos. Lessons show a still image until you press play; only then
           does YouTube load, and it may set its own cookies. After your first press, later lessons

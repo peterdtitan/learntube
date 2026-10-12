@@ -41,7 +41,8 @@ export default function RootLayout({ children }) {
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Navbar />
-            <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+            {/* A page whose root has the "bleed" class (the landing) runs edge to edge. */}
+            <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8 has-[>.bleed]:max-w-none has-[>.bleed]:p-0">{children}</main>
             <Footer />
           </div>
         </Providers>
