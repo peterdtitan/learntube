@@ -1,6 +1,6 @@
 # Skillreps
 
-The Skillreps learning app (formerly LearnTube), an Elev8r product. The landing site lives in the separate `skillreps-site` project.
+The Skillreps learning app (formerly LearnTube), an Elev8r product. Visitors who aren't signed in get the landing page at `/` (`src/components/landing`); signed-in learners get their home there instead.
 
 Free YouTube videos organized into bite-sized, unit-by-unit learning pathways —
 pick a skill, follow the units, and pick up where you left off.

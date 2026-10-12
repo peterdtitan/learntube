@@ -52,7 +52,7 @@ function Choice({
 export default function WelcomeSurvey({
   categories, initial, saveAction, skipAction,
 }) {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(initial.step || 0);
   const [interests, setInterests] = useState(initial.interests);
   const [goal, setGoal] = useState(initial.goal);
   const [days, setDays] = useState(initial.weeklyGoal);

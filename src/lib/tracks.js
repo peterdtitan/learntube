@@ -102,7 +102,11 @@ export async function getProgramCards(userId) {
       minutes,
       fun: funEquivalent(minutes, t.skill?.id),
       courses: t.pathways.map((p) => ({
-        id: p.id, title: p.title, certification: p.certification,
+        id: p.id,
+        title: p.title,
+        certification: p.certification,
+        lessons: lessonsOf(p).length,
+        minutes: estimatePathway(p.units).total,
       })),
       started: t.pathways.some((p) => lessonsOf(p).some((v) => startedIds.has(v.id))),
       learners: 0,

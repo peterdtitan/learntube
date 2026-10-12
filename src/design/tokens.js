@@ -32,6 +32,19 @@ const palette = {
   },
 };
 
+// Fixed colours for the landing page's dark bands; the same in light and dark themes.
+const brand = {
+  pine: '#2F6F62',
+  pineDeep: '#23564C',
+  mint: '#6CC3AE',
+  night: '#11161B',
+  night2: '#182027',
+  nightLine: '#29333C',
+  moss: '#1E3631',
+  gold: '#E8B865',
+  haze: '#9AA6B1',
+};
+
 const fonts = {
   display: 'Bricolage Grotesque',
   body: 'Atkinson Hyperlegible',
@@ -44,4 +57,6 @@ const radius = {
   pill: '999px',
 };
 
-module.exports = { palette, fonts, radius };
+module.exports = {
+  palette, brand, fonts, radius,
+};

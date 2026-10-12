@@ -2,7 +2,7 @@
 
 const animate = require('tailwindcss-animate');
 const plugin = require('tailwindcss/plugin');
-const { palette, radius } = require('./src/design/tokens');
+const { palette, brand, radius } = require('./src/design/tokens');
 
 const kebab = (s) => s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(' ');
@@ -25,7 +25,10 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
-      colors,
+      colors: {
+        ...colors,
+        ...Object.fromEntries(Object.entries(brand).map(([name, hex]) => [kebab(name), hex])),
+      },
       fontFamily: {
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],
         sans: ['var(--font-body)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],

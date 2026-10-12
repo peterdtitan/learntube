@@ -28,6 +28,18 @@ describe('the welcome survey', () => {
     expect(saved.onboardedAt).toBeInstanceOf(Date);
   });
 
+  it('clears the interests picked on the landing page once answered', async () => {
+    const user = await makeUser();
+    signIn(user);
+    globalThis.testCookies.set('skillreps_picks', 'guitar');
+    await expect(saveWelcome(surveyForm({ interests: ['guitar'] }))).rejects.toMatchObject({ redirectTo: '/?welcome=1' });
+    expect(globalThis.testCookies.has('skillreps_picks')).toBe(false);
+
+    globalThis.testCookies.set('skillreps_picks', 'guitar');
+    await expect(skipWelcome()).rejects.toMatchObject({ redirectTo: '/' });
+    expect(globalThis.testCookies.has('skillreps_picks')).toBe(false);
+  });
+
   it('drops unknown interests and goals, and ignores an out-of-range goal', async () => {
     const user = await makeUser();
     signIn(user);

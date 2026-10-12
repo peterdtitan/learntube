@@ -3,7 +3,7 @@ export const LEGAL = {
   country: 'Nigeria',
   contactEmail: 'peterdtitan@gmail.com',
   minimumAge: 13,
-  updated: '4 October 2026',
+  updated: '12 October 2026',
 };
 
 export function placeholders(values = LEGAL) {
