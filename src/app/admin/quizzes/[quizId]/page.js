@@ -54,7 +54,7 @@ export default async function EditQuiz({ params }) {
   const where = quiz.video ? `after “${quiz.video.title}”` : `in module “${quiz.unit?.title}”`;
   const sourceLessons = quiz.video ? [quiz.video] : quiz.unit?.videos || [];
   let disabledReason = null;
-  if (!process.env.ANTHROPIC_API_KEY) disabledReason = 'Set ANTHROPIC_API_KEY to draft questions with AI.';
+  if (!process.env.ANTHROPIC_API_KEY) disabledReason = 'No key configured.';
   else if (!sourceLessons.some((l) => l.transcript?.trim())) disabledReason = 'Add a transcript to the lesson first; drafts are written only from what it says.';
   const gameNote = quiz.kind === 'MODULE_GAME'
     ? 'Games also use every published quick-check question from this module’s lessons, so this list can stay short.'
