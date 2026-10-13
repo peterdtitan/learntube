@@ -1,5 +1,20 @@
 /** @type {import('next').NextConfig} */
+// Sent with every response. No script policy: Next's inline scripts would need nonces,
+// which force every page dynamic. These cover framing, sniffing, referrers and device access.
+const SECURITY_HEADERS = [
+  { key: 'Content-Security-Policy', value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self' https://accounts.google.com" },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // Fullscreen is for timed checkpoints; YouTube's player asks for the rest.
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self "https://www.youtube-nocookie.com"), autoplay=(self "https://www.youtube-nocookie.com"), encrypted-media=(self "https://www.youtube-nocookie.com"), picture-in-picture=(self "https://www.youtube-nocookie.com")' },
+];
+
 const nextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: '/:path*', headers: SECURITY_HEADERS }];
+  },
   // Test builds go elsewhere so they never clash with a running `next dev`.
   distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {

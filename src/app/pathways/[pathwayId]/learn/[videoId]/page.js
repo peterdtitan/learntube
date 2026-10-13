@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../../lib/auth';
+import { lessonMetadata } from '../../../../../lib/seo';
 import prisma from '../../../../../lib/prismadb';
 import { getPathwayWithUnits, getProgressByVideoId } from '../../../../../lib/course';
 import { getPathwayOutline } from '../../../../../lib/outline';
@@ -12,6 +13,10 @@ import LessonTabs from '../../../../../components/course/LessonTabs';
 import Button from '../../../../../components/ui/Button';
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }) {
+  return lessonMetadata(params.pathwayId, params.videoId);
+}
 
 // Skills whose lessons always get the code sandbox; any lesson with starter code gets it too.
 const SANDBOX_SKILLS = ['software-engineering'];
@@ -61,7 +66,7 @@ export default async function LessonPage({ params }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
       {/* After the lesson on phones, beside it on wide screens. */}
-      <aside className="order-last lg:order-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
+      <aside aria-label="Course outline" className="order-last lg:order-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
         <CourseSidebar
           pathway={pathway}
           units={units}
@@ -115,7 +120,7 @@ export default async function LessonPage({ params }) {
         )}
 
         {(checkpointNext || gameNext) && (
-          <aside className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed border-xp bg-xp-soft/40 p-5">
+          <aside aria-label="What’s next" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed border-xp bg-xp-soft/40 p-5">
             <div className="grid gap-1">
               <p className="font-bold">{checkpointNext ? 'Halfway checkpoint next' : `You’ve reached the end of ${week.title}`}</p>
               <p className="text-[15px] text-muted">

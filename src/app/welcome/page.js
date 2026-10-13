@@ -8,9 +8,10 @@ import { getInterestCategories } from '../../lib/skills';
 import { PICKS_COOKIE, parsePicks, startingInterests } from '../../lib/picks';
 import WelcomeSurvey from '../../components/welcome/WelcomeSurvey';
 import { saveWelcome, skipWelcome } from './actions';
+import { PRIVATE } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Welcome · Skillreps' };
+export const metadata = { title: 'Welcome · Skillreps', ...PRIVATE };
 
 export default async function WelcomePage() {
   const session = await getServerSession(authOptions);

@@ -9,9 +9,10 @@ import { authOptions } from '../../lib/auth';
 import { listNotifications, markAllRead } from '../../lib/notifications';
 import { timeAgo } from '../../lib/notificationText';
 import cn from '../../lib/cn';
+import { PRIVATE } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Notifications · Skillreps' };
+export const metadata = { title: 'Notifications · Skillreps', ...PRIVATE };
 
 const ICONS = {
   KUDOS: Heart, COMMENT: MessageCircle, FOLLOW: UserPlus, CHEER: PartyPopper,

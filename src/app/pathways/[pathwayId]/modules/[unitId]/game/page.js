@@ -5,9 +5,10 @@ import { authOptions } from '../../../../../../lib/auth';
 import prisma from '../../../../../../lib/prismadb';
 import { getGameQuestions } from '../../../../../../lib/quizzes';
 import ModuleGame from '../../../../../../components/quiz/ModuleGame';
+import { PRIVATE } from '../../../../../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Module games · Skillreps' };
+export const metadata = { title: 'Module games · Skillreps', ...PRIVATE };
 
 export default async function GamePage({ params }) {
   const unit = await prisma.unit.findFirst({

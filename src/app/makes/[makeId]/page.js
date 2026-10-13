@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
+import { makeMetadata } from '../../../lib/seo';
 import { getMake } from '../../../lib/makes';
 import { REPORT_REASONS } from '../../../lib/moderation';
 import ReportButton from '../../../components/makes/ReportButton';
@@ -13,6 +14,10 @@ import CommentThread from '../../../components/community/CommentThread';
 import SkillIcon from '../../../components/ui/SkillIcon';
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }) {
+  return makeMetadata(params.makeId);
+}
 
 export default async function MakePage({ params }) {
   const session = await getServerSession(authOptions);

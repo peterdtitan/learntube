@@ -4,7 +4,7 @@ import {
 } from '../../../lib/api';
 import { getLearnerSummary } from '../../../lib/xp';
 import { validateDisplayName } from '../../../lib/people';
-import { deletePhotos } from '../../../lib/blob';
+import { deleteAccount } from '../../../lib/account';
 import { rateLimit } from '../../../lib/rateLimit';
 import {
   isValidTimeZone, MAX_WEEKLY_GOAL, MIN_WEEKLY_GOAL,
@@ -76,11 +76,6 @@ export async function DELETE(req) {
   const body = await readJson(req);
   if (body?.confirm !== 'DELETE') return error(400, 'Type DELETE to confirm.');
 
-  const photos = await prisma.make.findMany({
-    where: { userId, imageUrl: { not: null } },
-    select: { imageUrl: true },
-  });
-  await prisma.user.delete({ where: { id: userId } });
-  await deletePhotos(photos.map((p) => p.imageUrl));
+  await deleteAccount(userId);
   return json({ deleted: true });
 }

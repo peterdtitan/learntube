@@ -7,9 +7,14 @@ import { getLeaderboard } from '../../lib/leaderboard';
 import ScopePicker from './ScopePicker';
 import cn from '../../lib/cn';
 import { initials } from '../../lib/people';
+import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Leaderboard · Skillreps' };
+export const metadata = staticMetadata(
+  'Leaderboard',
+  'This week’s XP leaderboard on Skillreps. It resets every Monday, so everyone starts fresh.',
+  '/leaderboard',
+);
 
 function Tabs({ label, current, options }) {
   return (

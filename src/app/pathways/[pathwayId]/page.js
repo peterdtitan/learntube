@@ -6,6 +6,7 @@ import {
   ArrowRight, Award, Check, Clock, Gamepad2, Sparkles, Timer,
 } from 'lucide-react';
 import { authOptions } from '../../../lib/auth';
+import { pathwayMetadata } from '../../../lib/seo';
 import { getPathwayOutline } from '../../../lib/outline';
 import { formatMinutes } from '../../../lib/estimate';
 import { formatDuration } from '../../../lib/youtube';
@@ -17,9 +18,8 @@ import Cover from '../../../components/ui/Cover';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
-  const outline = await getPathwayOutline(params.pathwayId, null);
-  return { title: outline ? `${outline.pathway.title} · Skillreps` : 'Skillreps' };
+export function generateMetadata({ params }) {
+  return pathwayMetadata(params.pathwayId);
 }
 
 function QuizRow({

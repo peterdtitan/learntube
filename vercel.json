@@ -1,3 +1,6 @@
 {
-  "buildCommand": "node scripts/vercel-build.mjs"
+  "buildCommand": "node scripts/vercel-build.mjs",
+  "crons": [
+    { "path": "/api/cron/retention", "schedule": "0 3 * * *" }
+  ]
 }

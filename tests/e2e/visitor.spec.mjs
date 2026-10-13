@@ -59,10 +59,57 @@ test.describe('a visitor who is not signed in', () => {
     await expect(page.getByRole('heading', { name: 'We couldn’t find that page.' })).toBeVisible();
   });
 
+  test('sees why a Google sign-in failed', async ({ page }) => {
+    await page.goto('/auth/signin?error=AccessDenied');
+    // Next's route announcer is also an alert; ours is the one in the page.
+    await expect(page.getByRole('main').getByRole('alert')).toHaveText('Sign-in was cancelled. Try again when you’re ready.');
+    await page.goto('/auth/signin?error=Whatever');
+    await expect(page.getByRole('main').getByRole('alert')).toHaveText('Something went wrong signing in with Google. Please try again.');
+  });
+
+  test('finds robots.txt, a sitemap and share cards', async ({ page, request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    expect(robots).toContain('Disallow: /settings');
+    expect(robots).toMatch(/Sitemap: http.*\/sitemap\.xml/);
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).toContain('/skills</loc>');
+    expect(sitemap).toContain('/pathways/');
+    expect(sitemap).not.toContain('/learners/');
+
+    await page.goto('/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /opengraph-image/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^http:\/\/localhost:\d+\/?$/);
+    await page.goto('/auth/signin');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+  });
+
+  test('gets security headers', async ({ request }) => {
+    const res = await request.get('/');
+    expect(res.headers()['x-frame-options']).toBe('DENY');
+    expect(res.headers()['x-content-type-options']).toBe('nosniff');
+    expect(res.headers()['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(res.headers()['x-powered-by']).toBeUndefined();
+  });
+
   test('is sent to sign in for settings and kept out of admin', async ({ page }) => {
     await page.goto('/settings');
     await expect(page).toHaveURL(/\/auth\/signin/);
     const admin = await page.goto('/admin');
     expect(admin.status()).toBe(404);
+  });
+});
+
+test.describe('the cookie notice', () => {
+  test.use({ cookieNotice: true });
+
+  test('shows once, links to the policy, and stays dismissed', async ({ page }) => {
+    await page.goto('/');
+    const notice = page.getByRole('region', { name: 'Cookies' });
+    await expect(notice).toContainText('No ads, no tracking.');
+    await expect(notice.getByRole('link', { name: 'How we use them' })).toHaveAttribute('href', '/privacy#cookies');
+    await notice.getByRole('button', { name: 'Got it' }).click();
+    await expect(notice).toHaveCount(0);
+    await page.goto('/skills');
+    await expect(page.getByRole('region', { name: 'Cookies' })).toHaveCount(0);
   });
 });

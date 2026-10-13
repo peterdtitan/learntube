@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { Award, Clock } from 'lucide-react';
 import { authOptions } from '../../../lib/auth';
+import { trackMetadata } from '../../../lib/seo';
 import { getTrackOverview } from '../../../lib/tracks';
 import { formatMinutes } from '../../../lib/estimate';
 import Button from '../../../components/ui/Button';
@@ -14,9 +15,8 @@ import Cover from '../../../components/ui/Cover';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
-  const overview = await getTrackOverview(params.slug, null);
-  return { title: overview ? `${overview.track.title} · Skillreps` : 'Skillreps' };
+export function generateMetadata({ params }) {
+  return trackMetadata(params.slug);
 }
 
 export default async function TrackPage({ params }) {

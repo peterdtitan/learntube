@@ -8,9 +8,14 @@ import { getPathwayOverviews } from '../../lib/course';
 import PathwayCard from '../../components/home/PathwayCard';
 import cn from '../../lib/cn';
 import SkillIcon from '../../components/ui/SkillIcon';
+import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Pathways · Skillreps' };
+export const metadata = staticMetadata(
+  'Pathways',
+  'Longer courses and programs built from free YouTube lessons, in order, with hands-on tasks, quizzes and XP.',
+  '/pathways',
+);
 
 const MAX_QUERY = 80;
 
@@ -121,6 +126,7 @@ export default async function PathwaysPage({ searchParams = {} }) {
         </section>
       )}
 
+      <h2 className="sr-only">Courses</h2>
       {pathways.length ? (
         <div className="grid gap-4 md:grid-cols-2">
           {pathways.map((p) => <PathwayCard key={p.id} pathway={p} signedIn={Boolean(userId)} />)}

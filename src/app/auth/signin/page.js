@@ -2,8 +2,17 @@ import React from 'react';
 import Link from 'next/link';
 import GoogleSignInButton from './GoogleSignInButton';
 import { LEGAL } from '../../../lib/legal';
+import { PRIVATE } from '../../../lib/seo';
 
-export const metadata = { title: 'Sign in · Skillreps' };
+export const metadata = { title: 'Sign in · Skillreps', ...PRIVATE };
+
+// NextAuth's error codes, in words. Anything unexpected gets the general message.
+const ERRORS = {
+  AccessDenied: 'Sign-in was cancelled. Try again when you’re ready.',
+  OAuthAccountNotLinked: 'That email is already linked to another sign-in. Use the Google account you first signed in with.',
+  Configuration: 'Sign-in isn’t working on our side right now. Please try again in a few minutes.',
+};
+const DEFAULT_ERROR = 'Something went wrong signing in with Google. Please try again.';
 
 // Only same-site paths are allowed as a return destination.
 function safeCallback(value) {
@@ -18,6 +27,11 @@ export default function SignIn({ searchParams }) {
         Signing in saves your place in every lesson, your notes and makes, and your weekly streak.
         New here? Signing in creates your account.
       </p>
+      {searchParams?.error && (
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-[15px]">
+          {ERRORS[searchParams.error] || DEFAULT_ERROR}
+        </p>
+      )}
       <GoogleSignInButton callbackUrl={safeCallback(searchParams?.callbackUrl)} />
       <p className="text-sm text-muted">
         {`By continuing you confirm you’re ${LEGAL.minimumAge} or older and agree to the `}

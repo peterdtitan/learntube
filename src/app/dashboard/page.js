@@ -11,9 +11,10 @@ import MakeCard from '../../components/makes/MakeCard';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import LeaderboardToggle from '../../components/community/LeaderboardToggle';
+import { PRIVATE } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Dashboard · Skillreps' };
+export const metadata = { title: 'Dashboard · Skillreps', ...PRIVATE };
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -48,7 +49,7 @@ export default async function DashboardPage() {
         <div className="grid gap-4">
           {summary && <WeekCard summary={summary} />}
           <Card className="grid gap-3">
-            <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Community</h3>
+            <h2 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">Community</h2>
             <LeaderboardToggle initialShown={summary?.showOnLeaderboard ?? true} />
             <Button href="/settings" variant="quiet" size="sm" className="justify-self-start">
               Display name and account settings

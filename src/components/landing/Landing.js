@@ -13,6 +13,7 @@ import {
   FAQ, GAMES, STEPS, TOOLS, XP_TABLE,
 } from './content';
 import { formatMinutes } from '../../lib/estimate';
+import { SITE_URL } from '../../lib/seo';
 
 const S = (name) => `/screens/${name}.webp`;
 const H2 = 'text-[clamp(2rem,4.4vw,3.2rem)] font-extrabold leading-[1.02]';
@@ -393,12 +394,36 @@ function Cta() {
   );
 }
 
+// Tells search engines who runs the site; shown nowhere on the page.
+const STRUCTURED = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#org`,
+      name: 'Skillreps',
+      url: SITE_URL,
+      logo: `${SITE_URL}/apple-icon.png`,
+      sameAs: ['https://www.instagram.com/skillreps/', 'https://www.tiktok.com/@skillreps'],
+      parentOrganization: { '@type': 'Organization', name: 'Elev8r Software Ltd.', url: 'https://elev8rstudio.com' },
+    },
+    {
+      '@type': 'WebSite', name: 'Skillreps', url: SITE_URL, publisher: { '@id': `${SITE_URL}/#org` },
+    },
+  ],
+};
+
 // What a visitor who isn't signed in sees at "/". Signed-in learners get their own home.
 export default function Landing({
   categories, skills, program, makes,
 }) {
   return (
     <div className="bleed">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger -- JSON built from constants above, not input.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED) }}
+      />
       <Hero categories={categories} />
       <Facts skillCount={skills.length} program={program} />
       <How />

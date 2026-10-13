@@ -4,8 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import LegalPage, { Mail, Section } from '../../components/legal/LegalPage';
 import { LEGAL } from '../../lib/legal';
+import { staticMetadata } from '../../lib/seo';
 
-export const metadata = { title: 'Terms of use · Skillreps' };
+export const metadata = staticMetadata(
+  'Terms of use',
+  'The rules for using Skillreps, the free way to learn a skill by making something.',
+  '/terms',
+);
 
 export default function Terms() {
   return (
@@ -64,11 +69,14 @@ export default function Terms() {
         </ul>
       </Section>
 
-      <Section id="ending" title="Ending your account">
+      <Section id="ending" title="Your data and ending your account">
         <p>
-          You can delete your account at any time in
+          You can download a copy of your data, or delete your account, at any time in
           {' '}
           <Link href="/settings" className="font-bold text-accent">Settings</Link>
+          . How we handle your data is in the
+          {' '}
+          <Link href="/privacy" className="font-bold text-accent">privacy policy</Link>
           . We may remove content or suspend accounts that break these terms, and will tell you why
           where we can.
         </p>
@@ -83,6 +91,14 @@ export default function Terms() {
       <Section id="law" title="Changes and governing law">
         <p>
           {`We’ll update this page and its date before changing these terms. They are governed by the laws of ${LEGAL.country}.`}
+        </p>
+      </Section>
+
+      <Section id="contact" title="Contact">
+        <p>
+          {`${LEGAL.company}, ${LEGAL.country}. Questions about these terms, takedown requests and anything else: `}
+          <Mail />
+          .
         </p>
       </Section>
     </LegalPage>

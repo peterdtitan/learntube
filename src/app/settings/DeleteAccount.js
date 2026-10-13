@@ -27,7 +27,8 @@ export default function DeleteAccount() {
     <form onSubmit={remove} className="grid gap-3">
       <p className="text-[15px]">
         This permanently deletes your account, progress, notes, makes and photos, comments, kudos,
-        follows and XP. It can’t be undone.
+        follows, XP and quiz results. It can’t be undone, so download your data first if you
+        want a copy.
       </p>
       <label htmlFor="confirm-delete" className="text-sm font-bold">Type DELETE to confirm</label>
       <div className="flex flex-wrap gap-2">

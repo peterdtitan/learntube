@@ -29,6 +29,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
 export const dynamic = 'force-dynamic';
+export const metadata = { alternates: { canonical: '/' } };
 
 function Section({
   title, sub, action, children,
