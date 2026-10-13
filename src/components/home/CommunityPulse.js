@@ -86,20 +86,19 @@ export default function CommunityPulse({ stats, feed }) {
   ];
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-      <dl className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+      <ul className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1" aria-label="This week">
         {STATS.map(({ icon: Icon, value, label }) => (
-          <div key={label} className="flex items-center gap-4 rounded-lg border border-line bg-surface p-4">
+          <li key={label} className="flex items-center gap-4 rounded-lg border border-line bg-surface p-4">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent-soft text-accent">
               <Icon size={20} aria-hidden="true" />
             </span>
-            <div>
-              <dt className="sr-only">{label}</dt>
-              <dd className="font-display text-3xl font-bold"><CountUp value={value} /></dd>
-              <dd className="text-sm text-muted" aria-hidden="true">{label}</dd>
-            </div>
-          </div>
+            <p className="grid">
+              <span className="font-display text-3xl font-bold"><CountUp value={value} /></span>
+              <span className="text-sm text-muted">{label}</span>
+            </p>
+          </li>
         ))}
-      </dl>
+      </ul>
       {feed.length ? (
         <ol className="grid gap-4 rounded-lg border border-line bg-surface p-5" aria-label="Recent activity">
           {feed.map((item, i) => (

@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  /* In-page links (#cookies, #how) land below the sticky header, not under it. */
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   body {
     @apply bg-canvas text-ink font-sans antialiased;
   }

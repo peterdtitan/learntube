@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import { Download } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../lib/auth';
@@ -10,9 +12,10 @@ import LeaderboardToggle from '../../components/community/LeaderboardToggle';
 import DisplayNameForm from './DisplayNameForm';
 import DeleteAccount from './DeleteAccount';
 import ExtraTimeToggle from './ExtraTimeToggle';
+import { PRIVATE } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Settings · Skillreps' };
+export const metadata = { title: 'Settings · Skillreps', ...PRIVATE };
 
 function Section({ title, children }) {
   return (
@@ -58,6 +61,26 @@ export default async function SettingsPage() {
 
       <Section title="Quizzes">
         <ExtraTimeToggle initialOn={user.extraQuizTime} />
+      </Section>
+
+      <Section title="Your data">
+        <p className="text-[15px] text-muted">
+          A copy of everything Skillreps holds about you, as a file you can keep or take elsewhere:
+          your account, lesson progress, notes, makes, XP and quiz results.
+        </p>
+        <a
+          href="/api/me/export"
+          download
+          className="inline-flex h-11 w-fit items-center gap-2 rounded-pill border border-line px-5 text-[15px] font-bold hover:bg-sunken"
+        >
+          <Download size={17} aria-hidden="true" />
+          Download my data
+        </a>
+        <p className="text-sm text-muted">
+          {'How we use and keep it: '}
+          <Link href="/privacy" className="font-bold text-accent hover:underline">privacy policy</Link>
+          .
+        </p>
       </Section>
 
       <Section title="Delete your account">

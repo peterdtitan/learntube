@@ -15,7 +15,7 @@ function headline(summary) {
 export default function WeekCard({ summary }) {
   return (
     <Card as="aside" aria-label="This week" className="grid content-start gap-4">
-      <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">This week</h3>
+      <h2 className="font-sans text-xs font-bold uppercase tracking-widest text-muted">This week</h2>
       <p className="font-display text-3xl font-bold leading-none tabular-nums">
         {summary.streakWeeks === 1 ? '1 week' : `${summary.streakWeeks} weeks`}
         <span className="ml-2 font-sans text-[15px] font-normal text-muted">practice streak</span>

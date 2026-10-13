@@ -3,8 +3,19 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from './prismadb';
 import { adminEmails, isAdminUser } from './roles';
 
+const prismaAdapter = PrismaAdapter(prisma);
+
+// Sessions live in the database, so Google's access, refresh and ID tokens aren't needed after
+// sign-in and nothing calls Google later. Don't keep them.
+const adapter = {
+  ...prismaAdapter,
+  linkAccount: (account) => prismaAdapter.linkAccount({
+    ...account, access_token: null, refresh_token: null, id_token: null,
+  }),
+};
+
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -29,6 +40,8 @@ export const authOptions = {
   },
   pages: {
     signIn: '/auth/signin',
+    // Failed sign-ins come back to the sign-in page with ?error=, instead of NextAuth's own page.
+    error: '/auth/signin',
   },
 };
 

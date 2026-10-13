@@ -6,6 +6,8 @@ import {
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import CookieNotice from '../components/CookieNotice';
+import { SITE_URL } from '../lib/seo';
 import Providers from './providers';
 import './globals.css';
 
@@ -28,10 +30,25 @@ const body = atkinsonHyperlegible({
 const DESCRIPTION = 'Free YouTube lessons, put in order. Watch a short step, try it with your own hands, and earn XP for what you make. An Elev8r product.';
 
 export const metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'Skillreps · Learn a skill by making something',
   description: DESCRIPTION,
   applicationName: 'Skillreps',
-  openGraph: { siteName: 'Skillreps', title: 'Skillreps', description: DESCRIPTION },
+  openGraph: {
+    type: 'website',
+    siteName: 'Skillreps',
+    locale: 'en',
+    title: 'Skillreps · Learn a skill by making something',
+    description: DESCRIPTION,
+  },
+  twitter: { card: 'summary_large_image' },
+};
+
+export const viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F3F5F7' },
+    { media: '(prefers-color-scheme: dark)', color: '#11161B' },
+  ],
 };
 
 export default function RootLayout({ children }) {
@@ -39,12 +56,16 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
       <body>
         <Providers>
+          <a href="#main" className="sr-only z-[60] rounded-pill bg-accent px-4 py-2 font-bold text-on-accent focus:not-sr-only focus:fixed focus:left-4 focus:top-3">
+            Skip to content
+          </a>
           <div className="flex min-h-screen flex-col">
             <Navbar />
             {/* A page whose root has the "bleed" class (the landing) runs edge to edge. */}
-            <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8 has-[>.bleed]:max-w-none has-[>.bleed]:p-0">{children}</main>
+            <main id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8 has-[>.bleed]:max-w-none has-[>.bleed]:p-0">{children}</main>
             <Footer />
           </div>
+          <CookieNotice />
         </Providers>
       </body>
     </html>

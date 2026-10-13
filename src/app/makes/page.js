@@ -8,9 +8,14 @@ import MakeCard from '../../components/makes/MakeCard';
 import MilestoneCard from '../../components/community/MilestoneCard';
 import Button from '../../components/ui/Button';
 import cn from '../../lib/cn';
+import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Makes · Skillreps' };
+export const metadata = staticMetadata(
+  'Makes',
+  'What Skillreps learners made: granny squares, first web pages, beats and more, with kudos from the community.',
+  '/makes',
+);
 
 function Empty({ title, body, action }) {
   return (

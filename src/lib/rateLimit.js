@@ -14,6 +14,7 @@ export const LIMITS = {
   report: { max: 20, windowSeconds: 86400 },
   settings: { max: 30, windowSeconds: 600 },
   deleteAccount: { max: 5, windowSeconds: 3600 },
+  export: { max: 10, windowSeconds: 3600 },
   videoCheck: { max: 120, windowSeconds: 600 },
   quizStart: { max: 30, windowSeconds: 600 },
   quizEvents: { max: 600, windowSeconds: 600 }, // sent as they happen during a checkpoint

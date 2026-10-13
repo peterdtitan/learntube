@@ -2,12 +2,17 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/auth';
+import { learnerMetadata } from '../../../lib/seo';
 import { getProfile } from '../../../lib/social';
 import MakeCard from '../../../components/makes/MakeCard';
 import MilestoneCard from '../../../components/community/MilestoneCard';
 import ProfileHeader from './ProfileHeader';
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }) {
+  return learnerMetadata(params.userId);
+}
 
 export default async function LearnerPage({ params }) {
   const session = await getServerSession(authOptions);

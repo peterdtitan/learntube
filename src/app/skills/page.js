@@ -7,9 +7,14 @@ import prisma from '../../lib/prismadb';
 import { getShortSkills, learnToPhrase } from '../../lib/skills';
 import Typewriter from '../../components/skills/Typewriter';
 import SkillsBrowser from '../../components/skills/SkillsBrowser';
+import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Skills · Skillreps' };
+export const metadata = staticMetadata(
+  'Skills',
+  'Short skills you can pick up in a few weeks, each under 15 hours, from the best free YouTube lessons. Cooking, knitting, guitar, code and more.',
+  '/skills',
+);
 
 export default async function SkillsPage() {
   const session = await getServerSession(authOptions);
@@ -42,6 +47,7 @@ export default async function SkillsPage() {
         </p>
       </header>
 
+      <h2 className="sr-only">All short skills</h2>
       {skills.length ? (
         <SkillsBrowser skills={skills} signedIn={Boolean(userId)} />
       ) : (

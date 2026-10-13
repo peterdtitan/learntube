@@ -5,9 +5,10 @@ import { authOptions } from '../../../../../lib/auth';
 import prisma from '../../../../../lib/prismadb';
 import { getQuizForLearner } from '../../../../../lib/quizzes';
 import CheckpointRunner from '../../../../../components/quiz/CheckpointRunner';
+import { PRIVATE } from '../../../../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Checkpoint · Skillreps' };
+export const metadata = { title: 'Checkpoint · Skillreps', ...PRIVATE };
 
 export default async function CheckpointPage({ params }) {
   const session = await getServerSession(authOptions);
