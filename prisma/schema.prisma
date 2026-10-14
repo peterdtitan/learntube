@@ -39,6 +39,9 @@ model User {
   interests         String[]        @default([]) // Skill ids chosen in the welcome survey
   learningGoal      String? // HOBBY, CAREER, GIFTS or CURIOUS, from the welcome survey
   onboardedAt       DateTime? // set when the welcome survey is finished or skipped
+  emailReminders    Boolean         @default(true) // streak, come-back and log-your-make emails
+  emailWeekly       Boolean         @default(true) // the Monday recap
+  emails            EmailLog[]
 }
 
 model Account {
@@ -476,4 +479,29 @@ model Track {
 enum PathwayKind {
   COURSE
   SKILL
+}
+
+enum EmailKind {
+  WEEKLY_RECAP
+  STREAK_AT_RISK
+  LOG_MAKE
+  COME_BACK
+  TEST
+}
+
+// One row per email sent. The unique key stops the same reminder going out twice (a week's
+// recap, one lesson's log-your-make), and recent rows cap how often anyone hears from us.
+model EmailLog {
+  id         String    @id @default(cuid())
+  userId     String
+  kind       EmailKind
+  key        String
+  providerId String? // Resend's id for the message
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, key])
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }

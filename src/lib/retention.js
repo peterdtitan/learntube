@@ -4,6 +4,7 @@ import prisma from './prismadb';
 export const RETENTION_DAYS = {
   checkpointCopyText: 90, // the copied or pasted text; counts and times stay with the attempt
   notifications: 365,
+  emailLog: 180, // long enough for the weekly and fortnightly limits, with room to spare
   rateLimits: 2, // the longest limit window is a day
 };
 
@@ -12,7 +13,7 @@ const daysBefore = (now, days) => new Date(now.getTime() - days * 86400000);
 // Run daily by Vercel Cron (see vercel.json). Safe to run any number of times.
 export async function runRetention(now = new Date()) {
   const [
-    copyText, sessions, tokens, verificationTokens, rateLimits, notifications,
+    copyText, sessions, tokens, verificationTokens, rateLimits, notifications, emailLog,
   ] = await prisma.$transaction([
     prisma.$executeRaw`
       UPDATE "QuizAttempt"
@@ -39,6 +40,9 @@ export async function runRetention(now = new Date()) {
     prisma.notification.deleteMany({
       where: { createdAt: { lt: daysBefore(now, RETENTION_DAYS.notifications) } },
     }),
+    prisma.emailLog.deleteMany({
+      where: { createdAt: { lt: daysBefore(now, RETENTION_DAYS.emailLog) } },
+    }),
   ]);
   return {
     checkpointCopyTextCleared: copyText,
@@ -47,5 +51,6 @@ export async function runRetention(now = new Date()) {
     expiredVerificationTokens: verificationTokens.count,
     oldRateLimits: rateLimits.count,
     oldNotifications: notifications.count,
+    oldEmailLogs: emailLog.count,
   };
 }
