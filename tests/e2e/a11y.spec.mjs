@@ -26,24 +26,25 @@ test.describe('accessibility', () => {
     test.use({ cookieNotice: true });
 
     test('pages a visitor can open', async ({ page }) => {
-      const { bread, code } = state();
       const found = [];
-      for (const path of [
-        '/', '/skills', '/pathways', `/pathways/${bread.id}`, lessonUrl(bread.id, bread.lessons[0]),
-        lessonUrl(code.id, code.lesson), '/makes', '/leaderboard', '/privacy', '/terms',
-        '/auth/signin', '/nope',
-      ]) found.push(...await scan(page, path));
+      for (const path of ['/', '/start', '/privacy', '/terms', '/auth/signin']) {
+        found.push(...await scan(page, path));
+      }
       expect(found).toEqual([]);
     });
   });
 
   test('pages a signed-in learner opens', async ({ page, signInAs }) => {
-    const { bread, people, quizzes } = state();
+    test.slow(); // many pages, each in two themes
+    const {
+      bread, code, people, quizzes,
+    } = state();
     await signInAs('ada');
     const found = [];
     for (const path of [
-      '/', '/dashboard', '/settings', '/notifications', `/learners/${people.ada.id}`, '/welcome',
-      lessonUrl(bread.id, bread.lessons[0]), `/pathways/${bread.id}/modules/${quizzes.unit}/game`,
+      '/', '/skills', '/pathways', `/pathways/${bread.id}`, lessonUrl(code.id, code.lesson), '/makes',
+      '/leaderboard', '/nope', '/dashboard', '/settings', '/notifications', `/learners/${people.ada.id}`,
+      '/welcome', lessonUrl(bread.id, bread.lessons[0]), `/pathways/${bread.id}/modules/${quizzes.unit}/game`,
     ]) found.push(...await scan(page, path));
     expect(found).toEqual([]);
   });

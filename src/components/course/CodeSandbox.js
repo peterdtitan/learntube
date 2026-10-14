@@ -180,6 +180,9 @@ export default function CodeSandbox({ lessonId, starterCode }) {
       <div className="grid gap-1">
         <p id={`console-${lessonId}`} className="text-sm font-bold text-muted">Console</p>
         <pre
+          // Focusable so keyboard users can scroll long output.
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
           aria-labelledby={`console-${lessonId}`}
           aria-live="polite"
           className="max-h-40 min-h-[3rem] overflow-auto rounded-md border border-line bg-sunken p-3 font-mono text-[13px] leading-relaxed"

@@ -24,8 +24,8 @@ export default function SignIn({ searchParams }) {
     <div className="mx-auto grid max-w-md gap-5 rounded-lg border border-line bg-surface p-8 sm:mt-10">
       <h1 className="text-3xl font-bold">Sign in</h1>
       <p className="text-[15px] text-muted">
-        Signing in saves your place in every lesson, your notes and makes, and your weekly streak.
-        New here? Signing in creates your account.
+        Skillreps is free, with an account: it saves your place in every lesson, your notes and
+        makes, and your weekly streak. New here? Signing in creates your account.
       </p>
       {searchParams?.error && (
         <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-[15px]">
@@ -33,6 +33,11 @@ export default function SignIn({ searchParams }) {
         </p>
       )}
       <GoogleSignInButton callbackUrl={safeCallback(searchParams?.callbackUrl)} />
+      <p className="text-[15px]">
+        {'New to Skillreps? '}
+        <Link href="/start" className="font-bold text-accent hover:underline">Find your first skill</Link>
+        {' in three quick questions.'}
+      </p>
       <p className="text-sm text-muted">
         {`By continuing you confirm you’re ${LEGAL.minimumAge} or older and agree to the `}
         <Link href="/terms" className="font-bold text-accent">Terms</Link>

@@ -39,3 +39,25 @@ export function comingSoon(interests, items, categories) {
   const available = new Set(items.map((i) => i.skill?.id));
   return categories.filter((c) => interests.includes(c.id) && !available.has(c.id));
 }
+
+export function itemHref(item) {
+  return item.kind === 'program' ? `/tracks/${item.slug}` : `/pathways/${item.id}`;
+}
+
+// About how many weeks a skill takes at the learner's pace: half an hour on each practice day.
+export const SESSION_MINUTES = 30;
+export function weeksToFinish(minutes, daysPerWeek) {
+  if (!minutes || !daysPerWeek) return null;
+  return Math.max(1, Math.ceil(minutes / (daysPerWeek * SESSION_MINUTES)));
+}
+
+// The end of the start questions: one place to start, and up to two others to choose instead.
+// Interests come first; with nothing to learn in them yet, the most popular skills stand in.
+export function startOptions(items, answers) {
+  const { picked, more } = recommend(items, answers, { picked: 3, more: 3 });
+  const options = [...picked, ...more].slice(0, 3);
+  return {
+    options,
+    fromInterests: picked.length > 0,
+  };
+}

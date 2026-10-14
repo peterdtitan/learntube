@@ -5,7 +5,7 @@ import Link from 'next/link';
 import LegalPage, { Mail, Section } from '../../components/legal/LegalPage';
 import { LEGAL } from '../../lib/legal';
 import { RETENTION_DAYS } from '../../lib/retention';
-import { PICKS_COOKIE } from '../../lib/picks';
+import { START_COOKIE } from '../../lib/picks';
 import { staticMetadata } from '../../lib/seo';
 
 export const metadata = staticMetadata(
@@ -116,7 +116,7 @@ export default function Privacy() {
             ['next-auth.csrf-token', 'Protects signing in from forged requests', 'Until you close your browser'],
             ['next-auth.callback-url', 'Brings you back to the page you signed in from', 'Until you close your browser'],
             ['next-auth.state and next-auth.pkce.code_verifier', 'Prove that the answer coming back from Google is for the sign-in you started', '15 minutes'],
-            [PICKS_COOKIE, 'Holds interests you ticked on the home page, so the welcome questions start with them', 'Up to a day; removed once you answer'],
+            [START_COOKIE, 'Holds your answers to the start questions while you sign up with Google, so your new account starts with them', 'Up to a day; removed once you’re signed in'],
           ]}
         />
         <p>

@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 import { Check } from 'lucide-react';
 import SkillIcon from '../ui/SkillIcon';
 import StartButton from './StartButton';
-import { LEGAL } from '../../lib/legal';
 import cn from '../../lib/cn';
 
-// The hero's call to action. Ticking interests here saves answering them again after sign-in.
+// The hero's call to action. Ticking interests here saves answering them again at /start.
 export default function InterestPicker({ categories }) {
   const [picks, setPicks] = useState([]);
   const toggle = (id) => setPicks((list) => (list.includes(id)
@@ -47,18 +46,17 @@ export default function InterestPicker({ categories }) {
       </fieldset>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
         <StartButton picks={picks}>
-          {picks.length ? `Start with ${picks.length} picked` : 'Start learning free'}
+          {picks.length ? `Continue with ${picks.length} picked` : 'Start learning free'}
         </StartButton>
-        <Link href="/skills" className="text-[15px] font-bold text-accent hover:underline">
-          Or look around first
-        </Link>
+        <span className="text-[15px] text-muted">
+          {'Have an account? '}
+          <button type="button" onClick={() => signIn('google', { callbackUrl: '/' })} className="font-bold text-accent hover:underline">
+            Sign in
+          </button>
+        </span>
       </div>
       <p className="max-w-[34rem] text-sm text-muted">
-        {`Free, with a Google account. By continuing you confirm you’re ${LEGAL.minimumAge} or older and agree to the `}
-        <Link href="/terms" className="font-bold text-accent hover:underline">Terms</Link>
-        {' and '}
-        <Link href="/privacy" className="font-bold text-accent hover:underline">Privacy policy</Link>
-        .
+        Free, forever. Three quick questions, then the skill to start with.
       </p>
     </div>
   );

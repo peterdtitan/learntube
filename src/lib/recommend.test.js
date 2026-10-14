@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { comingSoon, recommend } from './recommend';
+import {
+  comingSoon, itemHref, recommend, startOptions, weeksToFinish,
+} from './recommend';
 
 const item = (id, overrides = {}) => ({
   id, kind: 'skill', skill: { id: 'guitar', tier: 'HAND' }, minutes: 600, learners: 0, started: false, ...overrides,
@@ -45,5 +47,37 @@ describe('comingSoon', () => {
   it('lists chosen interests that have nothing to learn yet', () => {
     const categories = [{ id: 'guitar', name: 'Guitar' }, { id: 'digital-marketing', name: 'Digital Marketing' }];
     expect(comingSoon(['guitar', 'digital-marketing'], all, categories)).toEqual([{ id: 'digital-marketing', name: 'Digital Marketing' }]);
+  });
+});
+
+describe('startOptions', () => {
+  it('starts with the best match, then up to two others', () => {
+    const { options, fromInterests } = startOptions(all, { interests: ['cybersecurity'], goal: 'CAREER' });
+    expect(fromInterests).toBe(true);
+    expect(options.map((i) => i.id)).toEqual(['cyber', 'accounts', 'knit']);
+  });
+
+  it('falls back to popular skills when nothing matches the interests yet', () => {
+    const { options, fromInterests } = startOptions(all, { interests: ['pottery'], goal: 'HOBBY' });
+    expect(fromInterests).toBe(false);
+    expect(options[0].id).toBe('knit');
+    expect(options).toHaveLength(3);
+  });
+
+  it('has nothing to offer an empty catalogue', () => {
+    expect(startOptions([], { interests: ['guitar'] }).options).toEqual([]);
+  });
+});
+
+describe('itemHref and weeksToFinish', () => {
+  it('links skills to their course and programs to their track', () => {
+    expect(itemHref({ kind: 'skill', id: 'p1' })).toBe('/pathways/p1');
+    expect(itemHref({ kind: 'program', id: 't1', slug: 'cybersecurity-expert' })).toBe('/tracks/cybersecurity-expert');
+  });
+
+  it('counts half-hour sessions on each practice day', () => {
+    expect(weeksToFinish(360, 3)).toBe(4);
+    expect(weeksToFinish(20, 5)).toBe(1);
+    expect(weeksToFinish(0, 3)).toBeNull();
   });
 });
