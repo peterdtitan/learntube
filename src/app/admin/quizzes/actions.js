@@ -69,6 +69,10 @@ export async function saveQuizSettings(prev, form) {
       maxPenalty: int(form, 'maxPenalty', { min: 0, max: 100, fallback: quiz.maxPenalty }),
       timePenalty: int(form, 'timePenalty', { min: 0, max: 10, fallback: quiz.timePenalty }),
       afterVideoId: String(form.get('afterVideoId') || '') || null,
+      // Blank asks every question in the bank.
+      drawCount: String(form.get('drawCount') ?? '').trim()
+        ? int(form, 'drawCount', { min: 1, max: 200, fallback: quiz.drawCount })
+        : null,
     });
   }
   // A game can borrow the module's lesson-check questions, so it may have none of its own.

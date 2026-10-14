@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto';
 import prisma from './prismadb';
 import {
-  cleanEvents, gradeQuiz, integrityPenalty, publicQuestion, secondsLeft, summarizeEvents,
+  cleanEvents, drawQuestions, gradeQuiz, integrityPenalty, publicQuestion, secondsLeft,
+  summarizeEvents,
 } from './quizGrade';
 import { lessonContext, pathwayContext, reward } from './rewards';
 import { QUIZ_XP } from './xpValues';
@@ -41,6 +43,18 @@ async function quizPathwayId(quiz) {
   return null;
 }
 
+// The questions an attempt was given: its drawn set, in drawn order, or the whole quiz.
+function attemptQuestions(questions, attempt) {
+  if (!attempt?.questionIds?.length) return questions;
+  const byId = new Map(questions.map((q) => [q.id, q]));
+  return attempt.questionIds.map((id) => byId.get(id)).filter(Boolean);
+}
+
+// How many questions one attempt asks.
+function perAttempt(quiz, bankSize) {
+  return quiz.drawCount && quiz.drawCount < bankSize ? quiz.drawCount : bankSize;
+}
+
 function attemptView(attempt, quiz) {
   if (!attempt) return null;
   return {
@@ -57,6 +71,8 @@ function attemptView(attempt, quiz) {
     finalScore: attempt.finalScore,
     passed: attempt.passed,
     results: attempt.results,
+    // The learner's own log so far, so a reload carries on from it.
+    events: attempt.submittedAt ? undefined : attempt.events || [],
     integrity: attempt.submittedAt ? {
       leaveCount: attempt.leaveCount,
       awaySeconds: attempt.awaySeconds,
@@ -105,9 +121,13 @@ export async function getQuizForLearner(quizId, userId, { isAdmin = false } = {}
     pathwayId: await quizPathwayId(quiz),
     moduleTitle: quiz.unit?.title || null,
     lessonTitle: quiz.video?.title || null,
-    questionCount: quiz.questions.length,
+    questionCount: perAttempt(quiz, quiz.questions.length),
+    bankSize: quiz.questions.length,
+    unitId: quiz.unitId,
     // Seeded by the attempt so a reload shows the same order.
-    questions: open ? quiz.questions.map((q) => publicQuestion(q, `${open.id}:${q.id}`)) : [],
+    questions: open
+      ? attemptQuestions(quiz.questions, open).map((q) => publicQuestion(q, `${open.id}:${q.id}`))
+      : [],
     open: attemptView(open, quiz),
     best: attemptView(best, quiz),
     last: attemptView(last, quiz),
@@ -146,7 +166,15 @@ export async function startAttempt(quizId, userId, now = new Date()) {
   }
 
   let deadlineAt = null;
+  let questionIds = [];
   if (quiz.kind === 'CHECKPOINT') {
+    // Each attempt gets its own draw from the bank, so a retake isn't a repeat.
+    if (quiz.drawCount && quiz.drawCount < questionCount) {
+      const bank = await prisma.question.findMany({
+        where: { quizId }, ...QUESTION_ORDER, select: { id: true },
+      });
+      questionIds = drawQuestions(bank, quiz.drawCount, randomUUID()).map((q) => q.id);
+    }
     const user = await prisma.user.findUnique({
       where: { id: userId }, select: { extraQuizTime: true },
     });
@@ -155,7 +183,13 @@ export async function startAttempt(quizId, userId, now = new Date()) {
     deadlineAt = new Date(now.getTime() + seconds * 1000);
   }
   try {
-    return { attempt: await prisma.quizAttempt.create({ data: { quizId, userId, deadlineAt } }) };
+    return {
+      attempt: await prisma.quizAttempt.create({
+        data: {
+          quizId, userId, deadlineAt, questionIds,
+        },
+      }),
+    };
   } catch (err) {
     // Two tabs starting at once: use whichever got there first.
     const again = await prisma.quizAttempt.findFirst({
@@ -208,7 +242,10 @@ export async function submitAttempt(attemptId, userId, { answers, events } = {},
   const { quiz } = attempt;
   const questions = quiz.kind === 'MODULE_GAME'
     ? await getGameQuestions(quiz.unitId)
-    : await prisma.question.findMany({ where: { quizId: quiz.id }, ...QUESTION_ORDER });
+    : attemptQuestions(
+      await prisma.question.findMany({ where: { quizId: quiz.id }, ...QUESTION_ORDER }),
+      attempt,
+    );
   const graded = gradeQuiz(questions, answers && typeof answers === 'object' ? answers : {});
 
   const summary = {
@@ -266,12 +303,12 @@ export function resultView(attempt, quiz) {
   return attemptView(attempt, quiz);
 }
 
-// Where the checkpoint sits in a module: after the chosen lesson, or the middle one.
+// Where the module exam sits: after the chosen lesson, or at the end of the module.
 // Never lands between two parts of the same split video: it moves on to the last part.
 export function checkpointIndex(videos, afterVideoId) {
   if (!videos.length) return -1;
   const chosen = afterVideoId ? videos.findIndex((v) => v.id === afterVideoId) : -1;
-  let index = chosen >= 0 ? chosen : Math.ceil(videos.length / 2) - 1;
+  let index = chosen >= 0 ? chosen : videos.length - 1;
   const samePart = (a, b) => a && b && a.url && a.url === b.url && a.endSec && b.startSec;
   while (samePart(videos[index], videos[index + 1])) index += 1;
   return index;

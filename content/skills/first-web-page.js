@@ -1,4 +1,5 @@
 import { q } from '../../src/lib/content/plan';
+import { buildExam, cssExam, htmlExam } from './first-web-page-exams';
 
 // HTML from Kevin Stratvert, CSS concepts from Kevin Powell, then a personal site from
 // Coding2GO. Lessons follow each video's own chapters.
@@ -18,6 +19,7 @@ export default {
   modules: [
     {
       title: 'HTML',
+      checkpoint: htmlExam,
       lessons: [
         {
           ...html,
@@ -66,6 +68,7 @@ export default {
     },
     {
       title: 'CSS',
+      checkpoint: cssExam,
       lessons: [
         {
           ...css,
@@ -103,6 +106,7 @@ export default {
     },
     {
       title: 'Build your page',
+      checkpoint: buildExam,
       lessons: [
         {
           ...site,

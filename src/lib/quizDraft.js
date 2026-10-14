@@ -11,11 +11,11 @@ const TIMEOUT_MS = 50000;
 // silently cutting the transcript short.
 const MAX_SOURCE_CHARS = 400000;
 
-export const DRAFT_COUNTS = { LESSON_CHECK: 3, CHECKPOINT: 8, MODULE_GAME: 6 };
+export const DRAFT_COUNTS = { LESSON_CHECK: 3, CHECKPOINT: 10, MODULE_GAME: 6 };
 
 const GUIDANCE = {
   LESSON_CHECK: 'A quick check right after one lesson: test the key ideas and the steps of the hands-on task. Straightforward recall.',
-  CHECKPOINT: 'A timed checkpoint halfway through a module: spread questions across the lessons given, favour applying and ordering steps over pure recall, and include a couple that need careful thought.',
+  CHECKPOINT: 'A timed exam at the end of a module. Each learner gets a random draw from the bank, so every question must stand alone, and no two may test the same fact. Spread questions across all the lessons given. Favour short scenarios (a situation, then what to do, what went wrong, or what comes next) and applying or ordering steps over recall; about a third should need careful thought.',
   MODULE_GAME: 'Fast game rounds at the end of a module: short prompts that can be answered in under 20 seconds. Favour SINGLE, TRUE_FALSE and MATCH.',
 };
 
@@ -74,7 +74,7 @@ Question types and the fields each one uses:
 Fill every other field with an empty value: [] for lists, 0 for numbers, false for isTrue.
 
 Rules:
-- Only ask what the lesson material actually covers. Never rely on outside knowledge.
+- Only ask what the lessons cover. With transcripts, never rely on outside knowledge. With only titles and summaries, ask the standard, settled knowledge those lessons teach, at the level of someone who watched them.
 - Prompts are one or two plain sentences. No trick questions, no "all of the above".
 - Wrong options should be believable mistakes a beginner might make.
 - explanation is one sentence saying why the answer is right, for the results screen.
@@ -111,10 +111,7 @@ export async function draftQuestions({
   if (!process.env.ANTHROPIC_API_KEY) {
     return { error: 'AI drafts need ANTHROPIC_API_KEY set in the environment.' };
   }
-  const withText = lessons.filter((l) => l.transcript?.trim());
-  if (!withText.length) {
-    return { error: 'Add a transcript to the lesson first. Drafts are written only from what the lesson says.' };
-  }
+  if (!lessons.length) return { error: 'There are no lessons to draft from yet.' };
   const material = lessons.map((l, i) => [
     `## Lesson ${i + 1}: ${l.title}`,
     l.description && `Summary: ${l.description}`,
@@ -125,8 +122,10 @@ export async function draftQuestions({
     return { error: 'These transcripts are too long to draft from in one go. Draft from fewer lessons.' };
   }
 
+  const hasTranscripts = lessons.some((l) => l.transcript?.trim());
   const request = [
     `Write ${count} questions. ${GUIDANCE[kind]}`,
+    !hasTranscripts && 'There are no transcripts, only lesson titles and summaries.',
     moduleTitle && `Module: ${moduleTitle}`,
     existingPrompts.length && `These questions already exist; don't repeat them:\n${existingPrompts.map((p) => `- ${p}`).join('\n')}`,
     `<material>\n${material}\n</material>`,

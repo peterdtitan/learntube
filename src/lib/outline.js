@@ -55,7 +55,8 @@ export async function getPathwayOutline(pathwayId, userId) {
     id: q.id,
     kind: q.kind,
     title: q.title,
-    questionCount: q._count.questions,
+    // An exam asks a draw from its bank; everything else asks every question.
+    questionCount: Math.min(q.drawCount || Infinity, q._count.questions),
     timeLimitSec: q.timeLimitSec,
     passPercent: q.passPercent,
     best: bestScore[q.id] ?? null,

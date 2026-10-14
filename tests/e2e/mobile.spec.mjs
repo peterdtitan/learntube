@@ -27,4 +27,28 @@ test.describe('on a phone', () => {
       expect(overflow, path).toBeLessThanOrEqual(0);
     }
   });
+
+  test('a module exam doesn’t count focus changes or scrolling as leaving', async ({ page, signInAs }) => {
+    await signInAs('ada');
+    const { bread, quizzes } = state();
+    await page.goto(`/pathways/${bread.id}/checkpoint/${quizzes.checkpoint}`);
+    await expect(page.getByText('Switching to another app or tab costs')).toBeVisible();
+    await page.getByRole('button', { name: 'Start the exam' }).click();
+    await expect(page.getByLabel('Time left')).toBeVisible();
+    // No fullscreen on phones, and pull-to-refresh is off while the clock runs.
+    expect(await page.evaluate(() => Boolean(document.fullscreenElement))).toBe(false);
+    expect(await page.evaluate(() => document.documentElement.style.overscrollBehaviorY)).toBe('none');
+
+    // The notification shade or address bar can take focus without hiding the page.
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await page.waitForTimeout(2500);
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.mouse.wheel(0, -800);
+    await expect(page.getByRole('alertdialog', { name: 'You left the exam' })).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    await page.getByRole('button', { name: 'Submit anyway' }).click();
+    await expect(page.getByRole('heading', { name: 'Score deductions' })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.style.overscrollBehaviorY)).toBe('');
+  });
 });

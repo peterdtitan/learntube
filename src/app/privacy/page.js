@@ -46,7 +46,7 @@ export default function Privacy() {
         <ul>
           <li><strong>From Google when you sign in:</strong> your name, email address and profile picture. We don’t keep Google’s sign-in tokens, and we never see your Google password.</li>
           <li><strong>What you do here:</strong> where you are in each lesson, Try steps and XP, notes, makes (titles, notes and photos), kudos, comment phrases, follows, cheers and reports.</li>
-          <li><strong>Quizzes:</strong> your answers and scores. During timed checkpoints we also record each time you leave the quiz page and for how long, and any text you copy or paste. You are told this before a checkpoint starts.</li>
+          <li><strong>Quizzes:</strong> your answers and scores. During timed module exams we also record the kind of device (phone, tablet or computer), each time you leave the exam page and for how long, and any text you copy or paste. You are told this before an exam starts.</li>
           <li><strong>Settings and the welcome questions:</strong> display name, interests, what brought you here, weekly goal, time zone (from your device, so practice days match your clock), leaderboard and extra-time choices.</li>
           <li><strong>Technical logs:</strong> our host records requests (IP address, browser and page) for a short time to run and protect the site.</li>
         </ul>
@@ -63,7 +63,7 @@ export default function Privacy() {
           rows={[
             ['Your account, lessons, progress, notes, makes and XP', 'Providing the service you signed up for (contract)'],
             ['Showing your makes, milestones and XP to other learners', 'Providing the service; you can hide yourself from leaderboards and delete anything you post'],
-            ['Checkpoint integrity logs', 'Our legitimate interest in fair scores, explained before each checkpoint'],
+            ['Exam integrity logs', 'Our legitimate interest in fair scores, explained before each exam'],
             ['Reports, moderation and rate limits', 'Our legitimate interest in keeping the community safe and the site running'],
             ['Interests picked before signing in', 'Your request: you ticked them and pressed Start'],
           ]}
@@ -135,7 +135,7 @@ export default function Privacy() {
           head={['Data', 'Kept for']}
           rows={[
             ['Your account and everything you created', 'Until you delete it, or your whole account'],
-            ['Text copied or pasted during a checkpoint', `${RETENTION_DAYS.checkpointCopyText} days; the counts stay with the attempt`],
+            ['Text copied or pasted during an exam', `${RETENTION_DAYS.checkpointCopyText} days; the counts stay with the attempt`],
             ['Notifications', `${RETENTION_DAYS.notifications} days`],
             ['Expired sign-in sessions', 'Removed daily'],
             ['Rate-limit counters', `${RETENTION_DAYS.rateLimits} days`],

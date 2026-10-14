@@ -1,0 +1,75 @@
+import { q } from '../../src/lib/content/plan';
+
+// Module exams for "Build your first web page": 12 questions drawn from each bank of 20.
+const exam = (title, questions) => ({
+  title, minutes: 18, draw: 12, questions,
+});
+
+export const htmlExam = exam('HTML exam', [
+  q.single('Which tag holds a page’s main heading?', ['<head>', '<h1>', '<header>', '<title>'], 1),
+  q.single('Which element’s text appears in the browser tab?', ['<h1>', '<title>', '<meta>', '<body>'], 1),
+  q.single('Which attribute describes an image for screen readers, and shows if it fails to load?', ['src', 'alt', 'title', 'href'], 1),
+  q.single('Which tag makes a link to another page?', ['<link>', '<a>', '<href>', '<nav>'], 1),
+  q.single('Which list numbers its items?', ['<ul>', '<ol>', '<dl>', '<menu>'], 1),
+  q.order('Put the parts of a basic HTML document in order.', ['<!DOCTYPE html>', '<html>', '<head>', '<body>']),
+  q.single('Which element should wrap a site’s main menu of links?', ['<aside>', '<nav>', '<footer>', '<section>'], 1),
+  q.single('Which tag starts a new row in a table?', ['<td>', '<tr>', '<th>', '<thead>'], 1),
+  q.single('Which input type shows a box the user can tick?', ['type="radio"', 'type="checkbox"', 'type="text"', 'type="submit"'], 1),
+  q.single('Why connect a <label> to its input with for and id?', ['It makes the text bold', 'Clicking the label focuses the input, and screen readers read it out', 'It submits the form', 'It hides the input'], 1),
+  q.single('Which attribute opens a link in a new tab?', ['rel="new"', 'target="_blank"', 'href="_blank"', 'open="tab"'], 1),
+  q.single('Which element wraps the one main part of the page’s content?', ['<div>', '<main>', '<span>', '<aside>'], 1),
+  q.single('A page uses <h1>, and the next section heading is <h4>. What is wrong?', ['Nothing', 'Heading levels shouldn’t skip; it should be <h2>', '<h4> isn’t valid HTML', 'Headings must be inside a table'], 1),
+  q.single('Which adds a video with play and pause buttons?', ['<img src="clip.mp4">', '<video src="clip.mp4" controls>', '<audio controls>', '<iframe type="mp4">'], 1),
+  q.tf('HTML describes what content is; CSS controls how it looks.', true),
+  q.single('Which tag makes a paragraph?', ['<br>', '<p>', '<pre>', '<span>'], 1),
+  q.single('How do you write a comment in HTML?', ['// note', '<!-- note -->', '/* note */', '# note'], 1),
+  q.single('Which form attribute says where the data is sent?', ['method', 'action', 'name', 'value'], 1),
+  q.single('Which tag adds an image and has no closing tag?', ['<picture>', '<img>', '<image>', '<src>'], 1),
+  q.single('Where do <meta> tags go?', ['Inside <footer>', 'Inside <head>', 'After </html>', 'Inside <ul>'], 1),
+]);
+
+export const cssExam = exam('CSS exam', [
+  q.single('Which selector targets every element with class="card"?', ['#card', '.card', 'card', '*card'], 1),
+  q.single('Which selector is the most specific?', ['.title', '#title', 'h1', '*'], 1),
+  q.single('Two rules with equal specificity give one element different colours. Which wins?', ['The first one', 'The one that comes later', 'Neither', 'The shorter one'], 1),
+  q.order('Put the box model layers in order, from the inside out.', ['Content', 'Padding', 'Border', 'Margin']),
+  q.single('What does box-sizing: border-box change?', ['It removes the border', 'The width now includes padding and border', 'It adds margin', 'It makes the box a flex container'], 1),
+  q.single('Which property do child elements inherit by default?', ['border', 'color', 'margin', 'padding'], 1),
+  q.single('Which unit is relative to the root element’s font size?', ['px', 'rem', 'em', 'vh'], 1),
+  q.single('Which turns a container into a flexbox?', ['position: flex', 'display: flex', 'float: flex', 'flex: on'], 1),
+  q.single('In a flex row, which centres the items horizontally?', ['align-items: center', 'justify-content: center', 'text-align: middle', 'vertical-align: center'], 1),
+  q.single('Which adds space inside an element, between its content and its border?', ['margin', 'padding', 'gap', 'outline'], 1),
+  q.single('Which class naming method uses block__element--modifier?', ['Hungarian notation', 'BEM', 'camelCase', 'kebab-only'], 1),
+  q.single('How do you link an external stylesheet?', ['<style src="style.css">', '<link rel="stylesheet" href="style.css">', '<css href="style.css">', '<script href="style.css">'], 1),
+  q.single('Which colour is solid red?', ['rgba(255, 0, 0, 0)', 'rgb(255 0 0)', '#00ff00', 'hsl(120 100% 50%)'], 1),
+  q.single('Which selector styles links only while the pointer is over them?', ['a.hover', 'a:hover', 'a::hover', '#a:hover'], 1),
+  q.single('The top and bottom margins of two stacked blocks overlap instead of adding up. This is…', ['Overflow', 'Margin collapse', 'Specificity', 'Inheritance'], 1),
+  q.single('Which display value sits elements side by side and still allows a width and height?', ['inline', 'inline-block', 'none', 'contents'], 1),
+  q.single('Which property sets the space between flex or grid items?', ['margin-between', 'gap', 'spacing', 'padding'], 1),
+  q.tf('Adding !important to most rules makes CSS easier to maintain.', false, 'It overrides the cascade, so later changes get harder.'),
+  q.single('Which property changes the typeface?', ['font-style', 'font-family', 'text-font', 'typeface'], 1),
+  q.single('Which position value keeps an element in the same spot on screen while the page scrolls?', ['static', 'fixed', 'relative', 'absolute'], 1),
+]);
+
+export const buildExam = exam('Build your page exam', [
+  q.single('Which tag makes a page fit the width of a phone screen?', ['<meta charset="utf-8">', '<meta name="viewport" content="width=device-width, initial-scale=1">', '<meta name="robots">', '<meta http-equiv="refresh">'], 1),
+  q.single('Which CSS feature applies styles only at certain screen widths?', ['A pseudo-class', 'A media query', 'A comment', 'A custom property'], 1),
+  q.single('Which media query matches screens 600px wide or narrower?', ['@media (min-width: 600px)', '@media (max-width: 600px)', '@media screen > 600px', '@media width = 600px'], 1),
+  q.single('Which makes a gallery wrap into as many 200px-wide columns as will fit?', ['float: left on every image', 'grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))', 'A table', 'position: absolute'], 1),
+  q.single('Which HTML makes an expandable FAQ item without any JavaScript?', ['<dialog>', '<details> with a <summary>', '<section>', '<menu>'], 1),
+  q.single('Images spill out of their boxes on phones. Which rule fixes it?', ['img { width: 2000px; }', 'img { max-width: 100%; height: auto; }', 'img { position: fixed; }', 'img { display: none; }'], 1),
+  q.single('How do you put the logo on the left and the menu on the right of a header, in one line?', ['Two tables', 'A flex container with justify-content: space-between', 'A <br> between them', 'position: static'], 1),
+  q.single('Why keep CSS in its own file rather than in style attributes?', ['Browsers ignore style attributes', 'One change updates every page, and the HTML stays readable', 'HTML requires it', 'It makes pages slower'], 1),
+  q.single('Which line declares a CSS custom property correctly?', ['$brand: #2f6f62;', '--brand: #2f6f62;', '@brand = #2f6f62', 'brand-var: #2f6f62'], 1),
+  q.single('How do you use a custom property called --brand?', ['color: --brand;', 'color: var(--brand);', 'color: $brand;', 'color: brand();'], 1),
+  q.single('The menu takes up too much room on phones. What is a common fix?', ['Make the text smaller than 8px', 'Fold it behind a menu button', 'Remove the links', 'Make the page wider'], 1),
+  q.single('Which browser tool shows how the page looks at phone sizes?', ['Print preview', 'The device toolbar in the developer tools', 'The bookmarks bar', 'The downloads page'], 1),
+  q.single('Writing phone styles first, then adding min-width media queries for bigger screens, is…', ['Desktop-first', 'Mobile-first', 'Print-first', 'Grid-first'], 1),
+  q.single('Which file does a web server usually show when you open a folder?', ['home.css', 'index.html', 'main.js', 'page.txt'], 1),
+  q.single('Which makes a background image fill the whole section?', ['background-repeat: repeat', 'background-size: cover', 'object-fit: none', 'background-color: cover'], 1),
+  q.single('A button has white text on pale yellow and is hard to read. What is the problem?', ['The wrong font unit', 'Low colour contrast', 'Missing alt text', 'Margin collapse'], 1),
+  q.single('Which element should a "Send" action that submits a form use?', ['<div onclick>', '<button type="submit">', '<span>', '<a href="#">'], 1),
+  q.single('Which unit sizes things relative to the width of the browser window?', ['px', 'vw', 'pt', 'cm'], 1),
+  q.tf('A site that works on phones needs a separate HTML file for mobile.', false, 'One responsive page adapts with CSS.'),
+  q.single('Which rule makes in-page links glide to their section?', ['a { transition: scroll; }', 'html { scroll-behavior: smooth; }', 'body { overflow: smooth; }', 'html { scroll-snap: on; }'], 1),
+]);

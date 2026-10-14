@@ -9,6 +9,24 @@ function seconds(s) {
   return s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
 }
 
+const clockAt = (ms) => {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+
+// One line per thing the exam recorded, in plain words.
+function describeEvent(e) {
+  const where = e.via === 'window' ? 'another window' : 'another tab or app';
+  switch (e.type) {
+    case 'leave': return { text: `Left for ${seconds(e.seconds)} (${where})`, counted: true };
+    case 'blip': return { text: `Away ${seconds(e.seconds)} (${where}), too short to count`, counted: false };
+    case 'copy': return { text: `Copied: ${e.text || '(nothing)'}`, counted: true };
+    case 'paste': return { text: `Pasted: ${e.text || '(nothing)'}`, counted: true };
+    case 'fullscreen-exit': return { text: 'Left full screen (not counted)', counted: false };
+    default: return null;
+  }
+}
+
 // Every finished attempt, with what the integrity tracking recorded. Shown to admins only
 // (the admin layout returns 404 for everyone else).
 export default async function QuizAttempts({ params }) {
@@ -49,7 +67,7 @@ export default async function QuizAttempts({ params }) {
           <table className="w-full min-w-[760px] text-left text-[15px]">
             <thead className="bg-sunken text-sm text-muted">
               <tr>
-                {['Learner', 'Submitted', 'Correct', 'Deducted', 'Final', 'Left', 'Away', 'Copies', 'Pastes'].map((h) => (
+                {['Learner', 'Submitted', 'Device', 'Correct', 'Deducted', 'Final', 'Left', 'Away', 'Copies', 'Pastes'].map((h) => (
                   <th key={h} scope="col" className="px-3 py-2 font-bold">{h}</th>
                 ))}
               </tr>
@@ -57,7 +75,10 @@ export default async function QuizAttempts({ params }) {
             <tbody>
               {quiz.attempts.map((a) => {
                 const events = Array.isArray(a.events) ? a.events : [];
-                const texts = events.filter((e) => e.type === 'copy' || e.type === 'paste');
+                const device = events.find((e) => e.type === 'device')?.kind;
+                const log = events
+                  .map((e) => ({ ...e, line: describeEvent(e) }))
+                  .filter((e) => e.line);
                 return (
                   <React.Fragment key={a.id}>
                     <tr className="border-t border-line align-top">
@@ -66,6 +87,7 @@ export default async function QuizAttempts({ params }) {
                         <span className="block text-xs text-muted">{a.user.email}</span>
                       </td>
                       <td className="px-3 py-2 text-sm tabular-nums">{a.submittedAt.toISOString().slice(0, 16).replace('T', ' ')}</td>
+                      <td className="px-3 py-2 text-sm capitalize">{device || '–'}</td>
                       <td className="px-3 py-2 tabular-nums">{`${Math.round(a.score)}%`}</td>
                       <td className={cn('px-3 py-2 tabular-nums', a.penalty > 0 && 'font-bold text-danger')}>{a.penalty > 0 ? `−${a.penalty}` : '–'}</td>
                       <td className={cn('px-3 py-2 font-bold tabular-nums', a.passed ? 'text-accent' : 'text-muted')}>{`${Math.round(a.finalScore)}%`}</td>
@@ -74,19 +96,19 @@ export default async function QuizAttempts({ params }) {
                       <td className="px-3 py-2 tabular-nums">{a.copyCount}</td>
                       <td className="px-3 py-2 tabular-nums">{a.pasteCount}</td>
                     </tr>
-                    {texts.length > 0 && (
+                    {log.length > 0 && (
                       <tr>
-                        <td colSpan={9} className="px-3 pb-3">
+                        <td colSpan={10} className="px-3 pb-3">
                           <details className="text-sm">
-                            <summary className="cursor-pointer font-bold">What was copied or pasted</summary>
-                            <ul className="mt-1 grid gap-1">
-                              {texts.map((e) => (
-                                <li key={`${e.type}-${e.at}`} className="rounded-sm bg-sunken px-2 py-1">
-                                  <span className="font-bold">{`${e.type === 'copy' ? 'Copied' : 'Pasted'} at ${seconds(Math.round(e.at / 1000))}: `}</span>
-                                  <span className="break-words">{e.text || '(nothing)'}</span>
+                            <summary className="cursor-pointer font-bold">{`What was recorded (${log.length})`}</summary>
+                            <ol className="mt-1 grid gap-1">
+                              {log.map((e) => (
+                                <li key={`${e.type}-${e.at}`} className={cn('rounded-sm px-2 py-1', e.line.counted ? 'bg-sunken' : 'text-muted')}>
+                                  <span className="font-bold tabular-nums">{`${clockAt(e.at)} `}</span>
+                                  <span className="break-words">{e.line.text}</span>
                                 </li>
                               ))}
-                            </ul>
+                            </ol>
                           </details>
                         </td>
                       </tr>
