@@ -94,7 +94,7 @@ export async function deleteQuiz(form) {
   await prisma.quiz.delete({ where: { id } });
   refresh();
   const pathwayId = quiz.unit?.pathwayId || quiz.video?.unit?.pathwayId;
-  redirect(pathwayId ? `/admin/pathways/${pathwayId}` : '/admin');
+  redirect(pathwayId ? `/admin/pathways/${pathwayId}` : '/admin/quizzes');
 }
 
 // The question form sends the type-specific fields as JSON in `data`.
@@ -205,4 +205,31 @@ export async function draftWithAi(prev, form) {
   });
   refresh(quiz.id);
   return { ok: `Added ${result.questions.length} draft questions. Check each one before publishing.` };
+}
+
+// A quiz can go live once it has questions (games also use the module's quick checks).
+const READY = { OR: [{ kind: 'MODULE_GAME' }, { questions: { some: {} } }] };
+
+// Publish or unpublish one quiz from the exams list.
+export async function setQuizPublished(form) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+  const published = form.get('published') === 'true';
+  await prisma.quiz.updateMany({
+    where: published ? { id, ...READY } : { id },
+    data: { published },
+  });
+  revalidatePath('/', 'layout');
+}
+
+// Publishes every draft quiz in the list the admin is looking at that has questions.
+export async function publishReady(form) {
+  await requireAdmin();
+  const ids = form.getAll('id').map(String).slice(0, 1000);
+  if (!ids.length) return;
+  await prisma.quiz.updateMany({
+    where: { id: { in: ids }, published: false, ...READY },
+    data: { published: true },
+  });
+  revalidatePath('/', 'layout');
 }

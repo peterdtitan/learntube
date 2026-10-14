@@ -38,3 +38,46 @@ test('an admin builds a pathway that learners can then find', async ({ page, sig
   await page.goto('/pathways?q=beanie');
   await expect(page.getByRole('heading', { name: 'Knit a Beanie' })).toBeVisible();
 });
+
+test('an admin finds module exams in one list and publishes or unpublishes them', async ({ page, signInAs }) => {
+  await signInAs('admin');
+  await page.goto('/admin');
+  await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Needs attention' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Admin' }).getByRole('link', { name: 'Exams & quizzes' }).click();
+
+  await expect(page).toHaveURL(/\/admin\/quizzes$/);
+  const exam = page.getByRole('listitem').filter({ hasText: 'Starter exam' });
+  await expect(exam).toContainText('Module exam');
+  await expect(exam).toContainText('Live');
+  await exam.getByRole('button', { name: /^Unpublish/ }).click();
+  await expect(exam).toContainText('Draft');
+
+  // Drafts are one click from the filter, and can be published together.
+  await page.getByRole('navigation', { name: 'Status' }).getByRole('link', { name: 'Drafts' }).click();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Starter exam' })).toBeVisible();
+  await page.getByRole('button', { name: /^Publish \d+ ready drafts?$/ }).click();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Starter exam' })).toHaveCount(0);
+  await page.goto('/admin/quizzes');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Starter exam' })).toContainText('Live');
+});
+
+test('an admin sees the library, learners and emails', async ({ page, signInAs }) => {
+  await signInAs('admin');
+  await page.goto('/admin/library');
+  await expect(page.getByRole('heading', { name: 'Module exams' })).toBeVisible();
+  await expect(page.getByRole('status').first()).toHaveText(/Up to date|Ready to add/);
+
+  await page.goto('/admin/learners?q=bola');
+  await expect(page.getByRole('cell', { name: /Bola/ })).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('1 learner matching “bola”');
+
+  await page.goto('/admin/emails');
+  await expect(page.getByText('Off.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Send me a test email' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'RESEND_API_KEY' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Email' }).getByRole('link', { name: 'Log your make' }).click();
+  await expect(page.getByText(/^You tried “Your first purl stitch”/)).toBeVisible();
+  await page.getByRole('link', { name: 'Work it out' }).click();
+  await expect(page.getByRole('status').filter({ hasText: /active learners would get one/ })).toBeVisible();
+});

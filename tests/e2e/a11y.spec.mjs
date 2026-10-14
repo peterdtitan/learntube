@@ -50,10 +50,14 @@ test.describe('accessibility', () => {
   });
 
   test('admin pages', async ({ page, signInAs }) => {
+    test.slow();
     const { bread, quizzes } = state();
     await signInAs('admin');
     const found = [];
-    for (const path of ['/admin', `/admin/pathways/${bread.id}`, `/admin/quizzes/${quizzes.check}`, '/admin/reports']) {
+    for (const path of [
+      '/admin', '/admin/pathways', `/admin/pathways/${bread.id}`, '/admin/quizzes?kind=all', `/admin/quizzes/${quizzes.check}`,
+      '/admin/library', '/admin/learners', '/admin/emails', '/admin/reports',
+    ]) {
       found.push(...await scan(page, path));
     }
     expect(found).toEqual([]);
