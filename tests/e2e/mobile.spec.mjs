@@ -13,6 +13,21 @@ test.describe('on a phone', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
+  test('the video stays pinned while the notes scroll, until unpinned', async ({ page, signInAs }) => {
+    await signInAs('bola');
+    const { bread } = state();
+    await page.goto(lessonUrl(bread.id, bread.lessons[1]));
+    const player = page.getByTestId('player');
+    const scrollDown = () => page.evaluate(() => window.scrollTo(0, 900));
+    await scrollDown();
+    // Right under the 64px header.
+    await expect.poll(async () => Math.round((await player.boundingBox()).y)).toBe(64);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.getByRole('button', { name: 'Unpin video' }).click();
+    await scrollDown();
+    await expect.poll(async () => (await player.boundingBox()).y).toBeLessThan(0);
+  });
+
   test('the menu opens and links work', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Open menu' }).click();

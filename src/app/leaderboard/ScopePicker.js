@@ -22,7 +22,7 @@ export default function ScopePicker({
         name="scope"
         value={value}
         onChange={(e) => go(e.target.value)}
-        className="h-10 rounded-md border border-line bg-surface px-3 text-[15px]"
+        className="h-10 w-full min-w-0 rounded-md border border-line bg-surface px-3 text-[15px] sm:w-auto sm:max-w-md"
       >
         <option value="all">All skills</option>
         {groups.map((g) => (
