@@ -66,8 +66,28 @@ function checkQuestions(questions, where, problems) {
   });
 }
 
+// The module exam, ready to import. Shared by courses and short skills.
+function planExam(exam, where, problems) {
+  if (!exam) return null;
+  const questions = checkQuestions(exam.questions, `${where} exam`, problems);
+  const prompts = new Set();
+  questions.forEach((qn) => {
+    if (prompts.has(qn.prompt)) problems.push(`${where} exam: "${qn.prompt}" is in the bank twice`);
+    prompts.add(qn.prompt);
+  });
+  if (exam.draw && exam.draw > questions.length) problems.push(`${where} exam: draws ${exam.draw} from only ${questions.length}`);
+  return {
+    title: exam.title,
+    timeLimitSec: exam.minutes ? exam.minutes * 60 : 900,
+    drawCount: exam.draw || null,
+    questions,
+  };
+}
+
 // def: { slug, title, description, makeTitle, skillId, stages: [{ exam, videos, lessons,
-//   modules: [{ title, objectives: [from, to], intro?, checkpoint: { title, questions } }] }] }
+//   modules: [{ title, objectives: [from, to], intro?, checkpoint: { title, minutes?, draw?,
+//   questions } }] }] }. A checkpoint is the module exam: `draw` questions per attempt from
+//   its bank of `questions`.
 // `videos` is the playlist list; `lessons` maps video id to { try, minutes, questions }.
 // Returns { pathway, modules, problems }; import only when problems is empty.
 export function planPathway(def) {
@@ -111,13 +131,7 @@ export function planPathway(def) {
       modules.push({
         title: mod.title,
         lessons,
-        checkpoint: mod.checkpoint
-          ? {
-            title: mod.checkpoint.title,
-            timeLimitSec: mod.checkpoint.minutes ? mod.checkpoint.minutes * 60 : 900,
-            questions: checkQuestions(mod.checkpoint.questions, `${mod.title} checkpoint`, problems),
-          }
-          : null,
+        checkpoint: planExam(mod.checkpoint, mod.title, problems),
       });
     });
     stage.videos.forEach((v) => {
@@ -172,7 +186,8 @@ export const MAX_SKILL_HOURS = 20;
 const SKILL_PART_TRY = 'Follow along with this part as you watch, then carry on to the next part.';
 
 // def: { slug, title, description, makeTitle, skillId, by?, modules: [{ title, lessons:
-//   [{ id, title, seconds, from?, to?, by?, try, minutes, questions? }] }] }
+//   [{ id, title, seconds, from?, to?, by?, try, minutes, questions? }], checkpoint? }] }
+// (checkpoint: the module exam, as for courses)
 // `seconds` is the whole video's length; from/to (seconds) use just part of it. Anything
 // longer than 10 minutes is split into parts, like the courses.
 export function planSkill(def) {
@@ -207,7 +222,7 @@ export function planSkill(def) {
     });
     if (!lessons.length) problems.push(`"${mod.title}": no lessons`);
     if (!lessons.some((l) => l.check)) problems.push(`"${mod.title}": no questions for its games`);
-    return { title: mod.title, lessons, checkpoint: null };
+    return { title: mod.title, lessons, checkpoint: planExam(mod.checkpoint, `"${mod.title}"`, problems) };
   });
 
   const lessonIds = def.modules.flatMap((m) => m.lessons.map((l) => l.id));

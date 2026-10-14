@@ -18,7 +18,7 @@ export const maxDuration = 60;
 
 const KIND_LABEL = {
   LESSON_CHECK: 'Lesson quick check',
-  CHECKPOINT: 'Halfway checkpoint (timed)',
+  CHECKPOINT: 'Module exam (timed)',
   MODULE_GAME: 'End-of-module games',
 };
 const TYPE_LABEL = {
@@ -53,9 +53,9 @@ export default async function EditQuiz({ params }) {
   const pathwayId = quiz.unit?.pathwayId || quiz.video?.unit?.pathwayId;
   const where = quiz.video ? `after “${quiz.video.title}”` : `in module “${quiz.unit?.title}”`;
   const sourceLessons = quiz.video ? [quiz.video] : quiz.unit?.videos || [];
-  let disabledReason = null;
-  if (!process.env.ANTHROPIC_API_KEY) disabledReason = 'No key configured.';
-  else if (!sourceLessons.some((l) => l.transcript?.trim())) disabledReason = 'Add a transcript to the lesson first; drafts are written only from what it says.';
+  const disabledReason = process.env.ANTHROPIC_API_KEY ? null : 'No key configured.';
+  // Without transcripts Claude works from lesson titles and summaries, so review is stricter.
+  const outlineOnly = !sourceLessons.some((l) => l.transcript?.trim());
   const gameNote = quiz.kind === 'MODULE_GAME'
     ? 'Games also use every published quick-check question from this module’s lessons, so this list can stay short.'
     : null;
@@ -80,7 +80,11 @@ export default async function EditQuiz({ params }) {
 
       <section className="grid gap-4">
         <h2 className="text-xl font-bold">Settings</h2>
-        <QuizSettingsForm action={saveQuizSettings} quiz={quiz} lessons={quiz.unit?.videos || []} />
+        <QuizSettingsForm
+          action={saveQuizSettings}
+          quiz={{ ...quiz, bankSize: quiz.questions.length }}
+          lessons={quiz.unit?.videos || []}
+        />
       </section>
 
       <section className="grid gap-4">
@@ -91,6 +95,7 @@ export default async function EditQuiz({ params }) {
           quizId={quiz.id}
           defaultCount={DRAFT_COUNTS[quiz.kind]}
           disabledReason={disabledReason}
+          outlineOnly={outlineOnly}
         />
         <ol className="grid gap-3">
           {quiz.questions.map((q, i) => (

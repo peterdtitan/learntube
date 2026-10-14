@@ -13,18 +13,18 @@ export default function QuestionInput({
   question: q, value, onChange, disabled = false, idPrefix = 'q',
 }) {
   const name = `${idPrefix}-${q.id}`;
+  // Shown in the order the server chose; each option keeps its own index as its value.
+  const order = q.order || q.options?.map((_, i) => i) || [];
 
   switch (q.type) {
     case 'SINGLE':
       return (
         <fieldset className="grid gap-2" disabled={disabled}>
           <legend className="sr-only">{q.prompt}</legend>
-          {q.options.map((opt, i) => (
-            // Options never reorder within a question.
-            // eslint-disable-next-line react/no-array-index-key
+          {order.map((i) => (
             <label key={i} className={choice}>
               <input type="radio" name={name} checked={value === i} onChange={() => onChange(i)} className="h-4 w-4 accent-accent" />
-              {opt}
+              {q.options[i]}
             </label>
           ))}
         </fieldset>
@@ -34,8 +34,7 @@ export default function QuestionInput({
       return (
         <fieldset className="grid gap-2" disabled={disabled}>
           <legend className="text-sm text-muted">{`Choose ${q.pick}.`}</legend>
-          {q.options.map((opt, i) => (
-            // eslint-disable-next-line react/no-array-index-key
+          {order.map((i) => (
             <label key={i} className={choice}>
               <input
                 type="checkbox"
@@ -45,7 +44,7 @@ export default function QuestionInput({
                   : picked.filter((x) => x !== i))}
                 className="h-4 w-4"
               />
-              {opt}
+              {q.options[i]}
             </label>
           ))}
         </fieldset>

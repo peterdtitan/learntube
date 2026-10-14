@@ -49,14 +49,14 @@ async function sceneBounds(page) {
 test.describe('quizzes and games', () => {
   test.beforeEach(async ({ signInAs }) => signInAs('bola'));
 
-  test('the pathway page shows time to learn, modules, the checkpoint and the games', async ({ page }) => {
+  test('the pathway page shows time to learn, modules, the exam and the games', async ({ page }) => {
     const { bread } = state();
     await page.goto(`/pathways/${bread.id}`);
     await expect(page.getByRole('heading', { level: 1, name: 'Bake Your First Loaf' })).toBeVisible();
     await expect(page.getByText(/^≈ \d/).first()).toBeVisible();
     await expect(page.getByText(/^That’s about \d+ /)).toBeVisible();
     await expect(page.getByText('Week 1')).toBeVisible();
-    await expect(page.getByRole('link', { name: /Starter checkpoint/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Starter exam/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Module games/ })).toBeVisible();
   });
 
@@ -73,11 +73,11 @@ test.describe('quizzes and games', () => {
     await expect(check.getByText('+15 XP').last()).toBeVisible();
   });
 
-  test('the checkpoint tracks leaving and copying, then reports the deductions', async ({ page }) => {
+  test('the module exam tracks leaving and copying, ignores blips, then reports the deductions', async ({ page }) => {
     const { bread, quizzes } = state();
     await page.goto(`/pathways/${bread.id}/checkpoint/${quizzes.checkpoint}`);
     await expect(page.getByRole('heading', { name: 'Before you start' })).toBeVisible();
-    await page.getByRole('button', { name: 'Start the checkpoint' }).click();
+    await page.getByRole('button', { name: 'Start the exam' }).click();
     await expect(page.getByLabel('Time left')).toHaveText(/^[45]:\d\d$/);
 
     await page.getByLabel('True').check();
@@ -93,13 +93,20 @@ test.describe('quizzes and games', () => {
       Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => s });
       document.dispatchEvent(new Event('visibilitychange'));
     }, state);
+    const warning = page.getByRole('alertdialog', { name: 'You left the exam' });
+    // A notification or mis-tap: under two seconds is logged but not counted.
+    await setVisibility('hidden');
+    await page.waitForTimeout(300);
+    await setVisibility('visible');
+    await page.waitForTimeout(300);
+    await expect(warning).toHaveCount(0);
+
     await setVisibility('hidden');
     await page.waitForTimeout(2500);
     await setVisibility('visible');
-    const warning = page.getByRole('alertdialog', { name: 'You left the quiz' });
     await expect(warning).toBeVisible();
     await expect(warning).toContainText(/away for [2-9] seconds/);
-    await warning.getByRole('button', { name: 'Back to the quiz' }).click();
+    await warning.getByRole('button', { name: 'Back to the exam' }).click();
 
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Score deductions' })).toBeVisible();

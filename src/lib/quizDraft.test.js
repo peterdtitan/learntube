@@ -32,7 +32,7 @@ describe('draftQuestions', () => {
     delete process.env.ANTHROPIC_API_KEY;
     expect((await draftQuestions({ kind: 'LESSON_CHECK', lessons: [] })).error).toMatch(/ANTHROPIC_API_KEY/);
     process.env.ANTHROPIC_API_KEY = 'test';
-    expect((await draftQuestions({ kind: 'LESSON_CHECK', lessons: [{ title: 'A' }] })).error).toMatch(/transcript/);
+    expect((await draftQuestions({ kind: 'CHECKPOINT', lessons: [] })).error).toMatch(/no lessons/);
     if (before === undefined) delete process.env.ANTHROPIC_API_KEY;
     else process.env.ANTHROPIC_API_KEY = before;
   });

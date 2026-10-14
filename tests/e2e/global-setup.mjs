@@ -56,7 +56,7 @@ export default async function globalSetup() {
   }
 
   // Quizzes on the bread pathway's first module: a quick check after lesson one, a timed
-  // checkpoint and the module games.
+  // exam and the module games.
   const unit = course.bread.units[0];
   const tf = (prompt, answer, order) => ({
     type: 'TRUE_FALSE', prompt, data: { answer }, order,
@@ -73,7 +73,7 @@ export default async function globalSetup() {
     data: {
       kind: 'CHECKPOINT',
       unitId: unit.id,
-      title: 'Starter checkpoint',
+      title: 'Starter exam',
       published: true,
       timeLimitSec: 300,
       questions: {

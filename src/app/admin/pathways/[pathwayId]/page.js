@@ -142,8 +142,8 @@ export default async function EditPathway({ params }) {
           </span>
         </div>
         <p className="max-w-2xl text-[15px] text-muted">
-          Each module is a week. Give lessons a quick check, and each module a timed checkpoint
-          (it sits halfway through) and end-of-module games.
+          Each module is a week. Give lessons a quick check, and each module a timed exam (at the
+          end, drawing from a question bank) and games.
         </p>
         {pathway.units.map((unit, n) => (
           <div key={unit.id} className="grid gap-3 rounded-lg border border-line bg-surface p-4">
@@ -180,7 +180,7 @@ export default async function EditPathway({ params }) {
             </ol>
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
               <Link href={`/admin/pathways/${pathway.id}/lessons/new?unitId=${unit.id}`} className="mr-auto text-sm font-bold text-accent">+ Add a lesson</Link>
-              <QuizButton kind="CHECKPOINT" unitId={unit.id} quiz={unit.quizzes.find((q) => q.kind === 'CHECKPOINT')} icon={Timer} label="Checkpoint" />
+              <QuizButton kind="CHECKPOINT" unitId={unit.id} quiz={unit.quizzes.find((q) => q.kind === 'CHECKPOINT')} icon={Timer} label="Exam" />
               <QuizButton kind="MODULE_GAME" unitId={unit.id} quiz={unit.quizzes.find((q) => q.kind === 'MODULE_GAME')} icon={Gamepad2} label="Games" />
             </div>
           </div>

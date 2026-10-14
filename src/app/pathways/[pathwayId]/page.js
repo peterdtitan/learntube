@@ -141,8 +141,8 @@ export default async function PathwayPage({ params }) {
                       <QuizRow
                         href={`/pathways/${pathway.id}/checkpoint/${m.checkpoint.id}`}
                         icon={Timer}
-                        title={m.checkpoint.title || 'Halfway checkpoint'}
-                        detail={`Timed · ${Math.round((m.checkpoint.timeLimitSec || 600) / 60)} min`}
+                        title={m.checkpoint.title || 'Module exam'}
+                        detail={`Exam · ${m.checkpoint.questionCount} questions · ${Math.round((m.checkpoint.timeLimitSec || 600) / 60)} min`}
                         quiz={m.checkpoint}
                       />
                     )}

@@ -121,17 +121,22 @@ export default async function LessonPage({ params }) {
 
         {(checkpointNext || gameNext) && (
           <aside aria-label="What’s next" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed border-xp bg-xp-soft/40 p-5">
-            <div className="grid gap-1">
-              <p className="font-bold">{checkpointNext ? 'Halfway checkpoint next' : `You’ve reached the end of ${week.title}`}</p>
+            <div className="grid min-w-0 gap-1">
+              <p className="font-bold">{checkpointNext ? `Module exam: ${week.title}` : `You’ve reached the end of ${week.title}`}</p>
               <p className="text-[15px] text-muted">
                 {checkpointNext
-                  ? `A timed quiz on this module so far. ${checkpointNext.best != null ? `Your best: ${Math.round(checkpointNext.best)}%.` : 'Take it when you’re ready.'}`
+                  ? `${checkpointNext.questionCount} timed questions on this module. ${checkpointNext.best != null ? `Your best: ${Math.round(checkpointNext.best)}%.` : 'Take it when you’re ready.'}`
                   : 'Play the module games to lock in what you learned.'}
               </p>
             </div>
-            <Button href={checkpointNext ? `/pathways/${pathwayId}/checkpoint/${checkpointNext.id}` : `/pathways/${pathwayId}/modules/${week.id}/game`} size="sm">
-              {checkpointNext ? 'Go to the checkpoint' : 'Play the games'}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {checkpointNext && (
+                <Button href={`/pathways/${pathwayId}/checkpoint/${checkpointNext.id}`} size="sm">Take the exam</Button>
+              )}
+              {gameNext && (
+                <Button href={`/pathways/${pathwayId}/modules/${week.id}/game`} size="sm" variant={checkpointNext ? 'ghost' : 'primary'}>Play the games</Button>
+              )}
+            </div>
           </aside>
         )}
 

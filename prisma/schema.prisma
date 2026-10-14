@@ -397,6 +397,7 @@ model Quiz {
   published    Boolean  @default(false)
   timeLimitSec Int? // CHECKPOINT only
   passPercent  Int      @default(70)
+  drawCount    Int? // CHECKPOINT: questions drawn from the bank for each attempt; null asks them all
   // Integrity penalties, in percentage points off the score (CHECKPOINT only).
   leavePenalty Int      @default(3) // each time the learner leaves the quiz
   awayPenalty  Int      @default(1) // each 10 seconds away
@@ -447,6 +448,7 @@ model QuizAttempt {
   awaySeconds Int       @default(0)
   copyCount   Int       @default(0)
   pasteCount  Int       @default(0)
+  questionIds String[]  @default([]) // the questions drawn for this attempt; empty means all of the quiz's
   events      Json? // integrity log: leaves, copies (with the text), pastes
   results     Json? // per-question right/wrong, shown after submitting
 

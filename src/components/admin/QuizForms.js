@@ -25,19 +25,27 @@ export function QuizSettingsForm({ action, quiz, lessons }) {
   return (
     <form action={formAction} className="grid gap-5">
       <input type="hidden" name="id" value={quiz.id} />
-      <Field id="title" label="Title" hint="Optional, e.g. “Dough basics checkpoint”.">
+      <Field id="title" label="Title" hint="Optional, e.g. “Dough basics exam”.">
         <input id="title" name="title" maxLength={120} defaultValue={quiz.title || ''} className={inputClass()} />
       </Field>
       <div className="flex flex-wrap gap-6">
         <NumberField id="passPercent" label="Pass mark" value={quiz.passPercent} unit="%" />
         {checkpoint && <NumberField id="timeLimitMin" label="Time limit" value={Math.round((quiz.timeLimitSec || 600) / 60)} unit="minutes" />}
+        {checkpoint && (
+          <NumberField
+            id="drawCount"
+            label="Questions per attempt"
+            hint={`Drawn from the bank of ${quiz.bankSize}, spread across it. Blank asks every question.`}
+            value={quiz.drawCount ?? ''}
+          />
+        )}
       </div>
 
       {checkpoint && (
         <>
-          <Field id="afterVideoId" label="Comes after" hint="Where it sits in the module. Halfway by default.">
+          <Field id="afterVideoId" label="Comes after" hint="Where it sits in the module. The end by default.">
             <select id="afterVideoId" name="afterVideoId" defaultValue={quiz.afterVideoId || ''} className={inputClass('max-w-md')}>
-              <option value="">The middle lesson</option>
+              <option value="">The last lesson (end of the module)</option>
               {lessons.map((l) => <option key={l.id} value={l.id}>{l.title}</option>)}
             </select>
           </Field>
@@ -51,8 +59,10 @@ export function QuizSettingsForm({ action, quiz, lessons }) {
               <NumberField id="timePenalty" label="Clock penalty" value={quiz.timePenalty} unit="× time away" />
             </div>
             <p className="text-sm text-muted">
-              Leaving is spotted when the quiz tab or window loses focus. Phones, second screens and
-              apps outside the browser can’t be detected; the report shows exactly what was.
+              On a computer, leaving is spotted when the exam tab or window loses focus; on phones
+              and tablets, only when the page is hidden (another app or tab). Away for under 2
+              seconds is logged but not counted. Second screens and other devices can’t be
+              detected; the results page shows exactly what was.
             </p>
           </fieldset>
         </>
@@ -69,7 +79,7 @@ export function QuizSettingsForm({ action, quiz, lessons }) {
 }
 
 export function DraftForm({
-  action, quizId, defaultCount, disabledReason,
+  action, quizId, defaultCount, disabledReason, outlineOnly,
 }) {
   const [state, formAction] = useFormState(action, null);
   return (
@@ -83,6 +93,16 @@ export function DraftForm({
         </SubmitButton>
       </div>
       {disabledReason && <p className="text-sm text-muted">{disabledReason}</p>}
+      {!disabledReason && outlineOnly && (
+        <p className="text-sm text-muted">
+          These lessons have no transcripts, so drafts come from their titles and summaries.
+          Check each question against the videos before publishing.
+        </p>
+      )}
+      <p className="text-sm text-muted">
+        Drafted once and saved here for every learner, so it costs a few cents per press,
+        never per learner. Press again to grow an exam’s bank.
+      </p>
       <FormMessage state={state} />
     </form>
   );

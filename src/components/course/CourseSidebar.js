@@ -49,7 +49,7 @@ function QuizLink({
   );
 }
 
-// `modules` (from getPathwayOutline) adds week labels, the checkpoint and the game.
+// `modules` (from getPathwayOutline) adds week labels, the module exam and the game.
 export default function CourseSidebar({
   pathway, units, unassignedVideos, activeVideoId, progressByVideoId, modules = [],
 }) {
@@ -90,7 +90,7 @@ export default function CourseSidebar({
               <React.Fragment key={row.key}>
                 {row}
                 {m?.checkpoint && i === m.checkpointAfter && (
-                  <QuizLink href={`/pathways/${pathway.id}/checkpoint/${m.checkpoint.id}`} icon={Timer} title={m.checkpoint.title || 'Checkpoint'} best={m.checkpoint.best} />
+                  <QuizLink href={`/pathways/${pathway.id}/checkpoint/${m.checkpoint.id}`} icon={Timer} title={m.checkpoint.title || 'Module exam'} best={m.checkpoint.best} />
                 )}
               </React.Fragment>
             ))}
