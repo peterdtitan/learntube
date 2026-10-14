@@ -47,7 +47,8 @@ export default function Privacy() {
           <li><strong>From Google when you sign in:</strong> your name, email address and profile picture. We don’t keep Google’s sign-in tokens, and we never see your Google password.</li>
           <li><strong>What you do here:</strong> where you are in each lesson, Try steps and XP, notes, makes (titles, notes and photos), kudos, comment phrases, follows, cheers and reports.</li>
           <li><strong>Quizzes:</strong> your answers and scores. During timed module exams we also record the kind of device (phone, tablet or computer), each time you leave the exam page and for how long, and any text you copy or paste. You are told this before an exam starts.</li>
-          <li><strong>Settings and the welcome questions:</strong> display name, interests, what brought you here, weekly goal, time zone (from your device, so practice days match your clock), leaderboard and extra-time choices.</li>
+          <li><strong>Settings and the start questions:</strong> display name, interests, what brought you here, weekly goal, time zone (from your device, so practice days match your clock), leaderboard, extra-time and email choices.</li>
+          <li><strong>Emails we send you:</strong> which reminder went out and when, so nobody gets the same one twice or too many.</li>
           <li><strong>Technical logs:</strong> our host records requests (IP address, browser and page) for a short time to run and protect the site.</li>
         </ul>
         <p>
@@ -65,7 +66,8 @@ export default function Privacy() {
             ['Showing your makes, milestones and XP to other learners', 'Providing the service; you can hide yourself from leaderboards and delete anything you post'],
             ['Exam integrity logs', 'Our legitimate interest in fair scores, explained before each exam'],
             ['Reports, moderation and rate limits', 'Our legitimate interest in keeping the community safe and the site running'],
-            ['Interests picked before signing in', 'Your request: you ticked them and pressed Start'],
+            ['Answers to the start questions, before signing up', 'Your request: you answered them to get a recommendation'],
+            ['Practice reminders and the Monday recap', 'Our legitimate interest in helping you keep the practice habit you signed up for. Both are on by default and every email has a link to stop them'],
           ]}
         />
         <p>
@@ -93,12 +95,13 @@ export default function Privacy() {
           <li><strong>Google</strong> signs you in.</li>
           <li><strong>Vercel</strong> hosts the site and stores make photos.</li>
           <li><strong>Neon</strong> hosts the database.</li>
+          <li><strong>Resend</strong> sends our emails. It receives your email address, first name and the email itself.</li>
           <li><strong>YouTube</strong> plays the lessons, in its privacy-enhanced mode. Nothing loads from YouTube until you press play; from then on, YouTube’s own privacy policy applies to the video.</li>
           <li><strong>Anthropic</strong> may receive lesson transcripts when admins draft quiz questions with AI. Never anything about you.</li>
         </ul>
         <p>
           Our servers and database are in the United States, so your data leaves your country when
-          you use Skillreps. Vercel and Neon handle it only on our instructions, under data
+          you use Skillreps. Vercel, Neon and Resend handle it only on our instructions, under data
           processing terms that include standard contractual clauses for international transfers.
         </p>
       </Section>
@@ -137,6 +140,7 @@ export default function Privacy() {
             ['Your account and everything you created', 'Until you delete it, or your whole account'],
             ['Text copied or pasted during an exam', `${RETENTION_DAYS.checkpointCopyText} days; the counts stay with the attempt`],
             ['Notifications', `${RETENTION_DAYS.notifications} days`],
+            ['The record of emails sent to you', `${RETENTION_DAYS.emailLog} days`],
             ['Expired sign-in sessions', 'Removed daily'],
             ['Rate-limit counters', `${RETENTION_DAYS.rateLimits} days`],
             ['Technical logs at our host', 'A short time set by Vercel, measured in days'],
@@ -153,8 +157,8 @@ export default function Privacy() {
             {' → Download my data gives you a file of everything we hold about you.'}
           </li>
           <li>
-            <strong>Correct it:</strong> change your display name, goal, interests and leaderboard
-            choice in Settings or on the <Link href="/welcome" className="font-bold text-accent">welcome questions</Link>.
+            <strong>Correct it:</strong> change your display name, goal, interests, emails and
+            leaderboard choice in Settings or on the <Link href="/welcome" className="font-bold text-accent">welcome questions</Link>.
             Your name, email and picture come from Google.
           </li>
           <li>

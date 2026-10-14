@@ -12,14 +12,15 @@ import LeaderboardToggle from '../../components/community/LeaderboardToggle';
 import DisplayNameForm from './DisplayNameForm';
 import DeleteAccount from './DeleteAccount';
 import ExtraTimeToggle from './ExtraTimeToggle';
+import EmailToggles from './EmailToggles';
 import { PRIVATE } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Settings · Skillreps', ...PRIVATE };
 
-function Section({ title, children }) {
+function Section({ title, id, children }) {
   return (
-    <Card as="section" className="grid gap-4">
+    <Card as="section" id={id} className="grid scroll-mt-24 gap-4">
       <h2 className="text-xl font-bold">{title}</h2>
       {children}
     </Card>
@@ -40,6 +41,8 @@ export default async function SettingsPage() {
       weeklyGoal: true,
       showOnLeaderboard: true,
       extraQuizTime: true,
+      emailReminders: true,
+      emailWeekly: true,
     },
   });
 
@@ -57,6 +60,13 @@ export default async function SettingsPage() {
       <Section title="Practice">
         <GoalPicker goal={user.weeklyGoal} />
         <LeaderboardToggle initialShown={user.showOnLeaderboard} />
+      </Section>
+
+      <Section title="Emails" id="emails">
+        <EmailToggles
+          initial={{ emailReminders: user.emailReminders, emailWeekly: user.emailWeekly }}
+        />
+        <p className="text-sm text-muted">{`Sent to ${user.email}. Every email has a link to stop it.`}</p>
       </Section>
 
       <Section title="Quizzes">

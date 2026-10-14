@@ -25,6 +25,7 @@ export async function exportUserData(userId, now = new Date()) {
       quizAttempts: { include: { quiz: { select: { kind: true, title: true } } }, orderBy: { startedAt: 'asc' } },
       reports: { include: { make: LESSON }, orderBy: { createdAt: 'asc' } },
       notifications: { include: { actor: PERSON }, orderBy: { createdAt: 'asc' } },
+      emails: { orderBy: { createdAt: 'asc' } },
       _count: { select: { followers: true } },
     },
   });
@@ -46,6 +47,8 @@ export async function exportUserData(userId, now = new Date()) {
       interests: user.interests,
       learningGoal: user.learningGoal,
       onboardedAt: user.onboardedAt,
+      emailReminders: user.emailReminders,
+      emailWeekly: user.emailWeekly,
     },
     lessons: user.videoProgress.map((p) => ({
       lesson: p.video.title,
@@ -101,6 +104,7 @@ export async function exportUserData(userId, now = new Date()) {
     notifications: user.notifications.map((n) => ({
       kind: n.kind, from: publicName(n.actor), at: n.createdAt, readAt: n.readAt,
     })),
+    emailsSent: user.emails.map((e) => ({ kind: e.kind, at: e.createdAt })),
   };
 }
 

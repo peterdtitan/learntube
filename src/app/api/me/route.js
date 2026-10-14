@@ -17,7 +17,8 @@ export async function GET() {
   return json(await getLearnerSummary(userId));
 }
 
-// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard?, displayName?, extraQuizTime? }
+// PATCH /api/me { weeklyGoal?, timeZone?, showOnLeaderboard?, displayName?, extraQuizTime?,
+//   emailReminders?, emailWeekly? }
 export async function PATCH(req) {
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change your goal.');
@@ -59,6 +60,10 @@ export async function PATCH(req) {
     if (typeof body.showOnLeaderboard !== 'boolean') return error(400, 'showOnLeaderboard must be true or false.');
     data.showOnLeaderboard = body.showOnLeaderboard;
   }
+  const emailFields = ['emailReminders', 'emailWeekly'].filter((f) => body[f] !== undefined);
+  const badEmailField = emailFields.find((f) => typeof body[f] !== 'boolean');
+  if (badEmailField) return error(400, `${badEmailField} must be true or false.`);
+  emailFields.forEach((f) => { data[f] = body[f]; });
   if (!Object.keys(data).length) return error(400, 'Nothing to update.');
 
   await prisma.user.update({ where: { id: userId }, data });
