@@ -64,7 +64,8 @@ describe('reminder emails', () => {
     expect(log).toMatchObject({ kind: 'LOG_MAKE', key: lesson.id, providerId: 're_1_0' });
 
     // Running again, even hours later, sends nothing more.
-    expect(await sendReminders(new Date(NOW.getTime() + 3 * 3600000), { fetchImpl })).toMatchObject({ due: 0, sent: 0 });
+    const later = new Date(NOW.getTime() + 3 * 3600000);
+    expect(await sendReminders(later, { fetchImpl })).toMatchObject({ due: 0, sent: 0 });
     expect(sent).toHaveLength(1);
   });
 

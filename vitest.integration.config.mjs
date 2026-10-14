@@ -28,7 +28,13 @@ export default defineConfig({
     include: ['tests/integration/**/*.test.js'],
     globalSetup: ['tests/integration/globalSetup.mjs'],
     setupFiles: ['tests/integration/setup.mjs'],
-    env: { DATABASE_URL: url, DATABASE_URL_UNPOOLED: url, BLOB_READ_WRITE_TOKEN: 'test-token' },
+    // Test-only values, so the suite runs the same in CI as on a machine with .env.local.
+    env: {
+      DATABASE_URL: url,
+      DATABASE_URL_UNPOOLED: url,
+      BLOB_READ_WRITE_TOKEN: 'test-token',
+      NEXTAUTH_SECRET: 'integration-test-secret',
+    },
     // One database, so test files take turns.
     fileParallelism: false,
     testTimeout: 30000,
