@@ -1,9 +1,9 @@
 export const LEGAL = {
   company: 'Elev8r Software Ltd.',
   country: 'Nigeria',
-  contactEmail: 'peterdtitan@gmail.com',
+  contactEmail: 'hello@elev8rstudio.com',
   minimumAge: 13,
-  updated: '13 October 2026',
+  updated: '14 October 2026',
 };
 
 export function placeholders(values = LEGAL) {
