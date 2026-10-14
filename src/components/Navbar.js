@@ -104,12 +104,12 @@ export default function Navbar() {
 
   return (
     <header ref={menuRef} className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-        <Link href="/" aria-label="Skillreps home" className="text-[22px]">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:gap-8 lg:px-8">
+        <Link href="/" aria-label="Skillreps home" className="shrink-0 text-[20px] sm:text-[22px]">
           <Wordmark />
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">
           {LINKS.map((link) => (
             <Link
               key={link.href}
@@ -121,16 +121,17 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <div className="hidden items-center gap-2 sm:flex">{stats}</div>
-          <ThemeSwitcher />
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* Room for XP and streak only on wide screens; below that they're in the menu. */}
+          <div className="hidden items-center gap-2 xl:flex">{stats}</div>
+          <div className="hidden sm:block"><ThemeSwitcher /></div>
           {session?.user && <NotificationBell />}
           {session?.user
             ? <AccountMenu user={session.user} />
             : <Button size="sm" onClick={() => signIn()}>Sign in</Button>}
           <button
             type="button"
-            className="grid h-9 w-9 place-items-center rounded-pill text-ink md:hidden"
+            className="grid h-9 w-9 place-items-center rounded-pill text-ink lg:hidden"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(!menuOpen)}
@@ -141,13 +142,19 @@ export default function Navbar() {
       </div>
 
       {menuOpen && (
-        <nav aria-label="Main" className="border-t border-line bg-canvas px-4 pb-4 pt-2 md:hidden">
+        <nav aria-label="Main" className="border-t border-line bg-canvas px-4 pb-4 pt-2 sm:px-6 lg:hidden">
           {LINKS.map((link) => (
             <Link key={link.href} href={link.href} className="block py-3 text-[17px] font-bold">
               {link.label}
             </Link>
           ))}
-          {stats && <div className="flex flex-wrap gap-2 pt-2 sm:hidden">{stats}</div>}
+          <div className={cn('flex flex-wrap items-center gap-2 border-t border-line pt-3', !stats && 'sm:hidden')}>
+            {stats}
+            <span className="ml-auto flex items-center gap-2 text-sm text-muted sm:hidden">
+              Theme
+              <ThemeSwitcher />
+            </span>
+          </div>
         </nav>
       )}
     </header>

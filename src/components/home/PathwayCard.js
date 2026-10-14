@@ -21,18 +21,20 @@ export default function PathwayCard({ pathway, signedIn }) {
   if (signedIn && started) progressLabel = `${doneCount} of ${lessonCount} lessons done`;
 
   return (
-    <Card as="article" className="grid min-w-0 gap-4 sm:grid-cols-[200px_minmax(0,1fr)] sm:items-start">
+    // Cover beside the text only where the card is wide enough: a phone held sideways, or
+    // a desktop. In the two-column list on tablets the cover sits on top.
+    <Card as="article" className="grid min-w-0 gap-4 sm:max-md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)] sm:items-start">
       <Link href={`/pathways/${id}`} tabIndex={-1} aria-hidden="true" className="block overflow-hidden rounded-md">
-        <Cover src={cover} skill={skill} sizes="(min-width: 640px) 200px, 100vw" className="transition-transform duration-500 hover:scale-[1.04] motion-reduce:transition-none" />
+        <Cover src={cover} skill={skill} sizes="(min-width: 1024px) 200px, (min-width: 768px) 45vw, (min-width: 640px) 200px, 100vw" className="transition-transform duration-500 hover:scale-[1.04] motion-reduce:transition-none" />
       </Link>
       <div className="grid min-w-0 gap-4">
         {track && (
-        <Link href={`/tracks/${track.slug}`} className="-mb-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-accent">
+        <Link href={`/tracks/${track.slug}`} className="-mb-2 break-words text-xs font-bold uppercase tracking-widest text-muted hover:text-accent">
           {`${track.title} · Course ${track.order + 1}`}
         </Link>
         )}
         <header className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-xl font-bold">{title}</h3>
+          <h3 className="min-w-0 break-words text-xl font-bold">{title}</h3>
           {skill && (
           <span className="inline-flex items-center gap-1.5 rounded-pill border border-line px-2.5 py-0.5 text-xs text-muted">
             <SkillIcon skill={skill} />

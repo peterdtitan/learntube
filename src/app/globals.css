@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  /* A grid with no columns set gets one column that never grows past its container, so a
+     long word or wide control can't widen the whole page. Any grid-cols-* class wins. */
+  :where(.grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   /* In-page links (#cookies, #how) land below the sticky header, not under it. */
   html {
     scroll-padding-top: 5rem;

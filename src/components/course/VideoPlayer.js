@@ -196,7 +196,7 @@ const VideoPlayer = forwardRef(({
 
   const youtubeId = getYouTubeId(youtubeUrl);
   return (
-    <div data-testid="player" className="relative aspect-video w-full max-w-full overflow-hidden rounded-lg bg-black shadow-md">
+    <div data-testid="player" className="relative aspect-video w-full max-w-full overflow-hidden bg-black shadow-md sm:rounded-lg">
       {active ? (
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
       ) : (

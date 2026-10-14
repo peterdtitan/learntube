@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { Check } from 'lucide-react';
@@ -13,6 +15,8 @@ import Button from '../ui/Button';
 import { notifySummaryChanged } from '../useLearnerSummary';
 import { XP } from '../../lib/xpValues';
 import cn from '../../lib/cn';
+
+const PIN_KEY = 'learntube:pin-video';
 
 async function saveProgress(videoId, stoppedAt, completed) {
   try {
@@ -58,6 +62,23 @@ export default function Classroom({
 }) {
   const router = useRouter();
   const playerRef = useRef(null);
+  // Phones and tablets: the video stays at the top while notes and steps scroll under it.
+  const [pinned, setPinned] = useState(true);
+  useEffect(() => {
+    try {
+      setPinned(localStorage.getItem(PIN_KEY) !== '0');
+    } catch {
+      // Pinned by default.
+    }
+  }, []);
+  const togglePin = () => setPinned((p) => {
+    try {
+      localStorage.setItem(PIN_KEY, p ? '0' : '1');
+    } catch {
+      // Not remembered; the toggle still works.
+    }
+    return !p;
+  });
   const [rate, setRate] = useState(1);
   const [loop, setLoop] = useState(null);
   const [loopStart, setLoopStart] = useState(null);
@@ -120,22 +141,32 @@ export default function Classroom({
     celebrate('Nice work. Practice counted.', data.xpAwarded, data.milestones);
   };
 
+  // Below lg the wrapper dissolves (display: contents), so the video, controls and steps sit
+  // directly in the page's column and the pinned video can stay put while the rest scrolls.
+  // Short screens (a phone held sideways) never pin: the video would fill them.
   return (
-    <div className="grid gap-4">
-      <VideoPlayer
-        ref={playerRef}
-        videoId={lesson.id}
-        youtubeUrl={lesson.url}
-        startAt={startAt}
-        duration={lesson.duration}
-        clipStart={lesson.startSec || 0}
-        clipEnd={lesson.endSec || null}
-        captionsLang={lesson.captionsLang}
-        playbackRate={rate}
-        loop={loop}
-        onProgress={handleProgress}
-        onComplete={handleComplete}
-      />
+    <div className="max-lg:contents lg:col-start-1 lg:grid lg:gap-4">
+      <div
+        className={cn(
+          pinned && '[@media(max-width:1023px)_and_(min-height:560px)]:sticky [@media(max-width:1023px)_and_(min-height:560px)]:top-16 [@media(max-width:1023px)_and_(min-height:560px)]:z-20',
+          'max-sm:-mx-4 max-sm:bg-canvas',
+        )}
+      >
+        <VideoPlayer
+          ref={playerRef}
+          videoId={lesson.id}
+          youtubeUrl={lesson.url}
+          startAt={startAt}
+          duration={lesson.duration}
+          clipStart={lesson.startSec || 0}
+          clipEnd={lesson.endSec || null}
+          captionsLang={lesson.captionsLang}
+          playbackRate={rate}
+          loop={loop}
+          onProgress={handleProgress}
+          onComplete={handleComplete}
+        />
+      </div>
       <PracticeControls
         rate={rate}
         onRate={setRate}
@@ -146,6 +177,8 @@ export default function Classroom({
           const now = playerRef.current?.getCurrentTime();
           if (now !== null && now !== undefined) playerRef.current.seekTo(now - 10);
         }}
+        pinned={pinned}
+        onPin={togglePin}
       />
 
       <section aria-labelledby="steps-heading" className="rounded-lg border border-line bg-surface p-5">

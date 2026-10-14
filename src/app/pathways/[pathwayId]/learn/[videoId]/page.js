@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../../lib/auth';
@@ -9,7 +10,9 @@ import { getPathwayOutline } from '../../../../../lib/outline';
 import LessonCheck from '../../../../../components/quiz/LessonCheck';
 import CourseSidebar from '../../../../../components/course/CourseSidebar';
 import Classroom from '../../../../../components/course/Classroom';
-import LessonTabs from '../../../../../components/course/LessonTabs';
+import LessonWorkspace from '../../../../../components/course/LessonWorkspace';
+import NotesPanel from '../../../../../components/course/NotesPanel';
+import CodeSandbox from '../../../../../components/course/CodeSandbox';
 import Button from '../../../../../components/ui/Button';
 
 export const dynamic = 'force-dynamic';
@@ -63,33 +66,24 @@ export default async function LessonPage({ params }) {
   const continuesInNext = Boolean(lesson.endSec && next && next.url === lesson.url);
   const startAt = progress?.completed ? 0 : (progress?.stoppedAt || 0);
 
-  return (
-    <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
-      {/* After the lesson on phones, beside it on wide screens. */}
-      <aside aria-label="Course outline" className="order-last lg:order-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
-        <CourseSidebar
-          pathway={pathway}
-          units={units}
-          unassignedVideos={unassignedVideos}
-          activeVideoId={videoId}
-          progressByVideoId={progressByVideoId}
-          modules={outline.modules}
-        />
-      </aside>
+  const sandbox = Boolean(lesson.starterCode) || SANDBOX_SKILLS.includes(pathway.skill?.id);
+  const card = 'grid min-w-0 gap-0.5 rounded-lg border border-line bg-surface px-4 py-3 hover:border-accent';
 
-      <div className="grid min-w-0 content-start gap-5">
+  return (
+    <LessonWorkspace
+      header={(
         <header className="grid gap-1">
           <p className="text-sm text-muted">{`Lesson ${index + 1} of ${orderedVideos.length}`}</p>
-          <h1 className="text-[clamp(1.6rem,3vw,2.1rem)] font-bold leading-tight">{lesson.title}</h1>
+          <h1 className="text-[clamp(1.5rem,3vw,2.1rem)] font-bold leading-tight">{lesson.title}</h1>
           {lesson.description && <p className="text-[15px] text-muted">{lesson.description}</p>}
+          {!userId && (
+            <p className="mt-2 rounded-md bg-xp-soft px-4 py-3 text-[15px] text-xp">
+              Sign in to save your place, your notes and your practice.
+            </p>
+          )}
         </header>
-
-        {!userId && (
-          <p className="rounded-md bg-xp-soft px-4 py-3 text-[15px] text-xp">
-            Sign in to save your place, your notes and your practice.
-          </p>
-        )}
-
+      )}
+      stage={(
         <Classroom
           lesson={{
             id: lesson.id,
@@ -108,8 +102,9 @@ export default async function LessonPage({ params }) {
           myMakes={myMakes}
           showLog={!continuesInNext}
         />
-
-        {check && (
+      )}
+      after={[
+        check && (
           <LessonCheck
             key={check.id}
             quizId={check.id}
@@ -117,9 +112,8 @@ export default async function LessonPage({ params }) {
             best={check.best != null ? { finalScore: check.best } : null}
             isSignedIn={Boolean(userId)}
           />
-        )}
-
-        {(checkpointNext || gameNext) && (
+        ),
+        (checkpointNext || gameNext) && (
           <aside aria-label="What’s next" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed border-xp bg-xp-soft/40 p-5">
             <div className="grid min-w-0 gap-1">
               <p className="font-bold">{checkpointNext ? `Module exam: ${week.title}` : `You’ve reached the end of ${week.title}`}</p>
@@ -138,32 +132,64 @@ export default async function LessonPage({ params }) {
               )}
             </div>
           </aside>
-        )}
-
-        <LessonTabs
-          videoId={lesson.id}
-          transcript={lesson.transcript}
-          initialNote={note?.content || ''}
-          isSignedIn={Boolean(userId)}
-          showSandbox={Boolean(lesson.starterCode) || SANDBOX_SKILLS.includes(pathway.skill?.id)}
-          starterCode={lesson.starterCode}
-        />
-
-        <nav aria-label="Lesson navigation" className="flex flex-wrap justify-between gap-3">
+        ),
+      ]}
+      nav={(
+        <nav aria-label="Lesson navigation" className="grid gap-3 sm:grid-cols-2">
           {prev ? (
-            <Button href={`/pathways/${pathwayId}/learn/${prev.id}`} variant="ghost" size="sm">
-              {`← ${prev.title}`}
-            </Button>
-          ) : <span />}
+            <Link href={`/pathways/${pathwayId}/learn/${prev.id}`} className={card}>
+              <span className="text-xs font-bold uppercase tracking-widest text-muted">← Previous</span>
+              <span className="truncate text-[15px] font-bold">{prev.title}</span>
+            </Link>
+          ) : <span className="hidden sm:block" />}
           {next ? (
-            <Button href={`/pathways/${pathwayId}/learn/${next.id}`} size="sm">
-              {`${next.title} →`}
-            </Button>
+            <Link href={`/pathways/${pathwayId}/learn/${next.id}`} className={`${card} sm:text-right`}>
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">Next →</span>
+              <span className="truncate text-[15px] font-bold">{next.title}</span>
+            </Link>
           ) : (
-            <Button href="/" size="sm">Back to your workbench</Button>
+            <Link href="/" className={`${card} sm:text-right`}>
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">Finished</span>
+              <span className="truncate text-[15px] font-bold">Back to your workbench</span>
+            </Link>
           )}
         </nav>
-      </div>
-    </div>
+      )}
+      tools={[
+        {
+          id: 'notes',
+          label: 'Notes',
+          content: <NotesPanel videoId={lesson.id} initialContent={note?.content || ''} isSignedIn={Boolean(userId)} />,
+        },
+        ...(sandbox ? [{
+          id: 'code',
+          label: 'Code',
+          content: <CodeSandbox lessonId={lesson.id} starterCode={lesson.starterCode} />,
+        }] : []),
+        {
+          id: 'transcript',
+          label: 'Transcript',
+          content: lesson.transcript
+            ? <p className="max-w-[70ch] whitespace-pre-wrap text-[15px] leading-relaxed">{lesson.transcript}</p>
+            : <p className="text-[15px] text-muted">No transcript for this lesson yet.</p>,
+        },
+        {
+          id: 'outline',
+          label: 'Course',
+          content: (
+            <CourseSidebar
+              pathway={pathway}
+              units={units}
+              unassignedVideos={unassignedVideos}
+              activeVideoId={videoId}
+              progressByVideoId={progressByVideoId}
+              modules={outline.modules}
+            />
+          ),
+        },
+      ]}
+      defaultTab={sandbox ? 'code' : 'notes'}
+      startWide={sandbox}
+    />
   );
 }

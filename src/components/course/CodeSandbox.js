@@ -149,7 +149,8 @@ export default function CodeSandbox({ lessonId, starterCode }) {
         </div>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      {/* Code above its preview: the tools column is never wide enough for both side by side. */}
+      <div className="grid gap-3">
         <label htmlFor={`sandbox-${lessonId}`} className="sr-only">Code</label>
         <textarea
           id={`sandbox-${lessonId}`}
@@ -160,7 +161,7 @@ export default function CodeSandbox({ lessonId, starterCode }) {
           autoCapitalize="off"
           autoCorrect="off"
           wrap="off"
-          className="h-72 min-w-0 resize-y rounded-md border border-line bg-sunken p-3 font-mono text-[13px] leading-relaxed text-ink focus:border-accent focus:outline-none"
+          className="h-64 min-w-0 resize-y rounded-md border border-line bg-sunken p-3 font-mono text-[13px] leading-relaxed text-ink focus:border-accent focus:outline-none"
         />
         {/* A fresh frame per run: Chrome can drop a srcdoc change made while the frame is
             still loading, and it throws away whatever the last run left behind. */}
@@ -171,14 +172,15 @@ export default function CodeSandbox({ lessonId, starterCode }) {
             title="Code preview"
             sandbox="allow-scripts allow-modals"
             srcDoc={runState.doc}
-            className="h-72 w-full min-w-0 rounded-md border border-line bg-white"
+            className="h-64 w-full min-w-0 resize-y rounded-md border border-line bg-white"
           />
-        ) : <div className="h-72 rounded-md border border-line bg-white" />}
+        ) : <div className="h-64 rounded-md border border-line bg-white" />}
       </div>
 
       <div className="grid gap-1">
-        <h3 className="font-sans text-sm font-bold text-muted">Console</h3>
+        <p id={`console-${lessonId}`} className="text-sm font-bold text-muted">Console</p>
         <pre
+          aria-labelledby={`console-${lessonId}`}
           aria-live="polite"
           className="max-h-40 min-h-[3rem] overflow-auto rounded-md border border-line bg-sunken p-3 font-mono text-[13px] leading-relaxed"
         >

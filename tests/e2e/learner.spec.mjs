@@ -32,8 +32,28 @@ test.describe.serial('a learner working through a lesson', () => {
     const notes = page.getByLabel('Notes for this lesson');
     await notes.fill('Use 75% hydration');
     await expect(page.getByText(/^Saved/)).toBeVisible();
+    // Switching tabs keeps what was typed.
+    await page.getByRole('tab', { name: 'Course' }).click();
+    await page.getByRole('tab', { name: 'Notes' }).click();
+    await expect(notes).toHaveValue('Use 75% hydration');
     await page.reload();
     await expect(page.getByLabel('Notes for this lesson')).toHaveValue('Use 75% hydration');
+  });
+
+  test('keeps the notes beside the video on a laptop, and can widen them', async ({ page }) => {
+    const { bread } = state();
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(lessonUrl(bread.id, bread.lessons[1]));
+    const player = await page.getByTestId('player').boundingBox();
+    const tools = page.getByRole('region', { name: 'Lesson tools' });
+    const narrow = await tools.boundingBox();
+    expect(narrow.x).toBeGreaterThan(player.x + player.width);
+    expect(narrow.y).toBeLessThan(player.y + player.height);
+    // Still in view after scrolling down the lesson.
+    await page.mouse.wheel(0, 600);
+    await expect.poll(async () => (await tools.boundingBox()).y).toBeLessThan(120);
+    await page.getByRole('button', { name: 'Make the tools wider' }).click();
+    await expect.poll(async () => (await tools.boundingBox()).width).toBeGreaterThan(narrow.width + 100);
   });
 
   test('picks a display name that others see', async ({ page }) => {
