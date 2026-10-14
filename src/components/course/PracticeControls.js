@@ -1,14 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Repeat, RotateCcw } from 'lucide-react';
+import {
+  Pin, PinOff, Repeat, RotateCcw,
+} from 'lucide-react';
 import { formatDuration } from '../../lib/youtube';
 import cn from '../../lib/cn';
 
 const SPEEDS = [0.5, 0.75, 1, 1.25];
 
 export default function PracticeControls({
-  rate, onRate, loop, loopStart, onLoopClick, onBack,
+  rate, onRate, loop, loopStart, onLoopClick, onBack, pinned, onPin,
 }) {
   let loopLabel = 'Loop a section';
   if (loopStart !== null) loopLabel = `Set loop end (from ${formatDuration(loopStart)})`;
@@ -50,6 +52,18 @@ export default function PracticeControls({
         <Repeat size={15} />
         {loopLabel}
       </button>
+      {onPin && (
+        // Pinning only applies on phones and tablets in portrait.
+        <button
+          type="button"
+          onClick={onPin}
+          aria-pressed={pinned}
+          className="inline-flex h-8 items-center gap-1.5 rounded-pill px-3 text-sm font-bold text-muted hover:bg-sunken hover:text-ink lg:hidden"
+        >
+          {pinned ? <PinOff size={15} aria-hidden="true" /> : <Pin size={15} aria-hidden="true" />}
+          {pinned ? 'Unpin video' : 'Pin video'}
+        </button>
+      )}
     </div>
   );
 }

@@ -35,8 +35,9 @@ export default function NotesPanel({ videoId, initialContent, isSignedIn }) {
     return <p className="text-[15px] text-muted">Sign in to write notes that stay with this lesson.</p>;
   }
 
+  // Fills the tools column on wide screens; a fixed height everywhere else.
   return (
-    <div className="grid gap-1">
+    <div className="flex h-full flex-col gap-1">
       <label htmlFor="lesson-notes" className="sr-only">Notes for this lesson</label>
       <textarea
         id="lesson-notes"
@@ -47,7 +48,7 @@ export default function NotesPanel({ videoId, initialContent, isSignedIn }) {
         }}
         placeholder="Measurements, tips, what to watch for next time…"
         rows={7}
-        className="w-full resize-y rounded-md border border-line bg-surface p-3 text-[15px] placeholder:text-muted"
+        className="min-h-[11rem] w-full flex-1 resize-y rounded-md border border-line bg-surface p-3 text-[15px] leading-relaxed placeholder:text-muted lg:resize-none"
       />
       <p className="h-4 text-xs text-muted" aria-live="polite">
         {status === 'saving' && 'Saving…'}

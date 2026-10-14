@@ -9,12 +9,16 @@ import securityPlus from './security-plus';
 import { core1, core2 } from './checkpoints-a-plus';
 import netCheck from './checkpoints-network-plus';
 import secCheck from './checkpoints-security-plus';
+import banks from './exam-banks';
 
 // "Cybersecurity Expert": a track of three courses taken in order, each preparing for a
 // CompTIA certification, built on Professor Messer's free objective-by-objective videos.
 // Every lesson is 10 minutes or less (long videos are split); see src/lib/content/plan.js.
 
-const checkpoint = (title, questions) => ({ title, minutes: 15, questions });
+// The module exam at the end of each module: 15 questions drawn from a bank of 25.
+const checkpoint = (title, questions, more) => ({
+  title, minutes: 25, draw: 15, questions: [...questions, ...more],
+});
 
 export default {
   slug: 'cybersecurity-expert',
@@ -38,11 +42,11 @@ export default {
           videos: aPlusCore1Videos.videos,
           lessons: aPlusCore1,
           modules: [
-            { title: 'Core 1 · Mobile devices', objectives: ['1.1', '1.3'], checkpoint: checkpoint('Mobile devices checkpoint', core1.mobile) },
-            { title: 'Core 1 · Networking', objectives: ['2.1', '2.8'], checkpoint: checkpoint('Networking checkpoint', core1.networking) },
-            { title: 'Core 1 · Cables, memory and storage', objectives: ['3.1', '3.4'], checkpoint: checkpoint('Cables, memory and storage checkpoint', core1.hardware1) },
-            { title: 'Core 1 · Motherboards, power and printers', objectives: ['3.5', '3.8'], checkpoint: checkpoint('Motherboards and printers checkpoint', core1.hardware2) },
-            { title: 'Core 1 · Virtualization, cloud and troubleshooting', objectives: ['4.1', '5.6'], checkpoint: checkpoint('Cloud and troubleshooting checkpoint', core1.cloud) },
+            { title: 'Core 1 · Mobile devices', objectives: ['1.1', '1.3'], checkpoint: checkpoint('Mobile devices exam', core1.mobile, banks.core1.mobile) },
+            { title: 'Core 1 · Networking', objectives: ['2.1', '2.8'], checkpoint: checkpoint('Networking exam', core1.networking, banks.core1.networking) },
+            { title: 'Core 1 · Cables, memory and storage', objectives: ['3.1', '3.4'], checkpoint: checkpoint('Cables, memory and storage exam', core1.hardware1, banks.core1.hardware1) },
+            { title: 'Core 1 · Motherboards, power and printers', objectives: ['3.5', '3.8'], checkpoint: checkpoint('Motherboards and printers exam', core1.hardware2, banks.core1.hardware2) },
+            { title: 'Core 1 · Virtualization, cloud and troubleshooting', objectives: ['4.1', '5.6'], checkpoint: checkpoint('Cloud and troubleshooting exam', core1.cloud, banks.core1.cloud) },
           ],
         },
         {
@@ -50,11 +54,11 @@ export default {
           videos: aPlusCore2Videos.videos,
           lessons: aPlusCore2,
           modules: [
-            { title: 'Core 2 · Windows: installing, tools and the command line', objectives: ['1.1', '1.6'], checkpoint: checkpoint('Windows checkpoint', core2.os1) },
-            { title: 'Core 2 · Networking Windows, macOS and Linux', objectives: ['1.7', '1.11'], checkpoint: checkpoint('Windows networking, macOS and Linux checkpoint', core2.os2) },
-            { title: 'Core 2 · Security controls, access and malware', objectives: ['2.1', '2.4'], checkpoint: checkpoint('Security controls checkpoint', core2.security1) },
-            { title: 'Core 2 · Attacks and hardening', objectives: ['2.5', '2.11'], checkpoint: checkpoint('Attacks and hardening checkpoint', core2.security2) },
-            { title: 'Core 2 · Troubleshooting and operational procedures', objectives: ['3.1', '4.10'], checkpoint: checkpoint('Operations checkpoint', core2.operations) },
+            { title: 'Core 2 · Windows: installing, tools and the command line', objectives: ['1.1', '1.6'], checkpoint: checkpoint('Windows exam', core2.os1, banks.core2.os1) },
+            { title: 'Core 2 · Networking Windows, macOS and Linux', objectives: ['1.7', '1.11'], checkpoint: checkpoint('Windows networking, macOS and Linux exam', core2.os2, banks.core2.os2) },
+            { title: 'Core 2 · Security controls, access and malware', objectives: ['2.1', '2.4'], checkpoint: checkpoint('Security controls exam', core2.security1, banks.core2.security1) },
+            { title: 'Core 2 · Attacks and hardening', objectives: ['2.5', '2.11'], checkpoint: checkpoint('Attacks and hardening exam', core2.security2, banks.core2.security2) },
+            { title: 'Core 2 · Troubleshooting and operational procedures', objectives: ['3.1', '4.10'], checkpoint: checkpoint('Operations exam', core2.operations, banks.core2.operations) },
           ],
         },
       ],
@@ -73,12 +77,12 @@ export default {
           videos: networkPlusVideos.videos,
           lessons: networkPlus,
           modules: [
-            { title: 'Networking concepts, protocols and cabling', objectives: ['1.1', '1.6'], checkpoint: checkpoint('Networking concepts checkpoint', netCheck.concepts) },
-            { title: 'IP addressing, subnetting and modern networks', objectives: ['1.7', '1.8'], checkpoint: checkpoint('Addressing checkpoint', netCheck.addressing) },
-            { title: 'Routing, switching and wireless', objectives: ['2.1', '2.4'], checkpoint: checkpoint('Implementation checkpoint', netCheck.implementation) },
-            { title: 'Network operations and services', objectives: ['3.1', '3.5'], checkpoint: checkpoint('Operations checkpoint', netCheck.operations) },
-            { title: 'Network security', objectives: ['4.1', '4.3'], checkpoint: checkpoint('Network security checkpoint', netCheck.security) },
-            { title: 'Network troubleshooting', objectives: ['5.1', '5.5'], checkpoint: checkpoint('Troubleshooting checkpoint', netCheck.troubleshooting) },
+            { title: 'Networking concepts, protocols and cabling', objectives: ['1.1', '1.6'], checkpoint: checkpoint('Networking concepts exam', netCheck.concepts, banks.netCheck.concepts) },
+            { title: 'IP addressing, subnetting and modern networks', objectives: ['1.7', '1.8'], checkpoint: checkpoint('Addressing exam', netCheck.addressing, banks.netCheck.addressing) },
+            { title: 'Routing, switching and wireless', objectives: ['2.1', '2.4'], checkpoint: checkpoint('Implementation exam', netCheck.implementation, banks.netCheck.implementation) },
+            { title: 'Network operations and services', objectives: ['3.1', '3.5'], checkpoint: checkpoint('Operations exam', netCheck.operations, banks.netCheck.operations) },
+            { title: 'Network security', objectives: ['4.1', '4.3'], checkpoint: checkpoint('Network security exam', netCheck.security, banks.netCheck.security) },
+            { title: 'Network troubleshooting', objectives: ['5.1', '5.5'], checkpoint: checkpoint('Troubleshooting exam', netCheck.troubleshooting, banks.netCheck.troubleshooting) },
           ],
         },
       ],
@@ -97,13 +101,13 @@ export default {
           videos: securityPlusVideos.videos,
           lessons: securityPlus,
           modules: [
-            { title: 'General security concepts', objectives: ['1.1', '1.4'], checkpoint: checkpoint('Security concepts checkpoint', secCheck.concepts) },
-            { title: 'Threat actors, vectors and vulnerabilities', objectives: ['2.1', '2.3'], checkpoint: checkpoint('Threats and vulnerabilities checkpoint', secCheck.threats1) },
-            { title: 'Attacks, indicators and mitigations', objectives: ['2.4', '2.5'], checkpoint: checkpoint('Attacks and mitigations checkpoint', secCheck.threats2) },
-            { title: 'Security architecture', objectives: ['3.1', '3.4'], checkpoint: checkpoint('Architecture checkpoint', secCheck.architecture) },
-            { title: 'Security operations: hardening, assets and vulnerabilities', objectives: ['4.1', '4.4'], checkpoint: checkpoint('Operations checkpoint', secCheck.operations1) },
-            { title: 'Security operations: defences, identity and incidents', objectives: ['4.5', '4.9'], checkpoint: checkpoint('Defences and incident response checkpoint', secCheck.operations2) },
-            { title: 'Security program management', objectives: ['5.1', '5.6'], checkpoint: checkpoint('Program management checkpoint', secCheck.program) },
+            { title: 'General security concepts', objectives: ['1.1', '1.4'], checkpoint: checkpoint('Security concepts exam', secCheck.concepts, banks.secCheck.concepts) },
+            { title: 'Threat actors, vectors and vulnerabilities', objectives: ['2.1', '2.3'], checkpoint: checkpoint('Threats and vulnerabilities exam', secCheck.threats1, banks.secCheck.threats1) },
+            { title: 'Attacks, indicators and mitigations', objectives: ['2.4', '2.5'], checkpoint: checkpoint('Attacks and mitigations exam', secCheck.threats2, banks.secCheck.threats2) },
+            { title: 'Security architecture', objectives: ['3.1', '3.4'], checkpoint: checkpoint('Architecture exam', secCheck.architecture, banks.secCheck.architecture) },
+            { title: 'Security operations: hardening, assets and vulnerabilities', objectives: ['4.1', '4.4'], checkpoint: checkpoint('Operations exam', secCheck.operations1, banks.secCheck.operations1) },
+            { title: 'Security operations: defences, identity and incidents', objectives: ['4.5', '4.9'], checkpoint: checkpoint('Defences and incident response exam', secCheck.operations2, banks.secCheck.operations2) },
+            { title: 'Security program management', objectives: ['5.1', '5.6'], checkpoint: checkpoint('Program management exam', secCheck.program, banks.secCheck.program) },
           ],
         },
       ],

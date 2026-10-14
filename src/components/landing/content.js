@@ -25,7 +25,7 @@ export const XP_TABLE = [
   { what: 'Log what you made', detail: 'A photo and a note', xp: XP.LOG },
   { what: 'Pass a quick check', detail: 'After a lesson, no timer', xp: QUIZ_XP.LESSON_CHECK },
   { what: 'Pass the module games', detail: 'Tower or Speed round', xp: QUIZ_XP.MODULE_GAME },
-  { what: 'Pass a checkpoint', detail: 'Timed, mid-module', xp: QUIZ_XP.CHECKPOINT },
+  { what: 'Pass a module exam', detail: 'Timed, at the end of a module', xp: QUIZ_XP.CHECKPOINT },
 ];
 
 export const GAMES = [
@@ -33,7 +33,7 @@ export const GAMES = [
   ['Tower', 'Every right answer stacks a 3D block. How tall can you build it?'],
   ['Speed round', '20 seconds a question. Faster answers and streaks score more.'],
   ['Match-up', 'Flip cards to find the pairs. A memory game for the module.'],
-  ['Timed checkpoints', 'Halfway through a module, with fair-play rules up front and extra time if you need it.'],
+  ['Module exams', 'Timed, at the end of each module, drawn fresh for every attempt. Fair-play rules up front and extra time if you need it.'],
 ];
 
 export const TOOLS = [

@@ -6,7 +6,9 @@ import { formatDuration } from '../../lib/youtube';
 import ConfirmButton from '../../components/admin/ConfirmButton';
 import LibraryImport from '../../components/admin/LibraryImport';
 import { demoContentCount } from '../../lib/content/importPathway';
-import { importLibrarySkills, importLibraryTrack, removeDemo } from './content/actions';
+import {
+  importLibrarySkills, importLibraryTrack, removeDemo, updateLibraryExams,
+} from './content/actions';
 import shortSkills from '../../../content/skills';
 import SkillIcon from '../../components/ui/SkillIcon';
 
@@ -65,7 +67,7 @@ export default async function AdminHome() {
           <p className="text-[15px] text-muted">
             Three courses (IT Foundations, Networking, Security Operations) for CompTIA A+, Network+
             and Security+: 470 lessons of 10 minutes or less, with Try tasks, quick checks, timed
-            checkpoints and games. Safe to run again: existing courses are left alone.
+            module exams and games. Safe to run again: existing courses are left alone.
           </p>
           {track && <p className="text-sm text-accent">{`Imported: ${track._count.pathways} of 3 courses.`}</p>}
           <LibraryImport action={importLibraryTrack} slug="cybersecurity-expert" imported={Boolean(track)} />
@@ -82,6 +84,22 @@ export default async function AdminHome() {
             imported={skillCount > 0}
             label="Import short skills"
             againLabel="Import any missing skills"
+          />
+        </div>
+        <div className="grid gap-2 border-t border-line pt-4">
+          <p className="font-bold">Module exams</p>
+          <p className="text-[15px] text-muted">
+            Adds new exam questions from the library to courses and skills you’ve already
+            imported, and sets each exam’s time and questions per attempt. Existing questions,
+            your edits and learners’ results are never touched.
+          </p>
+          <LibraryImport
+            action={updateLibraryExams}
+            slug="exams"
+            imported
+            againLabel="Update module exams"
+            publishOption={false}
+            pendingText="Updating…"
           />
         </div>
         {demoCount > 0 && (

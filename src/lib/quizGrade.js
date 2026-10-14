@@ -74,29 +74,67 @@ export function validateQuestionData(type, raw = {}) {
 // Deterministic shuffle so a learner sees the same order on reload of one attempt.
 // FNV-1a hash of the seed, then xorshift-style steps; bitwise maths is the point here.
 /* eslint-disable no-bitwise */
-export function seededShuffle(list, seed) {
-  let h = String(seed).split('').reduce((acc, ch) => Math.imul(acc ^ ch.charCodeAt(0), 16777619), 2166136261);
+const hashSeed = (seed) => String(seed).split('').reduce((acc, ch) => Math.imul(acc ^ ch.charCodeAt(0), 16777619), 2166136261);
+
+// MurmurHash3's finaliser: spreads every bit of the seed. FNV alone leaves the low bits,
+// which pick between two options, nearly fixed.
+const mix = (n) => {
+  let h = Math.imul(n ^ (n >>> 16), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  return (h ^ (h >>> 16)) >>> 0;
+};
+
+// A fair pick from a list, the same every time for the same seed.
+function seededPick(list, seed) {
+  return list[mix(hashSeed(seed)) % list.length];
+}
+
+// A plain seeded Fisher–Yates shuffle: any order, including the original, can come out.
+function fairShuffle(list, seed) {
+  const h = hashSeed(seed);
   const out = [...list];
   for (let i = out.length - 1; i > 0; i -= 1) {
-    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
-    const j = h % (i + 1);
+    const j = mix(h + i) % (i + 1);
     [out[i], out[j]] = [out[j], out[i]];
   }
+  return out;
+}
+
+export function seededShuffle(list, seed) {
+  const out = fairShuffle(list, seed);
   // A shuffle that leaves an ORDER question already solved gives the answer away.
   if (out.length > 1 && out.every((x, i) => x === list[i])) out.push(out.shift());
   return out;
 }
 /* eslint-enable no-bitwise */
 
-// What the learner's browser gets: no answers.
+// The questions for one exam attempt. The bank, in its written order (which follows the
+// module), is cut into `count` runs and one question comes from each, so every attempt
+// covers the whole module but rarely repeats the last one.
+export function drawQuestions(questions, count, seed) {
+  if (!count || count >= questions.length) return questions;
+  return Array.from({ length: count }, (_, i) => {
+    const run = questions.slice(
+      Math.floor((i * questions.length) / count),
+      Math.floor(((i + 1) * questions.length) / count),
+    );
+    return seededPick(run, `${seed}:${i}`);
+  });
+}
+
+// What the learner's browser gets: no answers. Options keep their indexes (answers are
+// indexes) but come with a display order, so the right one isn't always in the same place.
 export function publicQuestion(q, seed = q.id) {
   const base = {
     id: q.id, type: q.type, prompt: q.prompt,
   };
   const d = q.data || {};
+  const order = () => fairShuffle(d.options.map((_, i) => i), `${seed}:options`);
   switch (q.type) {
-    case 'SINGLE': return { ...base, options: d.options };
-    case 'MULTI': return { ...base, options: d.options, pick: d.answers.length };
+    case 'SINGLE': return { ...base, options: d.options, order: order() };
+    case 'MULTI': return {
+      ...base, options: d.options, order: order(), pick: d.answers.length,
+    };
     case 'ORDER': return { ...base, items: seededShuffle(d.items, seed) };
     case 'MATCH': return { ...base, lefts: d.pairs.map((p) => p[0]), rights: seededShuffle(d.pairs.map((p) => p[1]), seed) };
     default: return base;
@@ -174,14 +212,24 @@ export function gradeQuiz(questions, answers = {}) {
 const MAX_EVENTS = 200;
 const MAX_EVENT_TEXT = 500;
 
-// Tidies the browser's log: { type: 'leave', seconds } | { type: 'copy'|'paste', text } |
-// { type: 'fullscreen-exit' }, each with `at` (ms since the attempt began).
+const EVENT_TYPES = ['device', 'leave', 'blip', 'copy', 'paste', 'fullscreen-exit'];
+const DEVICES = ['phone', 'tablet', 'desktop'];
+const VIA = ['tab', 'window'];
+
+// Tidies the browser's log, each event with `at` (ms since the attempt began):
+// { type: 'device', kind } once at the start; { type: 'leave', seconds, via } (penalised);
+// { type: 'blip', seconds, via } (too short to count, logged for review);
+// { type: 'copy'|'paste', text }; { type: 'fullscreen-exit' }.
 export function cleanEvents(raw) {
   return (Array.isArray(raw) ? raw : []).slice(0, MAX_EVENTS).map((e) => {
-    const type = ['leave', 'copy', 'paste', 'fullscreen-exit'].includes(e?.type) ? e.type : null;
+    const type = EVENT_TYPES.includes(e?.type) ? e.type : null;
     if (!type) return null;
     const event = { type, at: Math.max(0, Math.round(Number(e.at) || 0)) };
-    if (type === 'leave') event.seconds = Math.min(3600, Math.max(0, Math.round(Number(e.seconds) || 0)));
+    if (type === 'device') event.kind = DEVICES.includes(e.kind) ? e.kind : 'desktop';
+    if (type === 'leave' || type === 'blip') {
+      event.seconds = Math.min(3600, Math.max(0, Math.round(Number(e.seconds) || 0)));
+      if (VIA.includes(e.via)) event.via = e.via;
+    }
     if (type === 'copy' || type === 'paste') event.text = String(e.text ?? '').slice(0, MAX_EVENT_TEXT);
     return event;
   }).filter(Boolean);

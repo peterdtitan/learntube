@@ -42,6 +42,7 @@ async function importModule(pathwayId, mod, order, publishQuizzes) {
         unitId: unit.id,
         title: mod.checkpoint.title,
         timeLimitSec: mod.checkpoint.timeLimitSec,
+        drawCount: mod.checkpoint.drawCount,
         published: publishQuizzes,
       }] : []),
       {
@@ -121,6 +122,77 @@ export async function importTrack(trackPlan, options = {}) {
     }),
   );
   return { trackId: track.id, courses };
+}
+
+// Brings already-imported pathways' module exams up to date with the content: adds bank
+// questions that aren't there yet (matched by prompt) and sets each exam's title, time
+// limit and draw size. Never edits or removes a question, so admins' changes and
+// learners' results are safe. A module whose title no longer matches is skipped.
+export async function syncExams(plans) {
+  const problems = plans.flatMap((p) => p.problems);
+  if (problems.length) throw contentError(problems);
+  const report = {
+    exams: 0, created: 0, added: 0, skipped: [],
+  };
+  await inSequence(plans, async (plan) => {
+    const pathway = await prisma.pathway.findUnique({
+      where: { slug: plan.pathway.slug },
+      include: {
+        units: {
+          orderBy: { order: 'asc' },
+          include: {
+            quizzes: {
+              where: { kind: 'CHECKPOINT' },
+              include: { questions: { select: { prompt: true, order: true } } },
+            },
+          },
+        },
+      },
+    });
+    if (!pathway) return;
+    await inSequence(plan.modules, async (mod, i) => {
+      if (!mod.checkpoint) return;
+      const unit = pathway.units[i];
+      if (!unit || unit.title !== mod.title) {
+        report.skipped.push(`${plan.pathway.title}: ${mod.title}`);
+        return;
+      }
+      const settings = {
+        title: mod.checkpoint.title,
+        timeLimitSec: mod.checkpoint.timeLimitSec,
+        drawCount: mod.checkpoint.drawCount,
+      };
+      let quiz = unit.quizzes[0];
+      if (quiz) {
+        await prisma.quiz.update({ where: { id: quiz.id }, data: settings });
+      } else {
+        // New exams start as drafts for an admin to review.
+        quiz = await prisma.quiz.create({
+          data: { kind: 'CHECKPOINT', unitId: unit.id, ...settings },
+          include: { questions: { select: { prompt: true, order: true } } },
+        });
+        report.created += 1;
+      }
+      const have = new Set(quiz.questions.map((qn) => qn.prompt));
+      const next = quiz.questions.reduce((n, qn) => Math.max(n, qn.order + 1), 0);
+      const fresh = mod.checkpoint.questions.filter((qn) => !have.has(qn.prompt));
+      if (fresh.length) {
+        await prisma.question.createMany({
+          data: fresh.map((qn, k) => ({
+            quizId: quiz.id,
+            order: next + k,
+            type: qn.type,
+            prompt: qn.prompt,
+            data: qn.data,
+            explanation: qn.explanation || null,
+          })),
+        });
+      }
+      report.exams += 1;
+      report.added += fresh.length;
+    });
+  });
+  return report;
 }
 
 // Short skills (planSkill), each its own pathway. Safe to run again: existing ones are

@@ -162,7 +162,7 @@ function Program({ program }) {
             <span className="text-mint">Security+.</span>
           </h2>
           <p className="text-lg text-haze">
-            {`${program.courses.length} courses, taken in order: from how computers work to defending networks. Built on Professor Messer’s free videos, split into steps, with hands-on tasks and timed checkpoints.`}
+            {`${program.courses.length} courses, taken in order: from how computers work to defending networks. Built on Professor Messer’s free videos, split into steps, with hands-on tasks and timed module exams.`}
           </p>
           <ol className="grid gap-3">
             {program.courses.map((c, i) => (

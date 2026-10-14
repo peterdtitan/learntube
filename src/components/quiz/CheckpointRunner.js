@@ -19,11 +19,21 @@ function clock(seconds) {
 }
 
 const ANNOUNCE_AT = [300, 60, 30, 10];
+// Shorter than this away is a blip (a notification, a mis-tap): logged, never penalised.
+const MIN_AWAY_SECONDS = 2;
+
+// Phones and tablets lose window focus for things that aren't leaving (the notification
+// shade, the address bar), so there only a hidden page counts. Fullscreen is desktop-only:
+// iPhones can't do it, and on Android it fights scrolling.
+function deviceKind() {
+  if (typeof window === 'undefined' || !window.matchMedia('(pointer: coarse)').matches) return 'desktop';
+  return Math.min(window.screen.width, window.screen.height) >= 600 ? 'tablet' : 'phone';
+}
 
 // Tracks leaving the page, leaving fullscreen, copying and pasting while `active`.
 // Every event goes to the server straight away; see /api/attempts/:id/events.
 function useIntegrity({
-  active, attemptId, startedAt, onReturn, onFullscreenExit, onServer,
+  active, attemptId, startedAt, device, onReturn, onFullscreenExit, onServer,
 }) {
   const events = useRef([]);
   const awaySince = useRef(null);
@@ -51,35 +61,50 @@ function useIntegrity({
 
   useEffect(() => {
     if (!active) return undefined;
-    const isAway = () => document.visibilityState === 'hidden' || !document.hasFocus();
+    const desktop = device === 'desktop';
+    const awayVia = () => {
+      if (document.visibilityState === 'hidden') return 'tab';
+      if (desktop && !document.hasFocus()) return 'window';
+      return null;
+    };
     const check = () => {
-      if (isAway() && awaySince.current === null) {
-        awaySince.current = Date.now();
-      } else if (!isAway() && awaySince.current !== null) {
-        const seconds = Math.round((Date.now() - awaySince.current) / 1000);
+      const via = awayVia();
+      if (via && awaySince.current === null) {
+        awaySince.current = { at: Date.now(), via };
+      } else if (!via && awaySince.current !== null) {
+        const seconds = Math.round((Date.now() - awaySince.current.at) / 1000);
+        const from = awaySince.current.via;
         awaySince.current = null;
-        if (seconds >= 1) {
-          record({ type: 'leave', seconds });
+        if (seconds >= MIN_AWAY_SECONDS) {
+          record({ type: 'leave', seconds, via: from });
           onReturn(seconds);
+        } else {
+          record({ type: 'blip', seconds, via: from });
         }
       }
     };
     const onCopy = () => record({ type: 'copy', text: String(window.getSelection() || '') });
     const onPaste = (e) => record({ type: 'paste', text: e.clipboardData?.getData('text') || '' });
     const onFullscreen = () => {
-      if (!document.fullscreenElement) {
+      if (desktop && !document.fullscreenElement) {
         record({ type: 'fullscreen-exit' });
         onFullscreenExit();
       }
     };
+    // Pull-to-refresh would reload the quiz mid-attempt; scrolling past the top does nothing.
+    const root = document.documentElement;
+    const overscroll = root.style.overscrollBehaviorY;
+    root.style.overscrollBehaviorY = 'none';
     // Closing the tab mid-quiz: send what we have. The attempt stays open and the clock runs.
     const onHide = () => {
       const blob = new Blob([JSON.stringify({ events: events.current })], { type: 'application/json' });
       navigator.sendBeacon?.(`/api/attempts/${attemptId}/events`, blob);
     };
 
-    window.addEventListener('blur', check);
-    window.addEventListener('focus', check);
+    if (desktop) {
+      window.addEventListener('blur', check);
+      window.addEventListener('focus', check);
+    }
     document.addEventListener('visibilitychange', check);
     document.addEventListener('copy', onCopy);
     document.addEventListener('cut', onCopy);
@@ -87,6 +112,7 @@ function useIntegrity({
     document.addEventListener('fullscreenchange', onFullscreen);
     window.addEventListener('pagehide', onHide);
     return () => {
+      root.style.overscrollBehaviorY = overscroll;
       window.removeEventListener('blur', check);
       window.removeEventListener('focus', check);
       document.removeEventListener('visibilitychange', check);
@@ -96,14 +122,14 @@ function useIntegrity({
       document.removeEventListener('fullscreenchange', onFullscreen);
       window.removeEventListener('pagehide', onHide);
     };
-  }, [active, attemptId, record, onReturn, onFullscreenExit]);
+  }, [active, attemptId, device, record, onReturn, onFullscreenExit]);
 
   useEffect(() => () => clearTimeout(timer.current), []);
   return events;
 }
 
 export default function CheckpointRunner({
-  quiz: initial, isSignedIn, extraTime, pathwayId,
+  quiz: initial, isSignedIn, extraTime, pathwayId, gameHref,
 }) {
   const boxRef = useRef(null);
   const [quiz, setQuiz] = useState(initial);
@@ -118,6 +144,8 @@ export default function CheckpointRunner({
   const [confirming, setConfirming] = useState(false);
   const [announce, setAnnounce] = useState('');
   const submitting = useRef(false);
+  const [device, setDevice] = useState('desktop');
+  useEffect(() => setDevice(deviceKind()), []);
 
   const attemptId = quiz.open?.id;
   const startedAt = quiz.open ? new Date(quiz.open.startedAt).getTime() : Date.now();
@@ -136,10 +164,11 @@ export default function CheckpointRunner({
   const onFullscreenExit = useCallback(() => setOutOfFullscreen(true), []);
 
   const events = useIntegrity({
-    active: step === 'running', attemptId, startedAt, onReturn, onFullscreenExit, onServer,
+    active: step === 'running', attemptId, startedAt, device, onReturn, onFullscreenExit, onServer,
   });
 
   const enterFullscreen = async () => {
+    if (device !== 'desktop') return;
     try {
       if (boxRef.current?.requestFullscreen && !document.fullscreenElement) {
         await boxRef.current.requestFullscreen();
@@ -165,6 +194,8 @@ export default function CheckpointRunner({
       return;
     }
     setQuiz(data);
+    // Carry on the log the server already has: it ignores lists shorter than its own.
+    events.current = Array.isArray(data.open.events) ? data.open.events : [];
     try {
       const saved = sessionStorage.getItem(`checkpoint:${data.open.id}`);
       if (saved) setAnswers(JSON.parse(saved));
@@ -172,6 +203,10 @@ export default function CheckpointRunner({
       // Starting with blank answers is fine.
     }
     setEndAt(Date.now() + (data.open.secondsLeft ?? 0) * 1000);
+    // Tells the reviewer what kind of device the attempt was taken on.
+    if (!events.current.some((e) => e.type === 'device')) {
+      events.current = [...events.current, { type: 'device', kind: device, at: 0 }];
+    }
     setStep('running');
   };
 
@@ -232,8 +267,8 @@ export default function CheckpointRunner({
       {(step === 'intro' || step === 'resume') && (
         <div className="grid gap-6">
           <header className="grid gap-2">
-            <p className="text-sm font-bold uppercase tracking-widest text-muted">{`Checkpoint · ${quiz.moduleTitle || 'Module'}`}</p>
-            <h1 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold leading-tight">{quiz.title || 'Halfway checkpoint'}</h1>
+            <p className="text-sm font-bold uppercase tracking-widest text-muted">{`Module exam · ${quiz.moduleTitle || 'Module'}`}</p>
+            <h1 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold leading-tight">{quiz.title || 'Module exam'}</h1>
             <p className="text-lg text-muted">
               {`${quiz.questionCount} questions · ${minutes} minutes · pass mark ${quiz.passPercent}% · `}
               <span className="font-bold text-xp">{`+${QUIZ_XP.CHECKPOINT} XP`}</span>
@@ -244,10 +279,14 @@ export default function CheckpointRunner({
             <h2 id="rules-heading" className="text-lg font-bold">Before you start</h2>
             <ul className="grid list-disc gap-2 pl-5 text-[15px]">
               <li>
-                The quiz opens full screen and the clock starts straight away.
-                It submits itself when time runs out.
+                The clock starts straight away, and the exam submits itself when time runs out.
+                {device === 'desktop' && ' On a computer it opens full screen.'}
               </li>
-              <li>{`Leaving the quiz (another tab, app or window) costs ${p.leave} points, plus ${p.away} for every 10 seconds away, and ${p.time === 1 ? 'that time' : `${p.time}× that time`} comes off your clock.`}</li>
+              {quiz.bankSize > quiz.questionCount && (
+                <li>{`Your ${quiz.questionCount} questions are drawn from ${quiz.bankSize} covering the whole module, so a retake asks different ones.`}</li>
+              )}
+              <li>{`Switching to another ${device === 'desktop' ? 'tab or window' : 'app or tab'} costs ${p.leave} points, plus ${p.away} for every 10 seconds away, and ${p.time === 1 ? 'that time' : `${p.time}× that time`} comes off your clock.`}</li>
+              <li>{`Scrolling, notifications and anything under ${MIN_AWAY_SECONDS} seconds don’t count.`}</li>
               <li>{`Copying and pasting work, but each one is recorded, with the text, and costs ${p.copy} points.`}</li>
               <li>{`Deductions stop at ${p.max} points. You’ll see exactly what was deducted, and why, at the end.`}</li>
               <li>Not passing doesn’t lock anything. You can retake it after a short break.</li>
@@ -265,7 +304,7 @@ export default function CheckpointRunner({
           ) : (
             <Button onClick={start} className="justify-self-start">
               <Maximize size={16} aria-hidden="true" />
-              {step === 'resume' ? 'Return to the quiz (the clock kept running)' : 'Start the checkpoint'}
+              {step === 'resume' ? 'Return to the exam (the clock kept running)' : 'Start the exam'}
             </Button>
           )}
           {quiz.best && (
@@ -319,7 +358,7 @@ export default function CheckpointRunner({
               <div role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body" className="grid max-w-md gap-3 rounded-lg bg-surface p-6 shadow-xl">
                 <h2 id="leave-title" className="flex items-center gap-2 text-xl font-bold">
                   <AlertTriangle className="text-danger" size={22} />
-                  You left the quiz
+                  You left the exam
                 </h2>
                 <p id="leave-body" className="text-[15px]">
                   {`You were away for ${warning.seconds} ${warning.seconds === 1 ? 'second' : 'seconds'}. That’s −${warning.points} points and ${warning.clock} seconds off your clock. Stay on this page until you submit.`}
@@ -333,7 +372,7 @@ export default function CheckpointRunner({
                     enterFullscreen();
                   }}
                 >
-                  Back to the quiz
+                  Back to the exam
                 </Button>
               </div>
             </div>
@@ -343,7 +382,7 @@ export default function CheckpointRunner({
 
       {step === 'done' && outcome && (
         <div className="grid gap-6">
-          <h1 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold leading-tight">{quiz.title || 'Checkpoint'}</h1>
+          <h1 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold leading-tight">{quiz.title || 'Module exam'}</h1>
           <QuizResults
             result={outcome.result}
             passPercent={outcome.passPercent}
@@ -351,7 +390,8 @@ export default function CheckpointRunner({
             showIntegrity
           />
           <div className="flex flex-wrap gap-3">
-            {pathwayId && <Button href={`/pathways/${pathwayId}`}>Back to the pathway</Button>}
+            {gameHref && <Button href={gameHref}>Play the module games</Button>}
+            {pathwayId && <Button href={`/pathways/${pathwayId}`} variant={gameHref ? 'ghost' : 'primary'}>Back to the pathway</Button>}
             {!outcome.result.passed && <p className="self-center text-sm text-muted">You can retake it in 5 minutes.</p>}
           </div>
         </div>

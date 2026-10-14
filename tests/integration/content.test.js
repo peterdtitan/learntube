@@ -5,7 +5,7 @@ import {
 import def from '../../content/cybersecurity-expert';
 import { planTrack } from '../../src/lib/content/plan.js';
 import {
-  DEMO_OWNER_EMAIL, importTrack, removeDemoContent, setPathwayQuizzesPublished,
+  DEMO_OWNER_EMAIL, importTrack, removeDemoContent, setPathwayQuizzesPublished, syncExams,
 } from '../../src/lib/content/importPathway.js';
 import { getTrackOverview } from '../../src/lib/tracks.js';
 import * as contentActions from '../../src/app/admin/content/actions.js';
@@ -95,5 +95,49 @@ describe('removing the demo content', () => {
     expect(await prisma.user.findUnique({ where: { email: DEMO_OWNER_EMAIL } })).toBeNull();
     expect(await prisma.video.count()).toBe(realVideos);
     expect(await prisma.pathway.count()).toBe(3);
+  });
+});
+
+describe('updating module exams on courses already imported', () => {
+  // What production holds today: 10-question exams, no draw, 15 minutes.
+  const oldPlan = {
+    ...plan,
+    courses: plan.courses.map((c) => ({
+      ...c,
+      modules: c.modules.map((m) => ({
+        ...m,
+        checkpoint: m.checkpoint && {
+          ...m.checkpoint, drawCount: null, timeLimitSec: 900, questions: m.checkpoint.questions.slice(0, 10),
+        },
+      })),
+    })),
+  };
+
+  it('adds the new bank questions and settings, once, without touching what is there', async () => {
+    await importTrack(oldPlan);
+    const first = await prisma.question.findFirst({ where: { quiz: { kind: 'CHECKPOINT' } }, orderBy: { order: 'asc' } });
+    await prisma.question.update({ where: { id: first.id }, data: { explanation: 'An admin’s edit' } });
+    const unit = await prisma.unit.findFirst({ where: { title: 'Network security' } });
+    await prisma.unit.update({ where: { id: unit.id }, data: { title: 'Renamed by an admin' } });
+
+    const report = await syncExams(plan.courses);
+    const banks = plan.courses.flatMap((c) => c.modules).filter((m) => m.checkpoint && m.title !== 'Network security');
+    const bankSize = (m) => m.checkpoint.questions.length;
+    const expected = banks.reduce((n, m) => n + bankSize(m) - Math.min(10, bankSize(m)), 0);
+    expect(report).toMatchObject({
+      exams: 22, created: 0, added: expected, skipped: ['Networking: Network security'],
+    });
+
+    const exam = await prisma.quiz.findFirst({
+      where: { kind: 'CHECKPOINT', unit: { title: banks[0].title } },
+      include: { questions: { orderBy: { order: 'asc' } } },
+    });
+    const { drawCount, timeLimitSec } = banks[0].checkpoint;
+    expect(exam).toMatchObject({ drawCount, timeLimitSec });
+    expect(exam.questions).toHaveLength(banks[0].checkpoint.questions.length);
+    expect(exam.questions.map((q) => q.order)).toEqual(exam.questions.map((_, i) => i));
+    expect((await prisma.question.findUnique({ where: { id: first.id } })).explanation).toBe('An admin’s edit');
+
+    expect((await syncExams(plan.courses)).added).toBe(0);
   });
 });

@@ -6,12 +6,13 @@ test('the code sandbox runs code and shows console output', async ({ page, signI
   await signInAs('ada');
   const { code } = state();
   await page.goto(lessonUrl(code.id, code.lesson));
-  await page.getByRole('tab', { name: 'Code sandbox' }).click();
+  // Code lessons open on the Code tab.
+  await expect(page.getByRole('tab', { name: 'Code' })).toHaveAttribute('aria-selected', 'true');
 
   const consoleBox = page.locator('pre[aria-live]');
   await expect(consoleBox).toContainText('Scripts run too');
 
-  const editor = page.getByLabel('Code');
+  const editor = page.getByRole('textbox', { name: 'Code' });
   await editor.fill('<h2 id="out">Hi</h2><script>console.log("sum", 2 + 3); document.cookie;</script>');
   await editor.press('Control+Enter');
   await expect(consoleBox).toContainText('sum 5');

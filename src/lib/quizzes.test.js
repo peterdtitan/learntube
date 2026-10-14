@@ -6,13 +6,14 @@ const v = (id, url = id, startSec = null, endSec = null) => ({
 });
 
 describe('checkpointIndex', () => {
-  it('sits after the middle lesson', () => {
-    expect(checkpointIndex([v('a'), v('b'), v('c'), v('d')])).toBe(1);
+  it('sits at the end of the module', () => {
+    expect(checkpointIndex([v('a'), v('b'), v('c'), v('d')])).toBe(3);
+    expect(checkpointIndex([])).toBe(-1);
   });
 
   it('never splits the parts of one video', () => {
     const lessons = [v('a'), v('p1', 'ports', 0, 400), v('p2', 'ports', 390, 800), v('p3', 'ports', 790, 1222), v('b'), v('c')];
-    expect(checkpointIndex(lessons)).toBe(3); // middle is p2; moved to after p3
+    expect(checkpointIndex(lessons, 'p2')).toBe(3); // after p2 would split the video; moved to after p3
   });
 
   it('respects an admin’s choice, still at the end of a split video', () => {

@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  /* A grid with no columns set gets one column that never grows past its container, so a
+     long word or wide control can't widen the whole page. Any grid-cols-* class wins. */
+  :where(.grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   /* In-page links (#cookies, #how) land below the sticky header, not under it. */
   html {
     scroll-padding-top: 5rem;
@@ -15,6 +21,12 @@
   h1, h2, h3 {
     @apply font-display tracking-tight;
     text-wrap: balance;
+  }
+
+  /* The landing's headings keep the tighter tracking they were designed with. :where keeps
+     this as weak as the rule above, so tracking-* classes still win. */
+  :where(.bleed) :is(h1, h2, h3) {
+    letter-spacing: -0.035em;
   }
 
   :focus-visible {

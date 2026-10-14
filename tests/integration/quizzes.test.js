@@ -183,6 +183,55 @@ describe('timed checkpoints', () => {
   });
 });
 
+describe('module exams drawn from a bank', () => {
+  it('give each attempt its own spread of questions, show it again on reload, and grade only it', async () => {
+    const { bread } = await makeCourse();
+    const bank = Array.from({ length: 12 }, (_, i) => TF(i % 2 === 0, `Bank question ${i}`));
+    const quiz = await makeQuiz({ kind: 'CHECKPOINT', unitId: bread.units[0].id }, bank, {
+      timeLimitSec: 600, drawCount: 4,
+    });
+    const answerFor = (id) => quiz.questions.find((q) => q.id === id).data.answer;
+    signIn(await makeUser());
+
+    const draws = [];
+    for (let i = 0; i < 3; i += 1) {
+      const started = await start(quiz.id);
+      expect(started.data).toMatchObject({ questionCount: 4, bankSize: 12 });
+      const ids = started.data.questions.map((q) => q.id);
+      expect(ids).toHaveLength(4);
+      // One question from each third of the bank, in bank order.
+      ids.forEach((id, k) => expect(Math.floor(quiz.questions.findIndex((q) => q.id === id) / 3)).toBe(k));
+      const reloaded = await call(quizRoute.GET, { params: { quizId: quiz.id } });
+      expect(reloaded.data.questions.map((q) => q.id)).toEqual(ids);
+
+      const attemptId = started.data.open.id;
+      const answers = Object.fromEntries(ids.map((id) => [id, answerFor(id)]));
+      const done = await call(submit.POST, { params: { attemptId }, body: { answers } });
+      expect(done.data.result.score).toBe(100);
+      expect(done.data.result.results.questions).toHaveLength(4);
+      draws.push(ids.join());
+      await prisma.quizAttempt.update({
+        where: { id: attemptId }, data: { submittedAt: new Date(Date.now() - 6 * 60000) },
+      });
+    }
+    expect(new Set(draws).size).toBeGreaterThan(1);
+  });
+
+  it('carry on the integrity log after a reload', async () => {
+    const { bread } = await makeCourse();
+    const quiz = await makeQuiz({ kind: 'CHECKPOINT', unitId: bread.units[0].id }, [TF(true)], { timeLimitSec: 600 });
+    signIn(await makeUser());
+    const attemptId = (await start(quiz.id)).data.open.id;
+    const logged = [{ type: 'device', kind: 'phone', at: 0 }, {
+      type: 'blip', seconds: 1, via: 'tab', at: 900,
+    }];
+    await call(events.POST, { params: { attemptId }, body: { events: logged } });
+    const resumed = await start(quiz.id);
+    expect(resumed.data.open.events).toEqual(logged);
+    expect(resumed.data.open.integrity).toBeNull();
+  });
+});
+
 describe('module games', () => {
   it('use the module’s quick-check questions plus their own, never the checkpoint’s', async () => {
     const { bread } = await makeCourse();
@@ -205,14 +254,14 @@ describe('module games', () => {
 });
 
 describe('pathway outline', () => {
-  it('places the checkpoint halfway, adds the game and estimates time', async () => {
+  it('places the exam at the end of the module, adds the game and estimates time', async () => {
     const { bread } = await makeCourse();
     const unit = bread.units[0];
     await makeQuiz({ kind: 'CHECKPOINT', unitId: unit.id }, [TF(true)], { timeLimitSec: 600 });
     await makeQuiz({ kind: 'MODULE_GAME', unitId: unit.id }, [TF(true)]);
     const outline = await getPathwayOutline(bread.id, null);
     const week1 = outline.modules[0];
-    expect(week1.checkpointAfter).toBe(0); // 2 lessons: after the first
+    expect(week1.checkpointAfter).toBe(1); // 2 lessons: after the last
     expect(week1.game).not.toBeNull();
     // 9 min video + 8 + 6 practice (1.5× each video, rounded) + 10 checkpoint + 5 game
     expect(week1.minutes).toBe(38);
@@ -263,13 +312,14 @@ describe('admin quiz tools', () => {
   });
 
   it('explain what AI drafts need instead of failing', async () => {
-    const { lessons } = await makeCourse();
+    const { bread } = await makeCourse();
     signIn(await makeUser({ admin: true }));
-    const quiz = await makeQuiz({ kind: 'LESSON_CHECK', videoId: lessons[0].id }, []);
+    const empty = await prisma.unit.create({ data: { pathwayId: bread.id, title: 'Empty', order: 9 } });
+    const quiz = await makeQuiz({ kind: 'CHECKPOINT', unitId: empty.id }, []);
     const before = process.env.ANTHROPIC_API_KEY;
     process.env.ANTHROPIC_API_KEY = 'test-key';
     const res = await actions.draftWithAi(null, formData({ quizId: quiz.id, count: '3' }));
-    expect(res.error).toMatch(/transcript/);
+    expect(res.error).toMatch(/no lessons/);
     if (before === undefined) delete process.env.ANTHROPIC_API_KEY;
     else process.env.ANTHROPIC_API_KEY = before;
   });

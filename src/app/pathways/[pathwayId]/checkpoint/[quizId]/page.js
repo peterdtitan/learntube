@@ -8,7 +8,7 @@ import CheckpointRunner from '../../../../../components/quiz/CheckpointRunner';
 import { PRIVATE } from '../../../../../lib/seo';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Checkpoint · Skillreps', ...PRIVATE };
+export const metadata = { title: 'Module exam · Skillreps', ...PRIVATE };
 
 export default async function CheckpointPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -18,9 +18,16 @@ export default async function CheckpointPage({ params }) {
   });
   if (!quiz || quiz.kind !== 'CHECKPOINT' || quiz.pathwayId !== params.pathwayId) notFound();
 
-  const user = userId
-    ? await prisma.user.findUnique({ where: { id: userId }, select: { extraQuizTime: true } })
-    : null;
+  const [user, game] = await Promise.all([
+    userId
+      ? prisma.user.findUnique({ where: { id: userId }, select: { extraQuizTime: true } })
+      : null,
+    quiz.unitId
+      ? prisma.quiz.findFirst({
+        where: { unitId: quiz.unitId, kind: 'MODULE_GAME', published: true }, select: { id: true },
+      })
+      : null,
+  ]);
 
   return (
     <CheckpointRunner
@@ -28,6 +35,7 @@ export default async function CheckpointPage({ params }) {
       isSignedIn={Boolean(userId)}
       extraTime={Boolean(user?.extraQuizTime)}
       pathwayId={params.pathwayId}
+      gameHref={game ? `/pathways/${params.pathwayId}/modules/${quiz.unitId}/game` : null}
     />
   );
 }

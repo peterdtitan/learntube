@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cleanEvents, gradeQuestion, gradeQuiz, integrityPenalty, publicQuestion, secondsLeft,
-  seededShuffle, summarizeEvents, validateQuestionData,
+  drawQuestions, seededShuffle, summarizeEvents, validateQuestionData,
 } from './quizGrade';
 
 const q = (type, data, extra = {}) => ({
@@ -37,6 +37,19 @@ describe('publicQuestion', () => {
     ];
     const json = JSON.stringify(shown);
     expect(json).not.toMatch(/answer|accepted|secret|42/);
+  });
+
+  it('shows options in a fair, repeatable order, keeping each option’s index', () => {
+    const options = ['a', 'b', 'c', 'd'];
+    const where = [0, 0, 0, 0];
+    for (let k = 0; k < 2000; k += 1) {
+      const shown = publicQuestion(q('SINGLE', { options, answer: 0 }), `attempt-${k}`);
+      expect([...shown.order].sort()).toEqual([0, 1, 2, 3]);
+      where[shown.order.indexOf(0)] += 1;
+    }
+    where.forEach((n) => expect(n).toBeGreaterThan(400));
+    const once = publicQuestion(q('MULTI', { options, answers: [0, 1] }), 'same');
+    expect(publicQuestion(q('MULTI', { options, answers: [0, 1] }), 'same').order).toEqual(once.order);
   });
 
   it('shuffles steps so the order is never given away', () => {
@@ -100,6 +113,31 @@ describe('integrity', () => {
     });
   });
 
+  it('logs the device and blips, but only real leaves count against the learner', () => {
+    const events = cleanEvents([
+      { type: 'device', kind: 'phone', at: 0 },
+      {
+        type: 'blip', seconds: 1, via: 'tab', at: 500,
+      },
+      {
+        type: 'leave', seconds: 12, via: 'tab', at: 9000,
+      },
+      {
+        type: 'leave', seconds: 3, via: 'satellite', at: 12000,
+      },
+      { type: 'device', kind: 'toaster', at: 0 },
+    ]);
+    expect(events[0]).toEqual({ type: 'device', kind: 'phone', at: 0 });
+    expect(events[1]).toEqual({
+      type: 'blip', seconds: 1, via: 'tab', at: 500,
+    });
+    expect(events[3]).not.toHaveProperty('via');
+    expect(events[4].kind).toBe('desktop');
+    expect(summarizeEvents(events)).toEqual({
+      leaveCount: 2, awaySeconds: 15, copyCount: 0, pasteCount: 0,
+    });
+  });
+
   it('adds up penalties with a breakdown and a cap', () => {
     const p = integrityPenalty(quiz, {
       leaveCount: 2, awaySeconds: 25, copyCount: 1, pasteCount: 1,
@@ -122,5 +160,33 @@ describe('integrity', () => {
       deadlineAt, awaySeconds: 30, timePenalty: 2, now,
     })).toBe(540);
     expect(secondsLeft({ deadlineAt: null, now })).toBeNull();
+  });
+});
+
+describe('drawing exam questions from a bank', () => {
+  const bank = Array.from({ length: 25 }, (_, i) => ({ id: `q${i}` }));
+
+  it('asks everything when there is no draw, or the bank is small', () => {
+    expect(drawQuestions(bank, null, 's')).toBe(bank);
+    expect(drawQuestions(bank, 30, 's')).toBe(bank);
+  });
+
+  it('takes one question from each part of the bank, in module order', () => {
+    const drawn = drawQuestions(bank, 5, 'attempt-1').map((q) => Number(q.id.slice(1)));
+    expect(drawn).toHaveLength(5);
+    drawn.forEach((n, i) => expect(Math.floor(n / 5)).toBe(i));
+    expect(drawQuestions(bank, 5, 'attempt-1')).toEqual(drawQuestions(bank, 5, 'attempt-1'));
+  });
+
+  it('gives different attempts different questions, using the whole bank', () => {
+    const seen = new Set();
+    const sets = new Set();
+    for (let i = 0; i < 40; i += 1) {
+      const ids = drawQuestions(bank, 15, `attempt-${i}`).map((q) => q.id);
+      ids.forEach((id) => seen.add(id));
+      sets.add(ids.join());
+    }
+    expect(seen.size).toBe(25);
+    expect(sets.size).toBeGreaterThan(30);
   });
 });
