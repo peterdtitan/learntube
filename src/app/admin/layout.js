@@ -1,21 +1,19 @@
 import React from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAdmin } from '../../lib/admin';
+import prisma from '../../lib/prismadb';
+import AdminNav from '../../components/admin/AdminNav';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Admin · Skillreps', robots: { index: false } };
 
 export default async function AdminLayout({ children }) {
   if (!(await getAdmin())) notFound();
+  const reports = await prisma.report.count({ where: { resolvedAt: null } });
   return (
-    <div className="grid gap-6">
-      <nav aria-label="Admin" className="flex flex-wrap items-center gap-4 border-b border-line pb-3 text-[15px]">
-        <span className="rounded-pill bg-xp-soft px-3 py-1 text-xs font-bold uppercase tracking-widest text-xp">Admin</span>
-        <Link href="/admin" className="font-bold hover:text-accent">Content</Link>
-        <Link href="/admin/reports" className="font-bold hover:text-accent">Reports</Link>
-      </nav>
-      {children}
+    <div className="grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
+      <AdminNav badges={{ reports }} />
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

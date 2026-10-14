@@ -6,11 +6,7 @@ import { planSkill, planTrack } from '../../../lib/content/plan';
 import {
   importSkills, importTrack, removeDemoContent, setPathwayQuizzesPublished, syncExams,
 } from '../../../lib/content/importPathway';
-import cybersecurityExpert from '../../../../content/cybersecurity-expert';
-import shortSkills from '../../../../content/skills';
-
-// Content shipped with the app, ready to load into any database from /admin.
-const LIBRARY = { 'cybersecurity-expert': cybersecurityExpert };
+import { LIBRARY, libraryExamPlans, shortSkills } from '../../../lib/content/library';
 
 export async function importLibraryTrack(prev, form) {
   await requireAdmin();
@@ -43,10 +39,7 @@ export async function importLibrarySkills(prev, form) {
 // Adds new exam-bank questions from the library to courses that are already imported.
 export async function updateLibraryExams() {
   await requireAdmin();
-  const plans = [
-    ...Object.values(LIBRARY).flatMap((def) => planTrack(def).courses),
-    ...shortSkills.map(planSkill),
-  ];
+  const plans = libraryExamPlans();
   const problems = plans.flatMap((p) => p.problems);
   if (problems.length) return { error: `The content has problems: ${problems[0]}` };
   const report = await syncExams(plans);

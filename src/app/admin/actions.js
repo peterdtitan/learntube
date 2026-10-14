@@ -120,7 +120,7 @@ export async function deletePathway(form) {
     prisma.pathway.delete({ where: { id } }),
   ]);
   refreshContent();
-  redirect('/admin');
+  redirect('/admin/pathways');
 }
 
 // ---------- units ----------
@@ -260,5 +260,5 @@ export async function deleteLesson(form) {
   await prisma.video.delete({ where: { id } });
   const pathwayId = lesson.unitId ? await pathwayOfUnit(lesson.unitId) : null;
   refreshContent(pathwayId);
-  redirect(pathwayId ? `/admin/pathways/${pathwayId}` : '/admin');
+  redirect(pathwayId ? `/admin/pathways/${pathwayId}` : '/admin/pathways');
 }

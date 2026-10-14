@@ -128,7 +128,7 @@ export async function importTrack(trackPlan, options = {}) {
 // questions that aren't there yet (matched by prompt) and sets each exam's title, time
 // limit and draw size. Never edits or removes a question, so admins' changes and
 // learners' results are safe. A module whose title no longer matches is skipped.
-export async function syncExams(plans) {
+export async function syncExams(plans, { dryRun = false } = {}) {
   const problems = plans.flatMap((p) => p.problems);
   if (problems.length) throw contentError(problems);
   const report = {
@@ -163,6 +163,14 @@ export async function syncExams(plans) {
         drawCount: mod.checkpoint.drawCount,
       };
       let quiz = unit.quizzes[0];
+      if (dryRun) {
+        // Report what an update would do, without doing it.
+        const have = new Set((quiz?.questions || []).map((qn) => qn.prompt));
+        if (!quiz) report.created += 1;
+        report.exams += 1;
+        report.added += mod.checkpoint.questions.filter((qn) => !have.has(qn.prompt)).length;
+        return;
+      }
       if (quiz) {
         await prisma.quiz.update({ where: { id: quiz.id }, data: settings });
       } else {

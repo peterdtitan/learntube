@@ -1,112 +1,54 @@
 import React from 'react';
 import Link from 'next/link';
-import prisma from '../../lib/prismadb';
+import { AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { getOverview } from '../../lib/adminData';
 import Button from '../../components/ui/Button';
-import { formatDuration } from '../../lib/youtube';
-import ConfirmButton from '../../components/admin/ConfirmButton';
-import LibraryImport from '../../components/admin/LibraryImport';
-import { demoContentCount } from '../../lib/content/importPathway';
-import {
-  importLibrarySkills, importLibraryTrack, removeDemo, updateLibraryExams,
-} from './content/actions';
-import shortSkills from '../../../content/skills';
-import SkillIcon from '../../components/ui/SkillIcon';
+import cn from '../../lib/cn';
 
-// Imports can take a while on a cold database.
-export const maxDuration = 60;
-
-export default async function AdminHome() {
-  const [demoCount, skillCount, track] = await Promise.all([
-    demoContentCount(),
-    prisma.pathway.count({ where: { kind: 'SKILL', slug: { in: shortSkills.map((s) => s.slug) } } }),
-    prisma.track.findUnique({
-      where: { slug: 'cybersecurity-expert' },
-      include: { _count: { select: { pathways: true } } },
-    }),
-  ]);
-  const pathways = await prisma.pathway.findMany({
-    orderBy: { title: 'asc' },
-    include: {
-      skill: { select: { id: true, name: true, color: true } },
-      units: { select: { videos: { select: { duration: true } } } },
-    },
-  });
-
+export default async function AdminOverview() {
+  const { stats, attention } = await getOverview();
   return (
-    <div className="grid gap-10">
-      <div className="grid gap-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold">Pathways</h1>
-          <Button href="/admin/pathways/new" size="sm">New pathway</Button>
+    <div className="grid gap-8">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-3xl font-bold">Overview</h1>
+        <div className="flex flex-wrap gap-2">
+          <Button href="/admin/quizzes?kind=CHECKPOINT" size="sm" variant="ghost">Module exams</Button>
+          <Button href="/admin/pathways/new" size="sm">New course or skill</Button>
         </div>
-        <ul className="grid gap-2">
-          {pathways.map((p) => {
-            const lessons = p.units.flatMap((u) => u.videos);
-            return (
-              <li key={p.id}>
-                <Link href={`/admin/pathways/${p.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line bg-surface px-4 py-3 hover:border-accent">
-                  <span className="flex items-center gap-2 font-bold">
-                    <SkillIcon skill={p.skill} />
-                    {p.title}
-                  </span>
-                  <span className="text-sm text-muted tabular-nums">
-                    {`${p.skill?.name || 'No skill'} · ${p.units.length} units · ${lessons.length} lessons · ${formatDuration(lessons.reduce((s, v) => s + v.duration, 0))}`}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        {!pathways.length && <p className="text-muted">No pathways yet. Create the first one.</p>}
       </div>
 
-      <section className="grid gap-4 rounded-lg border border-line bg-surface p-5" aria-labelledby="library-heading">
-        <h2 id="library-heading" className="text-xl font-bold">Content library</h2>
-        <div className="grid gap-2">
-          <p className="font-bold">Cybersecurity Expert</p>
-          <p className="text-[15px] text-muted">
-            Three courses (IT Foundations, Networking, Security Operations) for CompTIA A+, Network+
-            and Security+: 470 lessons of 10 minutes or less, with Try tasks, quick checks, timed
-            module exams and games. Safe to run again: existing courses are left alone.
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.label} className="grid gap-1 rounded-lg border border-line bg-surface p-4">
+            <dt className="text-sm text-muted">{s.label}</dt>
+            <dd className="font-display text-3xl font-bold tabular-nums">{s.value}</dd>
+            {s.sub && <dd className="text-xs text-muted">{s.sub}</dd>}
+          </div>
+        ))}
+      </dl>
+
+      <section aria-labelledby="attention-heading" className="grid gap-3">
+        <h2 id="attention-heading" className="text-xl font-bold">Needs attention</h2>
+        {attention.length ? (
+          <ul className="grid gap-2">
+            {attention.map((a) => (
+              <li key={a.text}>
+                <Link
+                  href={a.href}
+                  className="group flex items-center gap-3 rounded-md border border-line bg-surface px-4 py-3 text-[15px] hover:border-accent"
+                >
+                  <AlertTriangle size={18} aria-hidden="true" className={cn('shrink-0', a.urgent ? 'text-danger' : 'text-xp')} />
+                  <span className="flex-1">{a.text}</span>
+                  <ArrowRight size={16} aria-hidden="true" className="shrink-0 text-muted group-hover:text-accent" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="flex items-center gap-2 text-[15px] text-muted">
+            <CheckCircle2 size={18} aria-hidden="true" className="text-accent" />
+            Nothing waiting. Every exam with questions is live and there are no open reports.
           </p>
-          {track && <p className="text-sm text-accent">{`Imported: ${track._count.pathways} of 3 courses.`}</p>}
-          <LibraryImport action={importLibraryTrack} slug="cybersecurity-expert" imported={Boolean(track)} />
-        </div>
-        <div className="grid gap-2 border-t border-line pt-4">
-          <p className="font-bold">Short skills</p>
-          <p className="text-[15px] text-muted">
-            {`${shortSkills.length} skills you can pick up in under 15 hours: ${shortSkills.map((s) => s.title).join(' · ')}.`}
-          </p>
-          {skillCount > 0 && <p className="text-sm text-accent">{`Imported: ${skillCount} of ${shortSkills.length} skills.`}</p>}
-          <LibraryImport
-            action={importLibrarySkills}
-            slug="skills"
-            imported={skillCount > 0}
-            label="Import short skills"
-            againLabel="Import any missing skills"
-          />
-        </div>
-        <div className="grid gap-2 border-t border-line pt-4">
-          <p className="font-bold">Module exams</p>
-          <p className="text-[15px] text-muted">
-            Adds new exam questions from the library to courses and skills you’ve already
-            imported, and sets each exam’s time and questions per attempt. Existing questions,
-            your edits and learners’ results are never touched.
-          </p>
-          <LibraryImport
-            action={updateLibraryExams}
-            slug="exams"
-            imported
-            againLabel="Update module exams"
-            publishOption={false}
-            pendingText="Updating…"
-          />
-        </div>
-        {demoCount > 0 && (
-          <form action={removeDemo} className="grid gap-2 border-t border-line pt-4">
-            <p className="text-[15px]">{`${demoCount} sample pathways from the original demo seed are still here, with placeholder videos. Remove them before going live.`}</p>
-            <ConfirmButton label="Remove demo pathways" confirmLabel="Click again to remove them and their progress" className="justify-self-start" />
-          </form>
         )}
       </section>
     </div>

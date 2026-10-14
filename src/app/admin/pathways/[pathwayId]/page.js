@@ -10,7 +10,7 @@ import ConfirmButton from '../../../../components/admin/ConfirmButton';
 import UnitAdder from '../../../../components/admin/UnitAdder';
 import { formatDuration, parseYouTubeId } from '../../../../lib/youtube';
 import { estimatePathway, formatMinutes, funEquivalent } from '../../../../lib/estimate';
-import { createQuiz } from '../../quizzes/actions';
+import { createQuiz, setQuizPublished } from '../../quizzes/actions';
 import { publishPathwayQuizzes } from '../../content/actions';
 import {
   deletePathway, deleteUnit, moveLesson, moveUnit, renameUnit, updatePathway,
@@ -26,6 +26,20 @@ const QUIZ_SELECT = {
     _count: { select: { questions: true } },
   },
 };
+
+// Publish or unpublish a module's exam without opening it.
+function PublishToggle({ quiz }) {
+  if (!quiz || (!quiz.published && !quiz._count.questions)) return null;
+  return (
+    <form action={setQuizPublished}>
+      <input type="hidden" name="id" value={quiz.id} />
+      <input type="hidden" name="published" value={String(!quiz.published)} />
+      <button type="submit" className="h-8 rounded-pill px-2 text-xs font-bold text-accent hover:underline">
+        {quiz.published ? 'Unpublish exam' : 'Publish exam'}
+      </button>
+    </form>
+  );
+}
 
 // Opens the quiz if it exists, otherwise creates it first.
 function QuizButton({
@@ -101,7 +115,7 @@ export default async function EditPathway({ params }) {
   return (
     <div className="grid gap-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/admin" className="text-sm text-muted hover:text-ink">← All pathways</Link>
+        <Link href="/admin/pathways" className="text-sm text-muted hover:text-ink">← Courses & skills</Link>
         <Link href={`/pathways/${pathway.id}`} className="text-sm font-bold text-accent">View as a learner</Link>
       </div>
 
@@ -181,6 +195,7 @@ export default async function EditPathway({ params }) {
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
               <Link href={`/admin/pathways/${pathway.id}/lessons/new?unitId=${unit.id}`} className="mr-auto text-sm font-bold text-accent">+ Add a lesson</Link>
               <QuizButton kind="CHECKPOINT" unitId={unit.id} quiz={unit.quizzes.find((q) => q.kind === 'CHECKPOINT')} icon={Timer} label="Exam" />
+              <PublishToggle quiz={unit.quizzes.find((q) => q.kind === 'CHECKPOINT')} />
               <QuizButton kind="MODULE_GAME" unitId={unit.id} quiz={unit.quizzes.find((q) => q.kind === 'MODULE_GAME')} icon={Gamepad2} label="Games" />
             </div>
           </div>
