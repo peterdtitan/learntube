@@ -383,12 +383,7 @@ function Cta() {
           Pick a skill, watch one short step, and try it with your own hands. It takes ten minutes
           and costs nothing.
         </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <StartButton light />
-          <Link href="/skills" className="inline-flex h-12 items-center rounded-pill border-2 border-white/40 px-6 font-bold hover:border-white">
-            Browse the skills
-          </Link>
-        </div>
+        <StartButton light />
       </Wrap>
     </section>
   );

@@ -28,14 +28,21 @@ test.describe('on a phone', () => {
     await expect.poll(async () => (await player.boundingBox()).y).toBeLessThan(0);
   });
 
-  test('the menu opens and links work', async ({ page }) => {
+  test('the menu opens and links work', async ({ page, signInAs }) => {
+    await signInAs('bola');
     await page.goto('/');
     await page.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Pathways' }).last().click();
     await expect(page).toHaveURL(/\/pathways$/);
   });
 
-  test('pathways and makes fit the screen', async ({ page }) => {
+  test('pathways and makes fit the screen', async ({ page, signInAs }) => {
+    for (const path of ['/', '/start']) {
+      await page.goto(path);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow, path).toBeLessThanOrEqual(0);
+    }
+    await signInAs('bola');
     for (const path of ['/', '/pathways', '/makes', '/leaderboard']) {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

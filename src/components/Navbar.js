@@ -87,7 +87,10 @@ function AccountMenu({ user }) {
 }
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  // Visitors only see the landing page, start and sign-in, so the app's links would lead
+  // straight to sign-in. They get the two ways in instead.
+  const visitor = status === 'unauthenticated';
   const summary = useLearnerSummary();
   const pathname = usePathname() || '/';
   const [menuOpen, setMenuOpen] = useState(false);
@@ -109,6 +112,7 @@ export default function Navbar() {
           <Wordmark />
         </Link>
 
+        {!visitor && (
         <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">
           {LINKS.map((link) => (
             <Link
@@ -120,15 +124,21 @@ export default function Navbar() {
             </Link>
           ))}
         </nav>
+        )}
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
           {/* Room for XP and streak only on wide screens; below that they're in the menu. */}
           <div className="hidden items-center gap-2 xl:flex">{stats}</div>
           <div className="hidden sm:block"><ThemeSwitcher /></div>
           {session?.user && <NotificationBell />}
-          {session?.user
-            ? <AccountMenu user={session.user} />
-            : <Button size="sm" onClick={() => signIn()}>Sign in</Button>}
+          {session?.user && <AccountMenu user={session.user} />}
+          {visitor && (
+            <>
+              <Button size="sm" variant="ghost" onClick={() => signIn('google', { callbackUrl: '/' })}>Sign in</Button>
+              {pathname !== '/start' && <Button size="sm" href="/start" className="max-[379px]:hidden">Start learning</Button>}
+            </>
+          )}
+          {!visitor && (
           <button
             type="button"
             className="grid h-9 w-9 place-items-center rounded-pill text-ink lg:hidden"
@@ -138,10 +148,11 @@ export default function Navbar() {
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+          )}
         </div>
       </div>
 
-      {menuOpen && (
+      {menuOpen && !visitor && (
         <nav aria-label="Main" className="border-t border-line bg-canvas px-4 pb-4 pt-2 sm:px-6 lg:hidden">
           {LINKS.map((link) => (
             <Link key={link.href} href={link.href} className="block py-3 text-[17px] font-bold">

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  formData, makeUser, prisma, signIn,
+  formData, makeCourse, makeUser, prisma, signIn,
 } from './helpers.mjs';
 import { saveWelcome, skipWelcome } from '../../src/app/welcome/actions.js';
+import { GET as finishStart } from '../../src/app/welcome/done/route.js';
+import { serializeStart } from '../../src/lib/picks.js';
 import skillDefs from '../../content/skills';
 import { planSkill } from '../../src/lib/content/plan.js';
 import { importSkills } from '../../src/lib/content/importPathway.js';
@@ -28,16 +30,16 @@ describe('the welcome survey', () => {
     expect(saved.onboardedAt).toBeInstanceOf(Date);
   });
 
-  it('clears the interests picked on the landing page once answered', async () => {
+  it('goes straight to the skill the learner chose, and only to a course or program page', async () => {
     const user = await makeUser();
     signIn(user);
-    globalThis.testCookies.set('skillreps_picks', 'guitar');
-    await expect(saveWelcome(surveyForm({ interests: ['guitar'] }))).rejects.toMatchObject({ redirectTo: '/?welcome=1' });
-    expect(globalThis.testCookies.has('skillreps_picks')).toBe(false);
-
-    globalThis.testCookies.set('skillreps_picks', 'guitar');
-    await expect(skipWelcome()).rejects.toMatchObject({ redirectTo: '/' });
-    expect(globalThis.testCookies.has('skillreps_picks')).toBe(false);
+    const form = surveyForm({ interests: ['guitar'], goal: 'HOBBY', weeklyGoal: 3 });
+    form.set('next', '/pathways/abc123');
+    await expect(saveWelcome(form)).rejects.toMatchObject({ redirectTo: '/pathways/abc123' });
+    form.set('next', 'https://evil.example/pathways/x');
+    await expect(saveWelcome(form)).rejects.toMatchObject({ redirectTo: '/?welcome=1' });
+    form.set('next', '/admin');
+    await expect(saveWelcome(form)).rejects.toMatchObject({ redirectTo: '/?welcome=1' });
   });
 
   it('drops unknown interests and goals, and ignores an out-of-range goal', async () => {
@@ -60,6 +62,45 @@ describe('the welcome survey', () => {
     signIn(null);
     await expect(saveWelcome(surveyForm({ interests: ['guitar'] })))
       .rejects.toMatchObject({ redirectTo: '/auth/signin?callbackUrl=/welcome' });
+  });
+});
+
+describe('signing up from /start', () => {
+  const done = () => finishStart(new Request('http://localhost/welcome/done'));
+  const startCookie = (answers) => globalThis.testCookies.set('skillreps_start', serializeStart(answers));
+
+  it('saves a new account’s answers and opens the skill they chose', async () => {
+    const { bread: pathway } = await makeCourse();
+    const user = await makeUser();
+    signIn(user);
+    startCookie({
+      interests: ['guitar', 'nope'], goal: 'CAREER', weeklyGoal: 5, pick: { kind: 'skill', id: pathway.id },
+    });
+    const res = await done();
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe(`http://localhost/pathways/${pathway.id}`);
+    expect(res.headers.get('set-cookie')).toMatch(/skillreps_start=;/);
+    const saved = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(saved).toMatchObject({ interests: ['guitar'], learningGoal: 'CAREER', weeklyGoal: 5 });
+    expect(saved.onboardedAt).toBeInstanceOf(Date);
+  });
+
+  it('keeps a returning learner’s own answers, and goes home when the skill is gone', async () => {
+    const user = await makeUser({ interests: ['cooking'], learningGoal: 'HOBBY', onboardedAt: new Date() });
+    signIn(user);
+    startCookie({
+      interests: ['guitar'], goal: 'CAREER', weeklyGoal: 5, pick: { kind: 'skill', id: 'deleted-skill' },
+    });
+    expect((await done()).headers.get('location')).toBe('http://localhost/');
+    const saved = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(saved).toMatchObject({ interests: ['cooking'], learningGoal: 'HOBBY', weeklyGoal: 3 });
+  });
+
+  it('goes home without answers, and to sign-in without a session', async () => {
+    signIn(await makeUser());
+    expect((await done()).headers.get('location')).toBe('http://localhost/');
+    signIn(null);
+    expect((await done()).headers.get('location')).toBe('http://localhost/auth/signin?callbackUrl=/welcome/done');
   });
 });
 

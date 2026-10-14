@@ -1,15 +1,11 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth/next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { authOptions } from '../../lib/auth';
 import prisma from '../../lib/prismadb';
-import { GOAL_IDS } from '../../lib/recommend';
-import { PICKS_COOKIE } from '../../lib/picks';
-
-const MAX_INTERESTS = 20;
+import { saveStartAnswers, safeNextPath } from '../../lib/onboarding';
 
 async function signedInUserId() {
   const session = await getServerSession(authOptions);
@@ -17,33 +13,22 @@ async function signedInUserId() {
   return session.user.id;
 }
 
+// Saves the answers and goes straight to the skill the learner chose to start with.
 export async function saveWelcome(form) {
   const userId = await signedInUserId();
-  const known = new Set((await prisma.skill.findMany({ select: { id: true } })).map((s) => s.id));
-  const interests = [...new Set(form.getAll('interest').map(String))]
-    .filter((id) => known.has(id))
-    .slice(0, MAX_INTERESTS);
-  const goal = String(form.get('goal') || '');
-  const days = Number(form.get('weeklyGoal'));
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      interests,
-      learningGoal: GOAL_IDS.includes(goal) ? goal : null,
-      onboardedAt: new Date(),
-      ...(Number.isInteger(days) && days >= 2 && days <= 5 ? { weeklyGoal: days } : {}),
-    },
+  await saveStartAnswers(userId, {
+    interests: form.getAll('interest').map(String),
+    goal: String(form.get('goal') || ''),
+    weeklyGoal: Number(form.get('weeklyGoal')),
   });
-  cookies().delete(PICKS_COOKIE);
   revalidatePath('/', 'layout');
-  redirect('/?welcome=1');
+  redirect(safeNextPath(form.get('next')) || '/?welcome=1');
 }
 
 // "Skip for now": don't ask again on sign-in. The survey stays at /welcome to fill in later.
 export async function skipWelcome() {
   const userId = await signedInUserId();
   await prisma.user.update({ where: { id: userId }, data: { onboardedAt: new Date() } });
-  cookies().delete(PICKS_COOKIE);
   revalidatePath('/', 'layout');
   redirect('/');
 }

@@ -1,12 +1,15 @@
 import { SITE_URL } from '../lib/seo';
 
-// Signed-in and admin pages are useless to search engines; the API isn't a page at all.
+// Everything past the landing page needs an account, so crawlers would only find sign-in.
 export default function robots() {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/api/', '/auth/', '/dashboard', '/notifications', '/settings', '/welcome'],
+      disallow: [
+        '/skills', '/pathways', '/tracks', '/makes', '/learners', '/leaderboard', '/dashboard',
+        '/notifications', '/settings', '/welcome', '/admin', '/api/', '/auth/', '/email/',
+      ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,
