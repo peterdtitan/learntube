@@ -90,3 +90,37 @@ test('signed-in learners can browse short skills and filter them', async ({ page
   await page.getByRole('link', { name: 'Knit a swatch' }).click();
   await expect(page.getByRole('link', { name: '← All skills' })).toBeVisible();
 });
+
+test('the skills search finds a skill, and says when we don’t have something', async ({ page, signInAs }) => {
+  await signInAs('bola');
+  await page.goto('/skills');
+  const search = page.getByRole('searchbox', { name: 'Search skills and programs' });
+  await search.fill('knitting');
+  await expect(page.getByText('1 match for “knitting”')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Knit a swatch' })).toBeVisible();
+
+  await search.fill('java');
+  await expect(page.locator('strong', { hasText: 'We don’t have “java” yet.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Knit a swatch' })).toBeHidden();
+  await expect(page).toHaveURL(/\/skills\?q=java$/);
+
+  await page.reload();
+  await expect(search).toHaveValue('java');
+  await page.getByRole('button', { name: 'Clear search' }).first().click();
+  await expect(page.getByRole('link', { name: 'Knit a swatch' })).toBeVisible();
+  await expect(page).toHaveURL(/\/skills$/);
+});
+
+test('admins see what learners searched for and didn’t find', async ({ page, signInAs }) => {
+  await signInAs('bola');
+  await page.goto('/skills');
+  const logged = page.waitForResponse((r) => r.url().endsWith('/api/search-log'));
+  await page.getByRole('searchbox', { name: 'Search skills and programs' }).fill('xylophone');
+  expect((await logged).status()).toBe(204);
+
+  await signInAs('admin');
+  await page.goto('/admin/searches?days=7');
+  const wanted = page.getByRole('table', { name: 'Searches for things we don’t teach yet' });
+  await expect(wanted.getByRole('cell', { name: 'xylophone' })).toBeVisible();
+  await expect(wanted.getByRole('cell', { name: 'Nothing close' })).toBeVisible();
+});

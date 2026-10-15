@@ -26,6 +26,7 @@ export async function exportUserData(userId, now = new Date()) {
       reports: { include: { make: LESSON }, orderBy: { createdAt: 'asc' } },
       notifications: { include: { actor: PERSON }, orderBy: { createdAt: 'asc' } },
       emails: { orderBy: { createdAt: 'asc' } },
+      searches: { orderBy: { createdAt: 'asc' } },
       _count: { select: { followers: true } },
     },
   });
@@ -105,6 +106,7 @@ export async function exportUserData(userId, now = new Date()) {
       kind: n.kind, from: publicName(n.actor), at: n.createdAt, readAt: n.readAt,
     })),
     emailsSent: user.emails.map((e) => ({ kind: e.kind, at: e.createdAt })),
+    searches: user.searches.map((s) => ({ search: s.query, day: s.day, opened: s.clicked })),
   };
 }
 

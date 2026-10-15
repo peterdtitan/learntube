@@ -81,3 +81,11 @@
 main:has(> .bleed) + footer {
   margin-top: 0;
 }
+
+/* iOS zooms in on a text field under 16px when it's tapped, and stays zoomed. On touch
+   screens, fields that aren't set larger use 16px. */
+@media (pointer: coarse) {
+  :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='submit'], [type='button']), select, textarea):not([class*='text-lg'], [class*='text-xl'], [class*='text-2xl'], [class*='text-3xl']) {
+    font-size: 16px;
+  }
+}

@@ -118,9 +118,16 @@ function How() {
   );
 }
 
+// A varied first six, so the page stays short on a phone; the rest are a click away.
+const FEATURED = [
+  'skill-nigerian-party-classics', 'skill-guitar-four-chords', 'skill-canva-design',
+  'skill-python-first-programs', 'skill-braid-your-hair', 'skill-chatgpt-work',
+];
+const SHOWN = 6;
+
 function Skills({ skills }) {
-  // Whole rows of three; the rest are a click away.
-  const shown = skills.slice(0, Math.max(3, skills.length - (skills.length % 3)));
+  const featured = FEATURED.map((slug) => skills.find((s) => s.slug === slug)).filter(Boolean);
+  const shown = [...featured, ...skills.filter((s) => !featured.includes(s))].slice(0, SHOWN);
   return (
     <section id="skills" aria-labelledby="skills-heading" className="scroll-mt-16 bg-surface py-24">
       <Wrap className="grid gap-12">
@@ -132,8 +139,8 @@ function Skills({ skills }) {
               <span className="text-accent">All free.</span>
             </h2>
             <p className="text-lg text-muted">
-              Each one takes under 15 hours and ends with something you made. Open any of them and
-              start watching, no account needed.
+              Each one takes under 15 hours and ends with something you made. Sign up free with
+              Google and start with any of them.
             </p>
           </div>
           {shown.length < skills.length && (
@@ -143,15 +150,21 @@ function Skills({ skills }) {
             </Link>
           )}
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {shown.map((s) => <SkillCard key={s.id} skill={s} signedIn={false} />)}
         </div>
+        {shown.length < skills.length && (
+          <Link href="/skills" className="inline-flex h-11 items-center justify-center gap-1.5 justify-self-center rounded-pill border border-line px-5 text-[15px] font-bold hover:bg-sunken sm:hidden">
+            {`See all ${skills.length} skills`}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        )}
       </Wrap>
     </section>
   );
 }
 
-function Program({ program }) {
+function Program({ program, more }) {
   return (
     <section id="program" aria-labelledby="program-heading" className={`scroll-mt-16 py-24 ${NIGHT}`}>
       <Wrap className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -182,6 +195,21 @@ function Program({ program }) {
             </Link>
             <p className="text-sm text-haze">Skillreps isn’t affiliated with CompTIA.</p>
           </div>
+          {more.length > 0 && (
+            <div className="grid gap-3 border-t border-night-line pt-6">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-haze">More programs</h3>
+              <ul className="flex flex-wrap gap-2">
+                {more.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/tracks/${p.slug}`} className="inline-flex items-center gap-1.5 rounded-pill border border-night-line bg-night2 px-4 py-2 text-[15px] font-bold transition-colors hover:border-mint">
+                      {p.title}
+                      <span className="font-normal text-haze">{`${p.courses.length} courses`}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <Reveal><Laptop src={S('track')} alt="The Cybersecurity Expert program page in Skillreps" /></Reveal>
       </Wrap>
@@ -410,7 +438,7 @@ const STRUCTURED = {
 
 // What a visitor who isn't signed in sees at "/". Signed-in learners get their own home.
 export default function Landing({
-  categories, skills, program, makes,
+  categories, skills, program, morePrograms = [], makes,
 }) {
   return (
     <div className="bleed">
@@ -423,7 +451,7 @@ export default function Landing({
       <Facts skillCount={skills.length} program={program} />
       <How />
       <Skills skills={skills} />
-      {program && <Program program={program} />}
+      {program && <Program program={program} more={morePrograms} />}
       <Xp />
       <Games />
       <Community makes={makes} />

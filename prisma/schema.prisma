@@ -42,6 +42,7 @@ model User {
   emailReminders    Boolean         @default(true) // streak, come-back and log-your-make emails
   emailWeekly       Boolean         @default(true) // the Monday recap
   emails            EmailLog[]
+  searches          SearchLog[]
 }
 
 model Account {
@@ -504,4 +505,24 @@ model EmailLog {
   @@unique([userId, kind, key])
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// What learners search for on the skills page, so admins can see what people look for and
+// what they want that isn't taught yet. One row per learner, search and day.
+model SearchLog {
+  id        String   @id @default(cuid())
+  userId    String
+  query     String // lower case, single spaces, at most 80 characters
+  results   Int // how many results were shown
+  missing   Boolean // "We don't have … yet" was shown
+  suggested String[] @default([]) // what we suggested instead
+  clicked   String? // the result they opened, by title
+  day       DateTime @db.Date
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, query, day])
+  @@index([day, query])
 }

@@ -6,7 +6,8 @@ import { authOptions } from '../../lib/auth';
 import prisma from '../../lib/prismadb';
 import { getShortSkills, learnToPhrase } from '../../lib/skills';
 import Typewriter from '../../components/skills/Typewriter';
-import SkillsBrowser from '../../components/skills/SkillsBrowser';
+import SkillsBrowser, { SEARCH_ID } from '../../components/skills/SkillsBrowser';
+import BackToTop from '../../components/ui/BackToTop';
 import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -16,15 +17,25 @@ export const metadata = staticMetadata(
   '/skills',
 );
 
-export default async function SkillsPage() {
+export default async function SkillsPage({ searchParams = {} }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const [skills, tracks] = await Promise.all([
     getShortSkills(userId),
     prisma.track.findMany({
       where: { pathways: { some: {} } },
+      orderBy: { title: 'asc' },
       select: {
-        slug: true, title: true, description: true, _count: { select: { pathways: true } },
+        slug: true,
+        title: true,
+        description: true,
+        skill: { select: { id: true, name: true, color: true } },
+        pathways: {
+          orderBy: { trackOrder: 'asc' },
+          select: {
+            id: true, slug: true, title: true, description: true,
+          },
+        },
       },
     }),
   ]);
@@ -49,7 +60,12 @@ export default async function SkillsPage() {
 
       <h2 className="sr-only">All short skills</h2>
       {skills.length ? (
-        <SkillsBrowser skills={skills} signedIn={Boolean(userId)} />
+        <SkillsBrowser
+          skills={skills}
+          programs={tracks.map(({ pathways, ...t }) => ({ ...t, courses: pathways }))}
+          signedIn={Boolean(userId)}
+          initialQuery={String(searchParams.q || '').slice(0, 80)}
+        />
       ) : (
         <p className="rounded-lg border border-dashed border-line px-5 py-8 text-center text-muted">
           Skills are on their way. Check back soon.
@@ -67,7 +83,7 @@ export default async function SkillsPage() {
               <Link key={t.slug} href={`/tracks/${t.slug}`} className="flex items-center justify-between gap-4 rounded-lg border border-line bg-surface p-5 hover:border-accent">
                 <span className="grid gap-1">
                   <span className="text-xl font-bold">{t.title}</span>
-                  <span className="text-sm text-muted">{`${t._count.pathways} courses, taken in order`}</span>
+                  <span className="text-sm text-muted">{`${t.pathways.length} courses, taken in order`}</span>
                 </span>
                 <ArrowRight size={20} className="shrink-0 text-accent" aria-hidden="true" />
               </Link>
@@ -75,6 +91,7 @@ export default async function SkillsPage() {
           </div>
         </section>
       )}
+      <BackToTop focusId={SEARCH_ID} />
     </div>
   );
 }

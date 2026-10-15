@@ -48,6 +48,7 @@ export default function Privacy() {
           <li><strong>What you do here:</strong> where you are in each lesson, Try steps and XP, notes, makes (titles, notes and photos), kudos, comment phrases, follows, cheers and reports.</li>
           <li><strong>Quizzes:</strong> your answers and scores. During timed module exams we also record the kind of device (phone, tablet or computer), each time you leave the exam page and for how long, and any text you copy or paste. You are told this before an exam starts.</li>
           <li><strong>Settings and the start questions:</strong> display name, interests, what brought you here, weekly goal, time zone (from your device, so practice days match your clock), leaderboard, extra-time and email choices.</li>
+          <li><strong>Searches:</strong> what you type in the skills search and which result you open, so we can see what people want to learn and add it. Our team only looks at totals, never at one person’s searches.</li>
           <li><strong>Emails we send you:</strong> which reminder went out and when, so nobody gets the same one twice or too many.</li>
           <li><strong>Technical logs:</strong> our host records requests (IP address, browser and page) for a short time to run and protect the site.</li>
         </ul>
@@ -66,6 +67,7 @@ export default function Privacy() {
             ['Showing your makes, milestones and XP to other learners', 'Providing the service; you can hide yourself from leaderboards and delete anything you post'],
             ['Exam integrity logs', 'Our legitimate interest in fair scores, explained before each exam'],
             ['Reports, moderation and rate limits', 'Our legitimate interest in keeping the community safe and the site running'],
+            ['Searches on the skills page', 'Our legitimate interest in teaching what people are looking for. We only look at totals'],
             ['Answers to the start questions, before signing up', 'Your request: you answered them to get a recommendation'],
             ['Practice reminders and the Monday recap', 'Our legitimate interest in helping you keep the practice habit you signed up for. Both are on by default and every email has a link to stop them'],
           ]}
@@ -141,6 +143,7 @@ export default function Privacy() {
             ['Text copied or pasted during an exam', `${RETENTION_DAYS.checkpointCopyText} days; the counts stay with the attempt`],
             ['Notifications', `${RETENTION_DAYS.notifications} days`],
             ['The record of emails sent to you', `${RETENTION_DAYS.emailLog} days`],
+            ['Searches on the skills page', `${RETENTION_DAYS.searchLog} days`],
             ['Expired sign-in sessions', 'Removed daily'],
             ['Rate-limit counters', `${RETENTION_DAYS.rateLimits} days`],
             ['Technical logs at our host', 'A short time set by Vercel, measured in days'],

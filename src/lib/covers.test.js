@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { coverImage, isAllowedCover, thumbnailUrl } from './covers';
+import {
+  coverImage, isAllowedCover, isLetterboxed, thumbnailUrl,
+} from './covers';
 
 describe('covers', () => {
   it('turns a video id or link into its thumbnail', () => {
@@ -16,6 +18,9 @@ describe('covers', () => {
 
   it('only allows hosts next/image can load', () => {
     expect(isAllowedCover('https://i.ytimg.com/vi/QkrIZBLZEXw/hqdefault.jpg')).toBe(true);
+    expect(isLetterboxed('https://i.ytimg.com/vi/QkrIZBLZEXw/hqdefault.jpg')).toBe(true);
+    expect(isLetterboxed('https://abc.public.blob.vercel-storage.com/covers/x.webp')).toBe(false);
+    expect(isLetterboxed(null)).toBe(false);
     expect(isAllowedCover('https://abc.public.blob.vercel-storage.com/covers/x.jpg')).toBe(true);
     expect(isAllowedCover('http://i.ytimg.com/vi/x/hqdefault.jpg')).toBe(false);
     expect(isAllowedCover('https://evil.example/x.jpg')).toBe(false);
