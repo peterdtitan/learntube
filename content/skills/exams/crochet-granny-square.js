@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  'Hook, yarn and your first chain': exam('Hook and chain exam', [
+    q.single('Which hook size suits smooth worsted (medium) yarn for a beginner?', ['About 5 mm', '1 mm', '15 mm', 'Any size'], 0),
+    q.multi('What do you need to start crocheting?', ['A hook', 'Yarn', 'Scissors', 'Knitting needles'], [0, 1, 2]),
+    q.single('A tapestry needle is used to…', ['Weave in the ends', 'Make chains', 'Hold the hook', 'Count stitches'], 0),
+    q.single('The first loop on your hook comes from…', ['A slip knot', 'A chain', 'A magic ring', 'A double crochet'], 0),
+    q.single('Your non-hook hand mainly…', ['Holds the work and controls the yarn’s tension', 'Does nothing', 'Turns the hook', 'Cuts the yarn'], 0),
+    q.single('To make a chain stitch, you…', ['Yarn over and pull it through the loop on your hook', 'Insert the hook into a stitch twice', 'Tie a knot', 'Push the loop off the hook'], 0),
+    q.tf('The loop on your hook doesn’t count as a chain when you count chains.', true),
+    q.single('Your chains are very tight and hard to work into. What helps?', ['Loosen your tension, or use a bigger hook for the chain', 'Pull each chain tighter', 'Use thinner yarn', 'Skip the chain'], 0),
+    q.tf('Even, same-sized chains are a sign of good tension.', true),
+    q.single('“ch 30” in a pattern means…', ['Make 30 chain stitches', 'Count 30 rows', 'Change colour 30 times', 'Cut 30 cm'], 0),
+    q.single('Why is light-coloured yarn easier for beginners?', ['You can see where to insert the hook', 'It is stronger', 'It never splits', 'It is always thicker'], 0),
+    q.order('Put the start of a crochet project in order.', ['Make a slip knot', 'Put it on the hook', 'Make a foundation chain', 'Work the first row of stitches']),
+  ]),
+  'The core stitches': exam('Core stitches exam', [
+    q.single('Which stitch is taller?', ['Double crochet', 'Single crochet', 'Slip stitch', 'They are the same height'], 0),
+    q.single('A double crochet starts with…', ['A yarn over before inserting the hook', 'Inserting the hook with no yarn over', 'A slip knot', 'Cutting the yarn'], 0),
+    q.single('A slip stitch is mostly used to…', ['Join a round or move along without adding height', 'Make tall rows', 'Start a project', 'Fix a mistake'], 0),
+    q.single('You chain 16 to work single crochet rows. How many single crochets per row?', ['15', '16', '14', '17'], 0, 'The turning chain doesn’t count, so 16 chains give 15 single crochet.'),
+    q.tf('Counting your stitches every row helps keep the edges straight.', true),
+    q.single('Your rows get narrower each time. What is likely happening?', ['You are missing the last stitch of each row', 'You are adding stitches', 'Your hook is too big', 'The yarn is shrinking'], 0),
+    q.order('Put the steps of a single crochet in order.', ['Insert the hook into the stitch', 'Yarn over and pull up a loop', 'Yarn over again', 'Pull through both loops on the hook']),
+    q.single('In US terms, “sc” and “dc” mean…', ['Single crochet and double crochet', 'Slip chain and double chain', 'Start chain and do chain', 'Single colour and double colour'], 0),
+    q.single('Why do you chain at the start of a new row?', ['To bring the hook up to the height of the next row', 'To fix tension', 'To change colour', 'To end the project'], 0),
+    q.multi('Which tell you a double crochet was finished correctly?', ['It is about twice as tall as a single crochet', 'You pulled through two loops twice', 'It has a yarn over at the start', 'It leaves three loops on the hook'], [0, 1, 2]),
+    q.tf('UK and US patterns use some of the same stitch names for different stitches.', true, 'A UK double crochet is a US single crochet, so check which a pattern uses.'),
+    q.single('Making a ring with a slip stitch means…', ['Joining the last chain to the first', 'Tying a knot', 'Making a magic ring', 'Turning the work'], 0),
+  ]),
+  'The granny square': exam('Granny square exam', [
+    q.single('Why use a magic ring to start a square?', ['It can be pulled tight so there is no hole in the middle', 'It makes the square bigger', 'It is faster than a chain', 'It changes colour automatically'], 0),
+    q.single('Granny squares are worked…', ['In rounds, from the centre out', 'In straight rows', 'Only in single crochet', 'From one corner to the other'], 0),
+    q.single('The classic granny square is built from groups of…', ['Three double crochets', 'One slip stitch', 'Ten single crochets', 'Chains only'], 0),
+    q.single('What makes the corners of a granny square?', ['Two clusters in the same space with chains between them', 'A slip stitch', 'Skipping a round', 'Pulling tight'], 0),
+    q.tf('A round is joined with a slip stitch before starting the next one.', true),
+    q.single('Your square is cupping like a bowl. What might be wrong?', ['Too few stitches in a round', 'Too many stitches', 'The wrong colour', 'Not weaving in ends'], 0),
+    q.single('Your square is ruffling and wavy. What might be wrong?', ['Too many stitches in a round', 'Too few stitches', 'The hook is too small', 'The magic ring is too tight'], 0),
+    q.order('Put the granny square steps in order.', ['Make a magic ring', 'Work the first round of clusters', 'Join with a slip stitch', 'Work more rounds with corners', 'Fasten off and weave in the ends']),
+    q.single('“Fasten off” means…', ['Cut the yarn and pull it through the last loop to lock it', 'Start a new round', 'Undo the work', 'Make a chain'], 0),
+    q.multi('What can you make by joining granny squares?', ['A blanket', 'A bag', 'A cushion cover', 'A knitting needle'], [0, 1, 2]),
+    q.tf('Each round of a granny square has the same number of corners: four.', true),
+    q.single('Squares for one project should be…', ['The same size, made with the same hook and yarn', 'Different sizes', 'Made with any hook', 'Left with ends hanging'], 0),
+  ]),
+};

@@ -154,23 +154,6 @@ export function planPathway(def) {
   };
 }
 
-// A track is courses taken in order; each course is planned like a pathway.
-export function planTrack(def) {
-  const courses = def.courses.map((course) => planPathway(course));
-  return {
-    track: {
-      slug: def.slug,
-      title: def.title,
-      description: def.description,
-      makeTitle: def.makeTitle,
-      skillId: def.skillId,
-      imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
-    },
-    courses,
-    problems: courses.flatMap((c) => c.problems.map((p) => `${c.pathway.title}: ${p}`)),
-  };
-}
-
 // Time to learn once imported with quizzes published: video, practice, quick checks
 // (2 min each) and each module's games (5 min). Matches src/lib/estimate.js.
 export function planMinutes(plan) {
@@ -185,17 +168,39 @@ export function planMinutes(plan) {
 export const MAX_SKILL_HOURS = 20;
 const SKILL_PART_TRY = 'Follow along with this part as you watch, then carry on to the next part.';
 
-// def: { slug, title, description, makeTitle, skillId, by?, modules: [{ title, lessons:
-//   [{ id, title, seconds, from?, to?, by?, try, minutes, questions? }], checkpoint? }] }
-// (checkpoint: the module exam, as for courses)
-// `seconds` is the whole video's length; from/to (seconds) use just part of it. Anything
-// longer than 10 minutes is split into parts, like the courses.
-export function planSkill(def) {
+// A module's lessons, written either inline ({ id, title, seconds, ... }) or as video ids.
+// Ids are looked up in def.videos (fetched from YouTube: id, title, seconds, by) and
+// def.lessons (what we wrote: title, try, minutes, questions, from/to), so titles and
+// lengths come from YouTube and only the teaching is typed by hand.
+function resolveLessons(def, mod, problems) {
+  return mod.lessons.map((entry) => {
+    if (typeof entry !== 'string') return entry;
+    const video = def.videos?.find((v) => v.id === entry);
+    const authored = def.lessons?.[entry];
+    if (!video) problems.push(`"${mod.title}": video ${entry} isn't in the video list`);
+    if (!authored) problems.push(`"${mod.title}": nothing written for "${video?.title || entry}" (${entry})`);
+    return {
+      id: entry, title: video?.title, seconds: video?.seconds, by: video?.by, ...authored,
+    };
+  });
+}
+
+// def: { slug, title, description, makeTitle, skillId, by?, cover?, videos?, lessons?,
+//   modules: [{ title, lessons: [lesson or video id], checkpoint? }] }
+// A lesson is { id, title, seconds, from?, to?, by?, try, minutes, questions? }; checkpoint
+// is the module exam, as for courses. `seconds` is the whole video's length; from/to
+// (seconds) use just part of it. Anything longer than 10 minutes is split into parts.
+function planAuthored(def, { kind, maxHours }) {
   const problems = [];
+  const seen = new Set();
   const modules = def.modules.map((mod) => {
-    const lessons = mod.lessons.flatMap((lesson) => {
+    const lessons = resolveLessons(def, mod, problems).flatMap((lesson) => {
       const where = `"${lesson.title}" (${lesson.id})`;
       if (!/^[\w-]{11}$/.test(lesson.id || '')) problems.push(`${where}: not a YouTube video id`);
+      const key = `${lesson.id}:${lesson.from || 0}`;
+      if (seen.has(key)) problems.push(`${where}: used twice`);
+      seen.add(key);
+      if (!lesson.title?.trim()) problems.push(`${where}: no title`);
       if (!lesson.try?.trim()) problems.push(`${where}: no Try task`);
       const from = lesson.from || 0;
       const to = lesson.to || lesson.seconds;
@@ -225,8 +230,11 @@ export function planSkill(def) {
     return { title: mod.title, lessons, checkpoint: planExam(mod.checkpoint, `"${mod.title}"`, problems) };
   });
 
-  const lessonIds = def.modules.flatMap((m) => m.lessons.map((l) => l.id));
-  if (def.cover && !lessonIds.includes(def.cover)) problems.push(`${def.title}: the cover isn't one of its videos`);
+  const used = new Set(def.modules.flatMap((m) => m.lessons.map((l) => (typeof l === 'string' ? l : l.id))));
+  Object.keys(def.lessons || {}).forEach((id) => {
+    if (!used.has(id)) problems.push(`${def.title}: lesson ${id} is written but in no module`);
+  });
+  if (def.cover && !used.has(def.cover)) problems.push(`${def.title}: the cover isn't one of its videos`);
   const plan = {
     pathway: {
       slug: def.slug,
@@ -234,16 +242,44 @@ export function planSkill(def) {
       description: def.description,
       makeTitle: def.makeTitle,
       skillId: def.skillId,
-      certification: null,
-      kind: 'SKILL',
+      certification: def.certification || null,
+      kind,
       imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
     },
     modules,
     problems,
   };
   const hours = planMinutes(plan) / 60;
-  if (hours > MAX_SKILL_HOURS) problems.push(`${def.title}: about ${Math.round(hours)} hours; a short skill is ${MAX_SKILL_HOURS} at most`);
+  if (maxHours && hours > maxHours) problems.push(`${def.title}: about ${Math.round(hours)} hours; a short skill is ${maxHours} at most`);
   return plan;
+}
+
+export function planSkill(def) {
+  return planAuthored(def, { kind: 'SKILL', maxHours: MAX_SKILL_HOURS });
+}
+
+// A course in a track, written like a short skill but with no time cap.
+export function planCourse(def) {
+  return planAuthored(def, { kind: 'COURSE' });
+}
+
+// A track is courses taken in order. A course is either built from exam objectives
+// (`stages`, see planPathway) or written module by module like a short skill (planCourse).
+export function planTrack(def) {
+  const courses = def.courses
+    .map((course) => (course.stages ? planPathway(course) : planCourse(course)));
+  return {
+    track: {
+      slug: def.slug,
+      title: def.title,
+      description: def.description,
+      makeTitle: def.makeTitle,
+      skillId: def.skillId,
+      imageUrl: def.cover ? thumbnailUrl(def.cover) : null,
+    },
+    courses,
+    problems: courses.flatMap((c) => c.problems.map((p) => `${c.pathway.title}: ${p}`)),
+  };
 }
 
 export function planSummary(plan) {

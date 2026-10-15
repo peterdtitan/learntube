@@ -19,6 +19,15 @@ describe('short skills content', () => {
     });
   });
 
+  it('ends every module with an exam that draws from a bigger bank', () => {
+    plans.forEach((plan) => plan.modules.forEach((m) => {
+      const where = `${plan.pathway.title}: ${m.title}`;
+      expect(m.checkpoint, where).toBeTruthy();
+      expect(m.checkpoint.questions.length, where).toBeGreaterThanOrEqual(12);
+      expect(m.checkpoint.drawCount, where).toBeLessThan(m.checkpoint.questions.length);
+    }));
+  });
+
   it('uses unique slugs, all marked as skills', () => {
     const slugs = plans.map((p) => p.pathway.slug);
     expect(new Set(slugs).size).toBe(slugs.length);

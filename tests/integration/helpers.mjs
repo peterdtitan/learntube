@@ -5,7 +5,7 @@ const prisma = prismaModule.default ?? prismaModule;
 
 export { prisma };
 
-// Everything except the migration history and the 10 skills the migrations seed.
+// Everything except the migration history and the skill categories the migrations seed.
 const KEEP = new Set(['_prisma_migrations', 'Skill']);
 
 export async function resetDb() {

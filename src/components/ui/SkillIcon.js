@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  BarChart3, Camera, ChefHat, Code2, Guitar, Megaphone, Music, Pencil, Scissors, ShieldCheck,
-  Sparkles,
+  BarChart3, Bot, Brush, Camera, ChefHat, Clapperboard, Code2, Crown, Guitar, Megaphone, Music,
+  Palette, Pencil, Piano, Scissors, ShieldCheck, Sparkles,
 } from 'lucide-react';
 import cn from '../../lib/cn';
 
@@ -41,6 +41,12 @@ const ICONS = {
   'digital-marketing': Megaphone,
   'music-production': Music,
   cybersecurity: ShieldCheck,
+  piano: Piano,
+  beauty: Brush,
+  chess: Crown,
+  'video-editing': Clapperboard,
+  design: Palette,
+  ai: Bot,
 };
 
 export function skillIcon(id) {

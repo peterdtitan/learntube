@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  Passwords: exam('Passwords exam', [
+    q.single('What makes a password strongest?', ['Length: a long passphrase or generated password', 'Replacing letters with symbols', 'Your birthday plus a number', 'A short word with capitals'], 0),
+    q.single('Why is reusing a password dangerous?', ['One leaked site gives attackers your other accounts', 'It makes typing slower', 'Sites forbid it', 'It wears out the password'], 0),
+    q.single('A password manager…', ['Stores and fills strong, unique passwords for you', 'Shares your passwords', 'Is the same as writing them on paper by the screen', 'Only works for email'], 0),
+    q.single('Which account should you secure first?', ['Your email, because it can reset the others', 'A game account', 'A shopping account', 'A forum account'], 0),
+    q.tf('“Password123!” is a strong password because it has a number and a symbol.', false, 'It is one of the first passwords attackers try.'),
+    q.multi('Which are good password habits?', ['A unique password for every account', 'Using a password manager', 'Sharing passwords over text', 'Long passphrases'], [0, 1, 3]),
+    q.single('A passphrase is…', ['Several random words strung together', 'A single word', 'Your name and date of birth', 'A PIN'], 0),
+    q.single('The master password for your password manager should be…', ['Long, unique and memorised', 'The same as your email password', 'Written on your monitor', 'Short so it is easy'], 0),
+    q.tf('Bitwarden offers a free password manager.', true),
+    q.single('“Credential stuffing” is when attackers…', ['Try leaked usernames and passwords on many other sites', 'Guess passwords one letter at a time', 'Steal your phone', 'Send you a letter'], 0),
+    q.single('You learn a site you use was breached. What should you do first?', ['Change that password, and any account where you reused it', 'Do nothing', 'Delete your email', 'Post about it'], 0),
+    q.order('Put the steps for moving to a password manager in order.', ['Install the password manager', 'Create a strong master password', 'Change your email password to a generated one', 'Update your other important accounts']),
+  ]),
+  'Sign in more safely': exam('Safer sign-in exam', [
+    q.single('Multi-factor authentication (MFA) means…', ['Proving it’s you with more than one kind of evidence', 'Having two passwords', 'Signing in twice a day', 'Using two browsers'], 0),
+    q.single('Which second factor is strongest against phishing?', ['A passkey or security key', 'An SMS code', 'A security question', 'An email link'], 0),
+    q.single('Why is an authenticator app better than SMS codes?', ['SMS can be intercepted or moved to another SIM', 'Apps are louder', 'SMS is too slow always', 'Apps need no phone'], 0),
+    q.single('A passkey…', ['Lets you sign in with your device’s lock (fingerprint, face or PIN) instead of a password', 'Is a longer password', 'Is a USB stick only', 'Is shared with the website'], 0),
+    q.tf('With a passkey, the website never stores a password that could be leaked.', true),
+    q.single('Backup codes for MFA should be…', ['Saved somewhere safe in case you lose your phone', 'Posted online', 'Deleted', 'Emailed to friends'], 0),
+    q.multi('Which are kinds of authentication factor?', ['Something you know (a password)', 'Something you have (a phone or key)', 'Something you are (a fingerprint)', 'Something you like'], [0, 1, 2]),
+    q.single('Someone asks you to read out a sign-in code you just received. You should…', ['Never share it: that is how accounts get taken over', 'Read it to them', 'Post it', 'Send it by email'], 0),
+    q.tf('Turning on two-step verification for your email protects every account it can reset.', true),
+    q.single('A fingerprint used with a passkey…', ['Stays on your device; the site doesn’t receive it', 'Is sent to the website', 'Is stored in the cloud for everyone', 'Replaces your email'], 0),
+    q.single('Unexpected MFA prompts you didn’t start probably mean…', ['Someone has your password: deny them and change it', 'A normal glitch', 'You should approve them', 'Your phone is new'], 0),
+    q.order('Put the steps for turning on an authenticator app in order.', ['Open your account’s security settings', 'Choose authenticator app', 'Scan the QR code with the app', 'Enter the code to confirm', 'Save the backup codes']),
+  ]),
+  'Spot scams, keep backups': exam('Scams and backups exam', [
+    q.multi('Which are warning signs of a phishing email?', ['Urgent threats or deadlines', 'A sender address that doesn’t match the company', 'Links to strange web addresses', 'Your correct full name in a newsletter you signed up for'], [0, 1, 2]),
+    q.single('How can you check where a link really goes without clicking?', ['Hover over it, or long-press on a phone', 'Click it quickly', 'Reply to the email', 'Forward it'], 0),
+    q.single('Your bank emails asking you to “confirm your password” through a link. You should…', ['Not click; go to the bank’s app or website yourself', 'Click and confirm', 'Reply with your password', 'Forward it to friends'], 0),
+    q.single('The 3-2-1 backup rule is…', ['3 copies, on 2 kinds of storage, 1 kept off-site', '3 passwords, 2 accounts, 1 phone', '3 backups a day', '3 apps, 2 laptops, 1 cloud'], 0),
+    q.tf('Cloud backup of your phone’s photos counts as an off-site copy.', true),
+    q.single('Why keep backups at all?', ['To recover from loss, theft, broken devices or ransomware', 'To make devices faster', 'Because it’s required', 'To save battery'], 0),
+    q.single('Smishing is…', ['Phishing by text message', 'A virus', 'A backup method', 'A strong password'], 0),
+    q.single('An email from a friend’s address asks you to buy gift cards urgently. Most likely…', ['Their account was hacked; check with them another way', 'They really need help, pay now', 'It’s from the bank', 'It’s safe because you know them'], 0),
+    q.tf('Spelling mistakes and odd greetings can be signs of a scam, but convincing scams can look perfect.', true),
+    q.single('Ransomware…', ['Locks your files until you pay', 'Speeds up your computer', 'Backs up your data', 'Blocks spam'], 0),
+    q.multi('Which belong on a personal security checklist?', ['Unique passwords in a password manager', 'MFA on important accounts', 'Backups turned on', 'Password written on your phone case'], [0, 1, 2]),
+    q.order('Put the safe response to a suspicious email in order.', ['Don’t click links or open attachments', 'Check the sender and the link destination', 'Contact the company through its own website or app', 'Report or delete the email']),
+  ]),
+};

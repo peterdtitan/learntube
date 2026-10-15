@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  'Confident lines': exam('Confident lines exam', [
+    q.single('For long, smooth lines you should draw from…', ['Your shoulder and elbow', 'Your fingertips only', 'Your wrist only', 'The tip of the pencil'], 0),
+    q.single('Why practise lines between two dots?', ['It trains your hand to place a line exactly where you want', 'It saves paper', 'It makes the pencil sharper', 'It replaces shading'], 0),
+    q.tf('Doing a short warm-up before drawing helps your lines feel more confident.', true),
+    q.single('Drawing a line quickly and with confidence usually gives…', ['A smoother line than drawing it slowly', 'A wobblier line', 'A darker line only', 'No difference at all'], 0),
+    q.single('When starting out, it helps to…', ['Draw a lot, without worrying about erasing every mistake', 'Only draw when you feel inspired', 'Erase every line until it is perfect', 'Copy one drawing forever'], 0),
+    q.multi('Which are good line-drawing habits?', ['Ghosting the motion before you put the pencil down', 'Rotating the paper to a comfortable angle', 'Pressing as hard as you can', 'Practising ellipses and curves too'], [0, 1, 3]),
+    q.single('“Ghosting” a line means…', ['Practising the movement in the air above the paper first', 'Drawing very faintly forever', 'Erasing it', 'Tracing a photo'], 0),
+    q.single('Light, loose lines at the start of a drawing are useful because…', ['They are easy to correct before you commit', 'They are always the final lines', 'They can’t be seen', 'They make the paper stronger'], 0),
+    q.tf('You need expensive pencils and paper to start learning to draw.', false, 'Any pencil and plain paper are enough to start.'),
+    q.single('Filling a page with doodles of what’s on your desk mainly builds…', ['The habit of drawing what you see', 'Shading skills only', 'Colour theory', 'Perspective rules'], 0),
+    q.single('Which warm-up trains curves?', ['Drawing ellipses and circles', 'Writing your name', 'Colouring in', 'Drawing a grid only'], 0),
+    q.order('Put a good practice session in order.', ['Warm up with lines and curves', 'Draw simple shapes', 'Work on a full drawing', 'Look back at what improved']),
+  ]),
+  'Simple shapes in 3D': exam('3D shapes exam', [
+    q.single('“Drawing through” a shape means…', ['Drawing its hidden edges as if it were see-through', 'Erasing the back', 'Drawing only the outline', 'Tracing it'], 0),
+    q.single('Which are the four basic forms used to build most objects?', ['Sphere, cylinder, cone and cube', 'Square, circle, line and dot', 'Triangle, star, heart and oval', 'Box, line, curve and grid'], 0),
+    q.single('In perspective, the horizon line is…', ['At the viewer’s eye level', 'Always at the top of the page', 'The ground under the object', 'The edge of the paper'], 0),
+    q.single('A vanishing point is…', ['Where parallel lines seem to meet in the distance', 'The darkest shadow', 'The centre of a circle', 'Where you start drawing'], 0),
+    q.single('A box drawn above the horizon line shows its…', ['Bottom', 'Top', 'Both top and bottom', 'Neither'], 0),
+    q.single('A box drawn below the horizon line shows its…', ['Top', 'Bottom', 'Back', 'Inside'], 0),
+    q.tf('In one-point perspective, lines going away from you meet at a single vanishing point.', true),
+    q.single('When you draw a cylinder, its ends appear as…', ['Ellipses', 'Squares', 'Straight lines', 'Triangles'], 0),
+    q.single('When checking a box, the edges that are parallel in real life should…', ['Head towards the same vanishing point', 'Point in random directions', 'All be vertical', 'Cross each other'], 0),
+    q.multi('Which everyday objects are mostly cylinders?', ['A mug', 'A tin can', 'A book', 'A candle'], [0, 1, 3]),
+    q.tf('Drawing the same form from different angles builds your sense of 3D.', true),
+    q.order('Put the steps for drawing a box in one-point perspective in order.', ['Draw the horizon line', 'Place a vanishing point', 'Draw the front face', 'Draw lines from its corners to the vanishing point', 'Close the back of the box']),
+  ]),
+  'Light, shade and real objects': exam('Light and shade exam', [
+    q.order('Put the tones on a shaded sphere in order, from lightest to darkest.', ['Highlight', 'Mid-tone', 'Core shadow', 'Cast shadow (nearest the object)']),
+    q.single('The core shadow is…', ['The darkest band on the object, where it turns away from the light', 'The shadow on the table', 'The brightest spot', 'The outline'], 0),
+    q.single('The cast shadow falls…', ['On the surface, on the side away from the light', 'Towards the light', 'Inside the object', 'Nowhere'], 0),
+    q.single('Light from the top left puts the highlight on a sphere…', ['Towards its top left', 'Bottom right', 'Dead centre always', 'On the table'], 0),
+    q.tf('Reflected light can make the edge of the shadow side slightly lighter than the core shadow.', true),
+    q.single('“Blocking in” an object means…', ['Roughing out its big simple shapes before details', 'Shading it black', 'Drawing a box around it', 'Erasing it'], 0),
+    q.order('Put the steps for drawing a real object in order.', ['Look at it and find its simple shapes', 'Block in the shapes lightly', 'Refine the outline', 'Add shading']),
+    q.multi('A coffee mug can be built from…', ['A cylinder for the body', 'A curved shape for the handle', 'An ellipse for the rim', 'A cone for the base'], [0, 1, 2]),
+    q.single('Why decide where the light comes from before shading?', ['So all the shadows on the object agree', 'It changes the outline', 'It speeds up erasing', 'It doesn’t matter'], 0),
+    q.tf('Pressing lightly and building tone in layers gives smoother shading than pressing hard at once.', true),
+    q.single('The edge of a cast shadow is usually sharpest…', ['Closest to the object', 'Farthest from the object', 'Always blurry', 'Never visible'], 0),
+    q.single('Which helps you see tones more clearly in a real scene?', ['Squinting at it', 'Looking for longer without blinking', 'Turning off all lights', 'Drawing faster'], 0),
+  ]),
+};

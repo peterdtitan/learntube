@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  'Get started': exam('Sheets basics exam', [
+    q.single('Typing sheets.new in your browser…', ['Opens a new blank Google Sheet', 'Downloads Excel', 'Opens Google Docs', 'Deletes a sheet'], 0),
+    q.single('A cell is named by…', ['Its column letter and row number, like B3', 'Its colour', 'Its value', 'Its sheet name only'], 0),
+    q.single('Freezing the header row…', ['Keeps it visible while you scroll', 'Stops anyone editing it', 'Deletes it', 'Hides it'], 0),
+    q.single('Conditional formatting…', ['Changes a cell’s look when it meets a rule', 'Sorts the data', 'Adds formulas', 'Shares the file'], 0),
+    q.tf('Google Sheets saves your work automatically.', true),
+    q.single('Formatting the Amount column as currency…', ['Shows numbers with a currency symbol and decimals', 'Converts the currency', 'Adds them up', 'Turns them into text'], 0),
+    q.multi('Which make a data table easier to read?', ['A clear header row', 'One kind of data per column', 'Merged cells everywhere', 'Consistent formatting'], [0, 1, 3]),
+    q.single('Explore in Google Sheets can…', ['Suggest charts and answer questions about your data', 'Write emails', 'Translate a sheet', 'Print it'], 0),
+    q.single('One row in an expense table should hold…', ['One expense', 'One category', 'All the totals', 'The whole month'], 0),
+    q.tf('Typing numbers as plain numbers (not text) is what lets formulas add them.', true),
+    q.single('A rule that turns any expense over 50 red is an example of…', ['Conditional formatting', 'A pivot table', 'Sorting', 'Sharing'], 0),
+    q.order('Put the setup of a budget sheet in order.', ['Name the file', 'Add column headers', 'Enter the data', 'Format the columns', 'Freeze the header row']),
+  ]),
+  'Formulas': exam('Formulas exam', [
+    q.single('Every formula starts with…', ['=', '+', '#', '@'], 0),
+    q.single('=SUM(D2:D11) adds…', ['Every value from D2 to D11', 'Only D2 and D11', 'Column D’s headers', 'Rows 2 to 11 of every column'], 0),
+    q.text('Which function finds the average of a range? (just the name)', ['AVERAGE'], 'For example =AVERAGE(D2:D11).'),
+    q.single('A dollar sign in $F$1 makes the reference…', ['Absolute: it stays on F1 when you copy the formula', 'A currency', 'Relative', 'An error'], 0),
+    q.single('Copying =D2/F1 down one row gives…', ['=D3/F2', '=D2/F1', '=D3/F1', '=E2/F1'], 0, 'Both parts are relative, so both move down.'),
+    q.single('Copying =D2/$F$1 down one row gives…', ['=D3/$F$1', '=D2/$F$1', '=D3/$F$2', '=E2/$F$1'], 0),
+    q.single('A named range lets you…', ['Refer to a group of cells by a name instead of an address', 'Rename the file', 'Hide cells', 'Colour a range'], 0),
+    q.tf('Changing a number used by a formula updates the formula’s result automatically.', true),
+    q.num('=10+5*2 returns what?', 20, 0, 'Multiplication happens before addition.'),
+    q.single('=B2-C2 subtracts…', ['C2 from B2', 'B2 from C2', 'Columns B and C', 'Nothing; it is text'], 0),
+    q.multi('Which are functions?', ['SUM', 'AVERAGE', 'COUNT', 'B2'], [0, 1, 2]),
+    q.single('A formula shows #DIV/0!. What happened?', ['It divided by zero or an empty cell', 'It added text', 'The sheet is shared', 'The number is too big'], 0),
+  ]),
+  'Find, sort and summarise': exam('Sorting and summarising exam', [
+    q.single('VLOOKUP…', ['Finds a value in the first column of a range and returns a value from the same row', 'Sorts a column', 'Adds a chart', 'Counts cells'], 0),
+    q.single('A filter…', ['Shows only the rows that match a condition, without deleting the others', 'Deletes rows', 'Adds a formula', 'Changes colours'], 0),
+    q.single('Sorting by Amount from Z to A puts…', ['The largest amounts first', 'The smallest first', 'Them in random order', 'Text first'], 0),
+    q.single('A pivot table…', ['Summarises data, like totals per category', 'Draws a picture', 'Deletes duplicates', 'Locks a sheet'], 0),
+    q.single('Which chart best shows how a total is split between categories?', ['A pie or bar chart', 'A line chart of one day', 'A scatter plot', 'No chart'], 0),
+    q.single('Version history lets you…', ['See and restore earlier versions of the sheet', 'Print it', 'Translate it', 'Speed it up'], 0),
+    q.single('Sharing with “Viewer” access means the person can…', ['Look but not edit', 'Edit everything', 'Delete the file', 'Change sharing settings'], 0),
+    q.tf('A Google Form can send its answers straight into a sheet.', true),
+    q.multi('Which can a pivot table do?', ['Total spending by category', 'Count expenses per month', 'Average amount per category', 'Send emails'], [0, 1, 2]),
+    q.single('You keep months on separate sheets (tabs). A formula on one tab can…', ['Refer to cells on another tab', 'Never see other tabs', 'Only refer to tab 1', 'Only copy them'], 0),
+    q.tf('When you sort, you should select the whole table so each row stays together.', true),
+    q.order('Put the steps for a spending-by-category chart in order.', ['Make a pivot table of amount by category', 'Select the pivot table', 'Insert a chart', 'Pick a pie or bar chart and label it']),
+  ]),
+};

@@ -70,6 +70,12 @@ const BY_SKILL = {
   data: [{ minutes: 15, one: 'coffee break', many: 'coffee breaks' }],
   'digital-marketing': [{ minutes: 0.75, one: 'short video', many: 'short videos' }],
   'music-production': [{ minutes: 3, one: 'beat', many: 'beats' }],
+  piano: [{ minutes: 4, one: 'song played through', many: 'songs played through' }],
+  beauty: [{ minutes: 20, one: 'full face of makeup', many: 'full faces of makeup' }],
+  chess: [{ minutes: 10, one: 'rapid game', many: 'rapid games' }],
+  'video-editing': [{ minutes: 15, one: 'short video edited', many: 'short videos edited' }],
+  design: [{ minutes: 15, one: 'Instagram post designed', many: 'Instagram posts designed' }],
+  ai: [{ minutes: 2, one: 'ChatGPT reply', many: 'ChatGPT replies' }],
 };
 
 // "About 108 songs": picks the comparison whose count reads best (ideally 5 to 60).
