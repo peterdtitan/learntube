@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  'Hold it, keep it sharp': exam('Knife safety and care exam', [
+    q.single('In the pinch grip, you hold the knife…', ['By the blade just in front of the handle, between thumb and index finger', 'At the very end of the handle', 'With your fist around the handle only', 'By the tip'], 0),
+    q.single('The claw grip protects you by…', ['Tucking your fingertips behind your knuckles', 'Holding the food with flat fingers', 'Keeping your hand far away', 'Wearing gloves'], 0),
+    q.single('Why put a damp towel under a cutting board?', ['To stop the board sliding', 'To keep the knife wet', 'To clean as you go', 'To soften the food'], 0),
+    q.tf('A sharp knife is safer than a dull one.', true, 'A dull knife needs more force and slips more easily.'),
+    q.single('Honing a knife…', ['Straightens the existing edge', 'Grinds a new edge', 'Removes rust', 'Makes it heavier'], 0),
+    q.single('Sharpening a knife…', ['Removes metal to make a new edge', 'Only straightens the edge', 'Is the same as honing', 'Polishes the handle'], 0),
+    q.single('A simple test of sharpness is…', ['Slicing a sheet of paper: a sharp knife cuts cleanly', 'Tapping it on the board', 'Looking at the handle', 'Running a finger along the edge'], 0),
+    q.single('How often should you hone a knife you use a lot?', ['Before most cooking sessions', 'Once a year', 'Never', 'Only when it is broken'], 0),
+    q.multi('Which are safe knife habits?', ['Keep fingertips tucked', 'Never try to catch a falling knife', 'Leave knives in soapy water in the sink', 'Cut on a stable board'], [0, 1, 3]),
+    q.tf('Keeping the same angle on every stroke matters when honing or sharpening.', true),
+    q.single('Your knife crushes tomatoes instead of slicing them. What does it most likely need?', ['Sharpening', 'A heavier board', 'More force', 'A damp towel'], 0),
+    q.single('When you walk with a knife, you should hold it…', ['Point down, close to your side', 'Point forward', 'Over your head', 'By the blade'], 0),
+  ]),
+  'The core cuts': exam('Core cuts exam', [
+    q.single('Why cut pieces to the same size?', ['So they cook evenly', 'Only so they look nice', 'To save the knife', 'So they cook faster than they should'], 0),
+    q.match('Match each cut to what it makes.', [['Julienne', 'Thin matchsticks'], ['Dice', 'Small cubes'], ['Chiffonade', 'Thin ribbons of leaves'], ['Mince', 'Very fine pieces']]),
+    q.single('Why leave the root end on when dicing an onion?', ['It holds the layers together while you cut', 'It adds flavour', 'It is easier to peel', 'It stops tears completely'], 0),
+    q.order('Put the steps for dicing an onion in order.', ['Cut it in half through the root and peel it', 'Make lengthwise cuts, keeping the root on', 'Make horizontal cuts towards the root', 'Cut across to make the dice']),
+    q.single('A quick way to peel garlic is to…', ['Crush the clove lightly with the flat of the blade', 'Boil it for an hour', 'Freeze it', 'Cut it in half lengthwise first'], 0),
+    q.single('For a chiffonade you first…', ['Stack the leaves and roll them tightly', 'Dice them', 'Boil them', 'Grate them'], 0),
+    q.tf('Turning a round vegetable so it sits on a flat side makes it safer to cut.', true),
+    q.single('A rocking motion with the tip on the board is good for…', ['Mincing herbs and garlic', 'Carving meat', 'Peeling', 'Cutting bread'], 0),
+    q.multi('Which make dicing a pepper easier?', ['Cutting off the top and bottom first', 'Removing the seeds and pith', 'Cutting it into flat strips before dicing', 'Leaving it whole'], [0, 1, 2]),
+    q.single('Matchstick-sized pieces of carrot for a stir-fry are…', ['A julienne', 'A dice', 'A chiffonade', 'A mince'], 0),
+    q.tf('Moving the knife, not your guiding hand, keeps your fingers away from the blade.', true),
+    q.single('Brunoise is…', ['A very small dice cut from julienne strips', 'A large chunk', 'A herb ribbon', 'A peeling method'], 0),
+  ]),
+  'Put it together': exam('Putting it together exam', [
+    q.single('Mise en place means…', ['Having everything cut and ready before you start cooking', 'Cooking everything at once', 'Plating the food', 'Cleaning up after'], 0),
+    q.multi('Which cuts go into a fresh salsa?', ['Diced tomato', 'Diced onion', 'Minced garlic and chili', 'Chiffonade of coriander'], [0, 1, 2, 3]),
+    q.single('Why cut the salsa vegetables to a similar size?', ['Every spoonful gets a bit of everything', 'It cooks them', 'It keeps the knife sharp', 'It isn’t important'], 0),
+    q.tf('Wiping your board between strong and mild ingredients keeps flavours clean.', true),
+    q.single('Chili seeds and white pith carry most of the…', ['Heat', 'Sweetness', 'Colour', 'Salt'], 0),
+    q.single('After cutting chili, you should…', ['Wash your hands before touching your face', 'Rub your eyes', 'Leave the board as it is', 'Rinse the knife in your hand'], 0),
+    q.order('Put the salsa steps in order.', ['Hone the knife and set up the board', 'Dice the tomatoes, onion and pepper', 'Mince garlic and chili', 'Chiffonade the coriander', 'Mix and season']),
+    q.single('Which cut suits soft herbs like basil or coriander leaves for a garnish?', ['Chiffonade', 'Large dice', 'Julienne carrots', 'Carving'], 0),
+    q.tf('Putting cut ingredients in separate bowls is part of mise en place.', true),
+    q.single('Your diced tomatoes are mushy. What helps next time?', ['A sharper knife, and slicing rather than pressing down', 'A heavier board', 'Freezing the tomatoes', 'Using the back of the knife'], 0),
+    q.multi('Which knife skills from this skill help in almost any recipe?', ['Dicing an onion', 'Mincing garlic', 'Keeping the knife sharp', 'Juggling knives'], [0, 1, 2]),
+    q.single('The safest place to put down a knife while you work is…', ['Flat on the board, away from the edge, blade facing away', 'Hanging over the edge of the counter', 'In the sink under water', 'In the pile of food'], 0),
+  ]),
+};

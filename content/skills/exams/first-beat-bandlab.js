@@ -1,0 +1,47 @@
+import { q } from '../../../src/lib/content/plan';
+import { exam } from './exam';
+
+export default {
+  'Find your way around the studio': exam('Studio basics exam', [
+    q.single('In a basic four-beat drum loop, the kick usually plays on…', ['Beats 1 and 3', 'Beats 2 and 4', 'Every beat', 'Only beat 4'], 0),
+    q.single('…and the snare usually plays on…', ['Beats 2 and 4', 'Beats 1 and 3', 'No beats', 'Every eighth note'], 0),
+    q.single('Hi-hats on every eighth note means…', ['Two hi-hats per beat', 'One hi-hat per bar', 'Eight per beat', 'Only on the snare'], 0),
+    q.single('A track in BandLab Studio is…', ['One lane for one instrument or recording', 'The whole song', 'A drum hit', 'An effect'], 0),
+    q.single('A bar (measure) in 4/4 time has…', ['Four beats', 'Three beats', 'Eight beats', 'Sixteen beats'], 0),
+    q.single('The tempo of a song is measured in…', ['Beats per minute (BPM)', 'Decibels', 'Bars per song', 'Hertz'], 0),
+    q.tf('A loop is a section of music that repeats.', true),
+    q.single('Where do you draw drum hits in BandLab’s drum editor?', ['On a grid, one row per drum sound', 'In the mixer', 'In the comments', 'In the export menu'], 0),
+    q.multi('What can you add to a BandLab project?', ['Instrument tracks', 'Drum tracks', 'Recorded audio', 'Physical guitars'], [0, 1, 2]),
+    q.tf('BandLab is free and runs in a web browser or on a phone.', true),
+    q.single('Quantising notes means…', ['Snapping them to the beat grid', 'Making them louder', 'Deleting them', 'Changing the key'], 0),
+    q.order('Put the steps for a first beat in order.', ['Create a project', 'Add a drum track', 'Program kick and snare', 'Add hi-hats', 'Play the loop back and adjust']),
+  ]),
+  'Write the music': exam('Writing the music exam', [
+    q.single('A chord progression is…', ['A series of chords played in order', 'One loud chord', 'A drum fill', 'An effect'], 0),
+    q.single('The simplest bass line plays…', ['The root note of each chord', 'Random notes', 'Only the highest note', 'Drum hits'], 0),
+    q.single('An 808 is…', ['A deep, booming bass sound named after a classic drum machine', 'A type of guitar', 'A reverb effect', 'A tempo setting'], 0),
+    q.single('Lining up 808 notes with the kick drum helps…', ['Them hit together and sound tight', 'Make the song longer', 'Remove the snare', 'Change the key'], 0),
+    q.single('Swing makes the groove…', ['Feel bouncier by delaying every other note slightly', 'Perfectly straight', 'Louder', 'Slower overall'], 0),
+    q.single('A drum fill is…', ['A short variation that leads into the next section', 'The main loop', 'A bass note', 'A mixing tool'], 0),
+    q.tf('Placing a fill at the end of every fourth bar is a common way to mark sections.', true),
+    q.single('Writing four chords that repeat over your drum loop gives you…', ['The harmony of your beat', 'The tempo', 'The mix', 'The export'], 0),
+    q.multi('Which instruments often play chords in a beat?', ['Keys (piano)', 'Synth pads', 'Kick drum', 'Guitar'], [0, 1, 3]),
+    q.tf('Too much swing can make a beat feel sloppy, so adjust it by ear.', true),
+    q.single('The MIDI piano roll shows…', ['Notes as blocks: pitch up and down, time left to right', 'Audio waveforms only', 'Lyrics', 'Comments'], 0),
+    q.single('Your bass and kick clash and sound muddy. What can help?', ['Line up their rhythms, or let one leave space for the other', 'Turn both up', 'Add more reverb to both', 'Remove the snare'], 0),
+  ]),
+  'Mix and finish': exam('Mixing exam', [
+    q.single('“Going into the red” on a meter means…', ['The signal is too loud and may distort', 'The track is muted', 'The mix is perfect', 'The tempo is too fast'], 0),
+    q.single('Reverb makes a sound…', ['Seem to be in a bigger space', 'Quieter only', 'Shorter', 'Out of tune'], 0),
+    q.single('Compression…', ['Evens out the loud and quiet parts of a sound', 'Changes the key', 'Adds echoes', 'Speeds up the song'], 0),
+    q.single('Setting levels means…', ['Balancing the volume of each track', 'Choosing the tempo', 'Writing chords', 'Exporting'], 0),
+    q.tf('Comparing an effect on and off helps you decide if it really improves the sound.', true),
+    q.single('Panning places a sound…', ['Between the left and right speakers', 'Higher in pitch', 'Earlier in time', 'In a different key'], 0),
+    q.multi('Which help a mix sound clear?', ['Balancing levels', 'Giving each instrument its own space in pitch or pan', 'Turning every track to maximum', 'Using effects with restraint'], [0, 1, 3]),
+    q.single('In most beats, which elements usually need to be clearest?', ['Kick and snare', 'Background pads', 'Reverb tails', 'Silence'], 0),
+    q.tf('Listening on more than one device (phone, headphones, speaker) helps check a mix.', true),
+    q.single('EQ (equalisation) lets you…', ['Boost or cut certain frequencies of a sound', 'Change the tempo', 'Add drums', 'Record vocals'], 0),
+    q.order('Put the final steps in order.', ['Finish the arrangement', 'Balance the levels', 'Add effects', 'Listen back and adjust', 'Export or publish']),
+    q.single('Before sharing your beat, it’s best to…', ['Listen to the whole thing once more from start to finish', 'Delete the drums', 'Speed it up', 'Turn off the master track'], 0),
+  ]),
+};
