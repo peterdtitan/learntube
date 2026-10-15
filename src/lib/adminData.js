@@ -16,7 +16,7 @@ export async function getOverview(now = new Date()) {
   const week = new Date(now - 7 * DAY);
   const [
     learners, active, makes, openReports, draftExams, thinExams,
-    modules, modulesWithExam, noTry, longLessons, emailsSent,
+    modules, modulesWithExam, noTry, longLessons, emailsSent, notTaught,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.xpEvent.groupBy({ by: ['userId'], where: { createdAt: { gte: week } } }).then((r) => r.length),
@@ -32,6 +32,7 @@ export async function getOverview(now = new Date()) {
     prisma.video.count({ where: { unitId: { not: null }, tryTask: null } }),
     prisma.video.count({ where: { unitId: { not: null }, duration: { gt: 600 } } }),
     prisma.emailLog.count({ where: { createdAt: { gte: week }, kind: { not: 'TEST' } } }),
+    prisma.searchLog.count({ where: { day: { gte: week }, missing: true } }),
   ]);
 
   const attention = [
@@ -42,6 +43,7 @@ export async function getOverview(now = new Date()) {
     noTry && { text: `${noTry} lessons have no Try step`, href: '/admin/pathways' },
     longLessons && { text: `${longLessons} lessons are over 10 minutes`, href: '/admin/pathways' },
     !emailConfig().configured && { text: 'Reminder emails are off: RESEND_API_KEY isn’t set', href: '/admin/emails' },
+    notTaught && { text: `${notTaught} ${notTaught === 1 ? 'search' : 'searches'} this week for things we don’t teach yet`, href: '/admin/searches?days=7' },
   ].filter(Boolean);
 
   return {
@@ -255,5 +257,56 @@ export async function emailActivity(now = new Date()) {
     recent,
     optedOut,
     total,
+  };
+}
+
+// What learners searched for on the skills page over the last `days` days, today included.
+// A learner counts once per search per day.
+export async function searchInsights(days = 30, now = new Date()) {
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const where = { day: { gte: new Date(today - (days - 1) * DAY) } };
+  const top = (extra) => prisma.searchLog.groupBy({
+    by: ['query'],
+    where: { ...where, ...extra },
+    _count: { query: true },
+    orderBy: [{ _count: { query: 'desc' } }, { query: 'asc' }],
+    take: 25,
+  });
+  const [total, found, wanted, popular] = await Promise.all([
+    prisma.searchLog.count({ where }),
+    prisma.searchLog.count({ where: { ...where, missing: false } }),
+    top({ missing: true }),
+    top({}),
+  ]);
+
+  const queries = [...new Set([...wanted, ...popular].map((r) => r.query))];
+  const [latest, clicks] = queries.length ? await Promise.all([
+    prisma.searchLog.findMany({
+      where: { ...where, query: { in: queries } },
+      distinct: ['query'],
+      orderBy: { updatedAt: 'desc' },
+      select: { query: true, results: true, suggested: true },
+    }),
+    prisma.searchLog.groupBy({
+      by: ['query', 'clicked'],
+      where: { ...where, query: { in: queries }, clicked: { not: null } },
+      _count: { clicked: true },
+    }),
+  ]) : [[], []];
+  const row = (r) => {
+    const last = latest.find((l) => l.query === r.query);
+    const opened = clicks.filter((c) => c.query === r.query)
+      .sort((a, b) => b._count.clicked - a._count.clicked);
+    return {
+      query: r.query,
+      searches: r._count.query,
+      results: last?.results ?? 0,
+      suggested: last?.suggested ?? [],
+      opened: opened.reduce((n, c) => n + c._count.clicked, 0),
+      topOpened: opened[0]?.clicked ?? null,
+    };
+  };
+  return {
+    days, total, found, wanted: wanted.map(row), popular: popular.map(row),
   };
 }

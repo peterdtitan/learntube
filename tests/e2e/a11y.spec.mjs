@@ -56,7 +56,7 @@ test.describe('accessibility', () => {
     const found = [];
     for (const path of [
       '/admin', '/admin/pathways', `/admin/pathways/${bread.id}`, '/admin/quizzes?kind=all', `/admin/quizzes/${quizzes.check}`,
-      '/admin/library', '/admin/learners', '/admin/emails', '/admin/reports',
+      '/admin/library', '/admin/learners', '/admin/searches', '/admin/emails', '/admin/reports',
     ]) {
       found.push(...await scan(page, path));
     }

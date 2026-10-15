@@ -8,6 +8,7 @@ import { getPathwayOverviews } from '../../lib/course';
 import PathwayCard from '../../components/home/PathwayCard';
 import cn from '../../lib/cn';
 import SkillIcon from '../../components/ui/SkillIcon';
+import BackToTop from '../../components/ui/BackToTop';
 import { staticMetadata } from '../../lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -77,7 +78,7 @@ export default async function PathwaysPage({ searchParams = {} }) {
               name="q"
               defaultValue={q}
               maxLength={MAX_QUERY}
-              placeholder="Try “bread”, “crochet” or “python”"
+              placeholder="Try “SQL”, “React” or “SEO”"
               className="h-11 w-full rounded-pill border border-line bg-surface pl-10 pr-4 text-[15px] placeholder:text-muted focus:border-accent focus:outline-none"
             />
           </div>
@@ -138,6 +139,7 @@ export default async function PathwaysPage({ searchParams = {} }) {
             : 'No pathways yet. Check back soon.'}
         </p>
       )}
+      <BackToTop focusId="pathway-search" />
     </div>
   );
 }

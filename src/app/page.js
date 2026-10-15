@@ -73,6 +73,7 @@ async function VisitorHome() {
       categories={categories.filter((c) => c.available > 0)}
       skills={skills}
       program={cyber && { ...cyber, lessons: cyber.courses.reduce((n, c) => n + c.lessons, 0) }}
+      morePrograms={programs.filter((p) => p !== cyber)}
       makes={makes}
     />
   );
@@ -150,7 +151,7 @@ export default async function HomePage({ searchParams = {} }) {
         action={<Link href="/welcome" className="text-sm font-bold text-accent hover:underline">Edit interests</Link>}
       >
         {picked.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {picked.map((item) => <Item key={item.id} item={item} />)}
           </div>
         ) : (
@@ -179,7 +180,7 @@ export default async function HomePage({ searchParams = {} }) {
           <div className="grid gap-4">
             {started.map((p) => <PathwayCard key={p.id} pathway={p} signedIn />)}
             {!started.length && more.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                 {more.slice(0, 2).map((item) => <Item key={item.id} item={item} />)}
               </div>
             )}

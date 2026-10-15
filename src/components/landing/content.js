@@ -47,7 +47,7 @@ export const TOOLS = [
 export const FAQ = [
   { q: 'Is it really free?', a: 'Yes. No subscription, no paywall and no card. The lessons are already free on YouTube; Skillreps puts them in order and adds the practice, quizzes and XP.' },
   { q: 'Who makes the videos?', a: 'YouTube creators. Every lesson plays from YouTube and belongs to the person who made it. If you made a video and want it removed, tell us and we’ll take it down.' },
-  { q: 'Do I need an account?', a: 'No. You can open any skill and watch every lesson without one. Sign in with Google to save your place, earn XP, keep a streak and share what you make.' },
+  { q: 'Do I need an account?', a: 'Yes, a free one. Sign up with Google in a few seconds: it saves your place, your XP and streak, and what you make. No card, no subscription.' },
   { q: 'How long does a skill take?', a: 'Every short skill takes under 15 hours, in steps of 10 minutes or less. Most people do a few steps a week; you choose 2 to 5 practice days.' },
   { q: 'Is the cybersecurity program official CompTIA training?', a: 'No. It’s built on Professor Messer’s free videos and prepares you for the A+, Network+ and Security+ exams, but Skillreps isn’t affiliated with CompTIA. Exams are booked and paid for through CompTIA.' },
   { q: 'Who’s behind Skillreps?', a: 'Elev8r Software, a product studio in Nigeria. We design, build and run Skillreps ourselves.' },

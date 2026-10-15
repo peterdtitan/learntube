@@ -6,6 +6,7 @@ export const RETENTION_DAYS = {
   notifications: 365,
   emailLog: 180, // long enough for the weekly and fortnightly limits, with room to spare
   rateLimits: 2, // the longest limit window is a day
+  searchLog: 365, // a year of searches shows what people want, season to season
 };
 
 const daysBefore = (now, days) => new Date(now.getTime() - days * 86400000);
@@ -14,6 +15,7 @@ const daysBefore = (now, days) => new Date(now.getTime() - days * 86400000);
 export async function runRetention(now = new Date()) {
   const [
     copyText, sessions, tokens, verificationTokens, rateLimits, notifications, emailLog,
+    searchLog,
   ] = await prisma.$transaction([
     prisma.$executeRaw`
       UPDATE "QuizAttempt"
@@ -43,6 +45,9 @@ export async function runRetention(now = new Date()) {
     prisma.emailLog.deleteMany({
       where: { createdAt: { lt: daysBefore(now, RETENTION_DAYS.emailLog) } },
     }),
+    prisma.searchLog.deleteMany({
+      where: { day: { lt: daysBefore(now, RETENTION_DAYS.searchLog) } },
+    }),
   ]);
   return {
     checkpointCopyTextCleared: copyText,
@@ -52,5 +57,6 @@ export async function runRetention(now = new Date()) {
     oldRateLimits: rateLimits.count,
     oldNotifications: notifications.count,
     oldEmailLogs: emailLog.count,
+    oldSearchLogs: searchLog.count,
   };
 }

@@ -15,6 +15,12 @@ export function coverImage(imageUrl, lessonUrls = []) {
   return lessonUrls.map(thumbnailUrl).find(Boolean) || null;
 }
 
+// YouTube's hqdefault thumbnail is 4:3 with black bars above and below a 16:9 picture. A
+// 16:9 box crops them; a squarer box has to zoom in by 4/3 to do the same.
+export function isLetterboxed(url) {
+  return /^https:\/\/i\.ytimg\.com\/vi\/[^/]+\/hqdefault\.jpg$/.test(url || '');
+}
+
 // Only hosts next/image may load; anything else would break the page.
 export function isAllowedCover(url) {
   try {

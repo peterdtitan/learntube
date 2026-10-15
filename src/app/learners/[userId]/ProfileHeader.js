@@ -30,7 +30,7 @@ export default function ProfileHeader({ profile }) {
           />
         )}
       </div>
-      <dl className="flex flex-wrap gap-x-8 gap-y-3">
+      <dl className="grid grid-cols-3 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-8">
         {stats.map((s) => (
           <div key={s.label} className="grid">
             <dt className="order-2 text-sm text-muted">{s.label}</dt>

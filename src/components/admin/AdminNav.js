@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  BookOpen, Flag, LayoutDashboard, Library, Mail, Timer, Users,
+  BookOpen, Flag, LayoutDashboard, Library, Mail, Search, Timer, Users,
 } from 'lucide-react';
 import cn from '../../lib/cn';
 
@@ -14,6 +14,7 @@ const ITEMS = [
   { href: '/admin/quizzes', label: 'Exams & quizzes', icon: Timer },
   { href: '/admin/library', label: 'Content library', icon: Library },
   { href: '/admin/learners', label: 'Learners', icon: Users },
+  { href: '/admin/searches', label: 'Searches', icon: Search },
   { href: '/admin/emails', label: 'Emails', icon: Mail },
   {
     href: '/admin/reports', label: 'Reports', icon: Flag, badge: 'reports',

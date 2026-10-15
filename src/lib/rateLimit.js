@@ -20,6 +20,7 @@ export const LIMITS = {
   quizEvents: { max: 600, windowSeconds: 600 }, // sent as they happen during a checkpoint
   quizSubmit: { max: 60, windowSeconds: 600 },
   quizDraft: { max: 30, windowSeconds: 3600 }, // AI drafts cost money
+  search: { max: 120, windowSeconds: 600 }, // skills page searches and the results opened
 };
 
 // Windows line up with the clock, so every request in one window shares a row.
