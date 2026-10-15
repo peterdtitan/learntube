@@ -1,0 +1,122 @@
+[
+ {
+  "id": "wgRwITQHszU",
+  "title": "Installing MySQL and Creating Databases | MySQL for Beginners",
+  "seconds": 724,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "HYD8KjPB9F8",
+  "title": "Select Statement in MySQL | Beginner MySQL Series",
+  "seconds": 660,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "MARn_mssG4A",
+  "title": "Where Clause in MySQL | Beginner MySQL Series",
+  "seconds": 747,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "zgYqUP_PhQo",
+  "title": "Group By + Order By in MySQL | Beginner MySQL Series",
+  "seconds": 646,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "dCNjUOc1cBY",
+  "title": "Having vs Where in MySQL | Beginner MySQL Series",
+  "seconds": 225,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "ZnAydTqCtFU",
+  "title": "Limit + Aliasing in MySQL | MySQL Beginner Series",
+  "seconds": 237,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "lXQzD09BOH0",
+  "title": "Joins in MySQL | Intermediate MySQL",
+  "seconds": 1030,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "iTQW_nDp938",
+  "title": "Unions in MySQL | Intermediate MySQL",
+  "seconds": 442,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "KRXSJb9ql1Y",
+  "title": "String Functions in MySQL | Intermediate MySQL Series",
+  "seconds": 713,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "RYIiOG4LsvQ",
+  "title": "Case Statements in MySQL | Intermediate MySQL",
+  "seconds": 533,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "Vj6RqA_X-IE",
+  "title": "Subqueries in MySQL | Intermediate MySQL",
+  "seconds": 660,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "7NBt0V8ebGk",
+  "title": "Window Functions in MySQL | Intermediate MySQL",
+  "seconds": 808,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "UC7uvOqcUTs",
+  "title": "CTEs in MySQL | Advanced MySQL Series",
+  "seconds": 631,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "uEk07jXdKOo",
+  "title": "Temp Tables in MySQL | Advanced MySQL Series",
+  "seconds": 466,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "7vnxpcqmqNQ",
+  "title": "Stored Procedures in MySQL | Advanced MySQL Series",
+  "seconds": 756,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "QMUZ5HfWMRc",
+  "title": "Triggers and Events in MySQL | Advanced MySQL Series",
+  "seconds": 882,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "4UltKCnnnTA",
+  "title": "Data Cleaning in MySQL | Full Project",
+  "seconds": 3070,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "QYd-RtK58VQ",
+  "title": "MySQL Exploratory Data Analysis | Full Project",
+  "seconds": 1963,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "ZHaYOC0H5KE",
+  "title": "Solving Easy SQL Interview Questions on Analyst Builder",
+  "seconds": 737,
+  "by": "Alex The Analyst"
+ },
+ {
+  "id": "fT-8mRf_-Hk",
+  "title": "Solving Medium SQL Interview Questions on Analyst Builder",
+  "seconds": 744,
+  "by": "Alex The Analyst"
+ }
+]

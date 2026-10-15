@@ -4,13 +4,22 @@ import prisma from '../../../lib/prismadb';
 import ConfirmButton from '../../../components/admin/ConfirmButton';
 import LibraryImport from '../../../components/admin/LibraryImport';
 import { demoContentCount, syncExams } from '../../../lib/content/importPathway';
-import { libraryExamPlans, shortSkills } from '../../../lib/content/library';
+import { LIBRARY, libraryExamPlans, shortSkills } from '../../../lib/content/library';
+import { planTrack } from '../../../lib/content/plan';
 import {
   importLibrarySkills, importLibraryTrack, removeDemo, updateLibraryExams,
 } from '../content/actions';
 
 // Imports can take a while on a cold database.
 export const maxDuration = 60;
+
+const programs = Object.values(LIBRARY).map(planTrack);
+
+function programSummary({ courses }) {
+  const lessons = courses.flatMap((c) => c.modules).reduce((n, m) => n + m.lessons.length, 0);
+  const certs = courses.map((c) => c.pathway.certification).filter(Boolean);
+  return `${courses.length} courses (${courses.map((c) => c.pathway.title).join(', ')}): ${lessons} lessons of 10 minutes or less, with Try tasks, quick checks, timed module exams and games.${certs.length ? ` Prepares you for ${certs.join(', ')}.` : ''}`;
+}
 
 function Panel({ title, children }) {
   return (
@@ -22,11 +31,11 @@ function Panel({ title, children }) {
 }
 
 export default async function AdminLibrary() {
-  const [demoCount, skillCount, track, pending] = await Promise.all([
+  const [demoCount, skillCount, tracks, pending] = await Promise.all([
     demoContentCount(),
     prisma.pathway.count({ where: { kind: 'SKILL', slug: { in: shortSkills.map((s) => s.slug) } } }),
-    prisma.track.findUnique({
-      where: { slug: 'cybersecurity-expert' },
+    prisma.track.findMany({
+      where: { slug: { in: programs.map((p) => p.track.slug) } },
       include: { _count: { select: { pathways: true } } },
     }),
     // What "Update module exams" would do right now, without doing it.
@@ -73,15 +82,24 @@ export default async function AdminLibrary() {
         </p>
       </Panel>
 
-      <Panel title="Cybersecurity Expert">
-        <p className="text-[15px] text-muted">
-          Three courses (IT Foundations, Networking, Security Operations) for CompTIA A+, Network+
-          and Security+: 470 lessons of 10 minutes or less, with Try tasks, quick checks, timed
-          module exams and games.
-        </p>
-        {track && <p className="text-sm text-accent">{`Imported: ${track._count.pathways} of 3 courses.`}</p>}
-        <LibraryImport action={importLibraryTrack} slug="cybersecurity-expert" imported={Boolean(track)} />
-      </Panel>
+      {programs.map((program) => {
+        const track = tracks.find((t) => t.slug === program.track.slug);
+        return (
+          <Panel key={program.track.slug} title={program.track.title}>
+            <p className="text-[15px] text-muted">{programSummary(program)}</p>
+            {track && (
+              <p className="text-sm text-accent">
+                {`Imported: ${track._count.pathways} of ${program.courses.length} courses.`}
+              </p>
+            )}
+            <LibraryImport
+              action={importLibraryTrack}
+              slug={program.track.slug}
+              imported={Boolean(track)}
+            />
+          </Panel>
+        );
+      })}
 
       <Panel title="Short skills">
         <p className="text-[15px] text-muted">
