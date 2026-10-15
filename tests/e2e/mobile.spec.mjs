@@ -74,3 +74,33 @@ test.describe('on a phone', () => {
     expect(await page.evaluate(() => document.documentElement.style.overscrollBehaviorY)).toBe('');
   });
 });
+
+test.describe('on a phone, before the cookie notice is dismissed', () => {
+  test.use({ cookieNotice: true });
+
+  test('back to top sits above the cookie notice, and drops down once it’s gone', async ({ page, signInAs }) => {
+    await signInAs('bola');
+    // A short screen, so the test skills page is a few screens long.
+    await page.setViewportSize({ width: 390, height: 420 });
+    await page.goto('/skills');
+    const notice = page.getByRole('region', { name: 'Cookies' });
+    await expect(notice).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 700));
+    const button = page.getByRole('button', { name: 'Back to top' });
+    await expect(button).toBeVisible();
+
+    const onTop = () => button.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.closest('button') === el;
+    });
+    expect(await onTop()).toBe(true);
+    const above = (await button.boundingBox()).y + 48 <= (await notice.boundingBox()).y;
+    expect(above).toBe(true);
+
+    await notice.getByRole('button', { name: 'Got it' }).click();
+    await expect(notice).toBeHidden();
+    await expect.poll(async () => (await button.boundingBox()).y).toBeGreaterThan(300);
+    await button.tap();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+});
