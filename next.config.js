@@ -10,6 +10,12 @@ const SECURITY_HEADERS = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self "https://www.youtube-nocookie.com"), autoplay=(self "https://www.youtube-nocookie.com"), encrypted-media=(self "https://www.youtube-nocookie.com"), picture-in-picture=(self "https://www.youtube-nocookie.com")' },
 ];
 
+// Only our own Blob store's images go through the image optimizer, not any store on Vercel.
+// The token is vercel_blob_rw_<storeId>_<secret>, and @vercel/blob builds public URLs as
+// <storeId>.public.blob.vercel-storage.com. Builds without a token (CI, local) keep the wildcard.
+const blobStore = (process.env.BLOB_READ_WRITE_TOKEN || '').split('_')[3]?.toLowerCase();
+const BLOB_HOST = `${blobStore || '*'}.public.blob.vercel-storage.com`;
+
 const nextConfig = {
   poweredByHeader: false,
   async headers() {
@@ -21,7 +27,7 @@ const nextConfig = {
     // Make photos are in Vercel Blob; lesson thumbnails come from YouTube's image CDN and are
     // fetched by the server, so a learner's browser doesn't contact YouTube before they press play.
     remotePatterns: [
-      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      { protocol: 'https', hostname: BLOB_HOST, pathname: '/**' },
       { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' },
     ],
   },
