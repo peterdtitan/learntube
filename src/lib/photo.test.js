@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { cleanPhoto } from './photo';
+import { cleanPhoto, sniffFormat } from './photo';
 
 const photo = (width, height, format = 'jpeg') => sharp({
   create: {
@@ -40,5 +40,24 @@ describe('cleanPhoto', () => {
   it('refuses files that only claim to be images', async () => {
     expect(await cleanPhoto(Buffer.from('<script>alert(1)</script>'))).toBeNull();
     expect(await cleanPhoto(await photo(10, 10, 'gif').toBuffer())).toBeNull();
+  });
+
+  it('keeps WebP photos', async () => {
+    const clean = await cleanPhoto(await photo(20, 10, 'webp').toBuffer());
+    expect(clean).toMatchObject({ ext: 'webp', contentType: 'image/webp' });
+  });
+
+  it('never hands AVIF, SVG or TIFF files to sharp', async () => {
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>');
+    const others = [
+      await photo(10, 10, 'avif').toBuffer(),
+      await photo(10, 10, 'tiff').toBuffer(),
+      svg,
+    ];
+    others.forEach((file) => expect(sniffFormat(file)).toBeNull());
+    expect(await cleanPhoto(others[0])).toBeNull();
+    expect(sniffFormat(await photo(10, 10, 'jpeg').toBuffer())).toBe('jpeg');
+    expect(sniffFormat(await photo(10, 10, 'png').toBuffer())).toBe('png');
+    expect(sniffFormat(await photo(10, 10, 'webp').toBuffer())).toBe('webp');
   });
 });

@@ -13,15 +13,32 @@ const OUTPUT = {
   webp: { ext: 'webp', contentType: 'image/webp', encode: (img) => img.webp({ quality: 82 }) },
 };
 
+const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+// The format from the file's first bytes. sharp would also open AVIF, HEIC, SVG, TIFF and
+// more, and those parsers are where image library bugs turn up, so anything else never
+// reaches it.
+export function sniffFormat(input) {
+  if (!Buffer.isBuffer(input) || input.length < 12) return null;
+  if (input[0] === 0xff && input[1] === 0xd8 && input[2] === 0xff) return 'jpeg';
+  if (input.subarray(0, 8).equals(PNG)) return 'png';
+  if (input.toString('latin1', 0, 4) === 'RIFF' && input.toString('latin1', 8, 12) === 'WEBP') {
+    return 'webp';
+  }
+  return null;
+}
+
 // Returns { buffer, ext, contentType }, or null if it isn't a JPEG, PNG or WebP image.
 export async function cleanPhoto(input) {
+  const sniffed = sniffFormat(input);
+  if (!sniffed) return null;
   let format;
   try {
     ({ format } = await sharp(input, { limitInputPixels: MAX_PIXELS }).metadata());
   } catch {
     return null;
   }
-  const out = OUTPUT[format];
+  const out = format === sniffed ? OUTPUT[format] : null;
   if (!out) return null;
   const image = sharp(input, { limitInputPixels: MAX_PIXELS })
     .rotate()
