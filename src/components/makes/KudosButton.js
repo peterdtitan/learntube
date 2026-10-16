@@ -18,7 +18,9 @@ export default function KudosButton({
   }
 
   async function toggle() {
-    if (status !== 'authenticated') {
+    // Right after the page loads the session is still 'loading'; that isn't signed out,
+    // so go ahead and let the API turn away anyone who really is.
+    if (status === 'unauthenticated') {
       signIn();
       return;
     }

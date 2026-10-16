@@ -20,7 +20,7 @@ export default function ReportButton({ makeId, reasons }) {
     return (
       <button
         type="button"
-        onClick={() => (status === 'authenticated' ? setOpen(true) : signIn())}
+        onClick={() => (status === 'unauthenticated' ? signIn() : setOpen(true))}
         className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
       >
         <Flag size={14} />

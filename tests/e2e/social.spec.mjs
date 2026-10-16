@@ -31,3 +31,22 @@ test('kudos, comments and follows reach the maker as notifications', async ({ pa
   await page.goto('/makes');
   await expect(page.getByRole('link', { name: /^Notifications/ })).toHaveAccessibleName('Notifications');
 });
+
+test('kudos works before the page has finished checking who you are', async ({ page, signInAs }) => {
+  await signInAs('ada');
+  const res = await page.request.post('/api/makes', { data: { title: 'Quick tap' } });
+  const { make } = await res.json();
+
+  // A slow phone: the session check is still out when the learner taps.
+  await signInAs('bola');
+  await page.route('**/api/auth/session', async (route) => {
+    await new Promise((resolve) => { setTimeout(resolve, 1500); });
+    await route.continue();
+  });
+  await page.goto(`/makes/${make.id}`);
+  const kudos = page.waitForResponse((r) => r.url().endsWith('/kudos') && r.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Give kudos' }).click();
+  expect((await kudos).status()).toBe(200);
+  await expect(page).toHaveURL(new RegExp(`/makes/${make.id}$`));
+  await expect(page.getByRole('button', { name: 'Remove kudos' })).toBeVisible();
+});

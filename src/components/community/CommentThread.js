@@ -14,7 +14,9 @@ export default function CommentThread({ makeId, initialComments, presets }) {
   const used = new Set(comments.filter((c) => c.isMine).map((c) => c.preset));
 
   const add = async (preset) => {
-    if (status !== 'authenticated') {
+    // Right after the page loads the session is still 'loading'; that isn't signed out,
+    // so go ahead and let the API turn away anyone who really is.
+    if (status === 'unauthenticated') {
       signIn();
       return;
     }
