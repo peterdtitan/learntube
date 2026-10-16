@@ -136,6 +136,8 @@ test.describe('quizzes and games', () => {
     await page.goto('/settings');
     const box = page.getByLabel('Extra time on timed quizzes (1.5×)');
     await box.check();
+    // It's disabled while saving; reloading before then can cancel the save.
+    await expect(box).toBeEnabled();
     await page.reload();
     await expect(page.getByLabel('Extra time on timed quizzes (1.5×)')).toBeChecked();
     await page.getByLabel('Extra time on timed quizzes (1.5×)').uncheck();

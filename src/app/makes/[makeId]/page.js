@@ -15,11 +15,13 @@ import SkillIcon from '../../../components/ui/SkillIcon';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return makeMetadata(params.makeId);
 }
 
-export default async function MakePage({ params }) {
+export default async function MakePage(props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const viewerId = session?.user?.id || null;
   const viewerIsAdmin = Boolean(session?.user?.isAdmin);

@@ -7,7 +7,8 @@ async function followerCount(userId) {
   return prisma.follow.count({ where: { followingId: userId } });
 }
 
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const viewerId = await requireUserId();
   if (!viewerId) return error(401, 'Sign in to follow learners.');
   const limited = await rateLimit('follow', viewerId);
@@ -28,7 +29,8 @@ export async function POST(req, { params }) {
   return json({ following: true, followers: await followerCount(target.id) });
 }
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const viewerId = await requireUserId();
   if (!viewerId) return error(401, 'Sign in to change who you follow.');
   const limited = await rateLimit('follow', viewerId);

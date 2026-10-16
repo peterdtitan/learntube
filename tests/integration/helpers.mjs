@@ -48,7 +48,11 @@ export async function call(handler, {
     init.body = typeof body === 'string' ? body : JSON.stringify(body);
     init.headers['Content-Type'] = 'application/json';
   }
-  const res = await handler(new Request(`http://test.local/api${query}`, init), { params });
+  // Next 15 passes params as a promise; a handler that forgets to await it fails here too.
+  const res = await handler(
+    new Request(`http://test.local/api${query}`, init),
+    { params: Promise.resolve(params) },
+  );
   const text = await res.text();
   let data = text;
   try { data = JSON.parse(text); } catch { /* plain text body */ }

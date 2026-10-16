@@ -10,10 +10,15 @@ test('kudos, comments and follows reach the maker as notifications', async ({ pa
 
   await signInAs('bola');
   await page.goto(`/makes/${make.id}`);
-  await page.getByRole('button', { name: 'Give kudos' }).click();
+  // Both buttons change before the request finishes; leaving the page too soon can cancel it.
+  const saved = (path) => page.waitForResponse(
+    (r) => r.url().endsWith(path) && r.request().method() === 'POST',
+  );
+  await Promise.all([saved('/kudos'), page.getByRole('button', { name: 'Give kudos' }).click()]);
   await expect(page.getByRole('button', { name: 'Remove kudos' })).toBeVisible();
-  await page.getByRole('button', { name: 'Love the colours' }).click();
-  await expect(page.getByRole('button', { name: 'Love the colours' })).toBeDisabled();
+  const preset = page.getByRole('button', { name: 'Love the colours', exact: true });
+  await Promise.all([saved('/comments'), preset.click()]);
+  await expect(preset).toBeDisabled();
   await page.goto(`/learners/${people.ada.id}`);
   await page.getByRole('button', { name: 'Follow' }).click();
   await expect(page.getByRole('button', { name: /Following/ })).toBeVisible();

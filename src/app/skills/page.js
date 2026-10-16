@@ -17,7 +17,8 @@ export const metadata = staticMetadata(
   '/skills',
 );
 
-export default async function SkillsPage({ searchParams = {} }) {
+export default async function SkillsPage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const [skills, tracks] = await Promise.all([

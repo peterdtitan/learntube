@@ -5,7 +5,8 @@ import { getQuizForLearner } from '../../../../lib/quizzes';
 
 // GET /api/quizzes/:id: the quiz, the learner's open attempt (with questions, no answers)
 // and their best and latest results.
-export async function GET(req, { params }) {
+export async function GET(req, props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const quiz = await getQuizForLearner(params.quizId, session?.user?.id || null, {
     isAdmin: Boolean(session?.user?.isAdmin),

@@ -10,7 +10,8 @@ import { PRIVATE } from '../../../../../../lib/seo';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Module games · Skillreps', ...PRIVATE };
 
-export default async function GamePage({ params }) {
+export default async function GamePage(props) {
+  const params = await props.params;
   const unit = await prisma.unit.findFirst({
     where: { id: params.unitId, pathwayId: params.pathwayId },
     include: {

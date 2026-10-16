@@ -10,11 +10,13 @@ import ProfileHeader from './ProfileHeader';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return learnerMetadata(params.userId);
 }
 
-export default async function LearnerPage({ params }) {
+export default async function LearnerPage(props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const profile = await getProfile(params.userId, session?.user?.id || null);
   if (!profile) notFound();

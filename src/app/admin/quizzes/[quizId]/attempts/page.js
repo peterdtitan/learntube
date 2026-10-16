@@ -29,7 +29,8 @@ function describeEvent(e) {
 
 // Every finished attempt, with what the integrity tracking recorded. Shown to admins only
 // (the admin layout returns 404 for everyone else).
-export default async function QuizAttempts({ params }) {
+export default async function QuizAttempts(props) {
+  const params = await props.params;
   const quiz = await prisma.quiz.findUnique({
     where: { id: params.quizId },
     include: {

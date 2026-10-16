@@ -6,7 +6,8 @@ import LessonForm from '../../../../components/admin/LessonForm';
 import ConfirmButton from '../../../../components/admin/ConfirmButton';
 import { deleteLesson, saveLesson } from '../../actions';
 
-export default async function EditLesson({ params }) {
+export default async function EditLesson(props) {
+  const params = await props.params;
   const lesson = await prisma.video.findUnique({
     where: { id: params.lessonId },
     include: {

@@ -6,7 +6,8 @@ import { getQuizForLearner, startAttempt } from '../../../../../lib/quizzes';
 
 // POST /api/quizzes/:id/attempts: start (or resume) an attempt. Returns the quiz with
 // its questions and, for checkpoints, the seconds left.
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId) return error(401, 'Sign in to take quizzes.');

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useFormState } from 'react-dom';
 import SubmitButton from './SubmitButton';
+import useFormAction from './useFormAction';
 import {
   Field, FormMessage, inputClass, textareaClass,
 } from './fields';
@@ -73,9 +73,9 @@ function CoverField({ pathway, covers, autoCover }) {
 export default function PathwayForm({
   action, pathway, skills, submitLabel, covers = [], autoCover = null,
 }) {
-  const [state, formAction] = useFormState(action, null);
+  const { state, onSubmit, pending } = useFormAction(action);
   return (
-    <form action={formAction} className="grid gap-4">
+    <form onSubmit={onSubmit} className="grid gap-4">
       {pathway && <input type="hidden" name="id" value={pathway.id} />}
       <Field id="pw-title" label="Title">
         <input id="pw-title" name="title" required maxLength={120} defaultValue={pathway?.title} className={inputClass()} />
@@ -94,7 +94,7 @@ export default function PathwayForm({
       </Field>
       {pathway && <CoverField pathway={pathway} covers={covers} autoCover={autoCover} />}
       <FormMessage state={state} />
-      <SubmitButton className="justify-self-start">{submitLabel}</SubmitButton>
+      <SubmitButton pending={pending} className="justify-self-start">{submitLabel}</SubmitButton>
     </form>
   );
 }

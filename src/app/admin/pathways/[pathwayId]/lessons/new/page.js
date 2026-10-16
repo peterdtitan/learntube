@@ -5,7 +5,9 @@ import prisma from '../../../../../../lib/prismadb';
 import LessonForm from '../../../../../../components/admin/LessonForm';
 import { saveLesson } from '../../../../actions';
 
-export default async function NewLesson({ params, searchParams }) {
+export default async function NewLesson(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const units = await prisma.unit.findMany({
     where: { pathwayId: params.pathwayId },
     orderBy: { order: 'asc' },

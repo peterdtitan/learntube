@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { useFormState } from 'react-dom';
 import SubmitButton from './SubmitButton';
+import useFormAction from './useFormAction';
 import {
   Field, FormMessage, inputClass, textareaClass,
 } from './fields';
@@ -47,7 +47,7 @@ async function measureDuration(videoId) {
 export default function LessonForm({
   action, lesson, units, defaultUnitId,
 }) {
-  const [state, formAction] = useFormState(action, null);
+  const { state, onSubmit, pending } = useFormAction(action);
   const titleRef = useRef(null);
   const durationRef = useRef(null);
   const [lookup, setLookup] = useState({ status: 'idle' });
@@ -68,7 +68,7 @@ export default function LessonForm({
   };
 
   return (
-    <form action={formAction} className="grid gap-4">
+    <form onSubmit={onSubmit} className="grid gap-4">
       {lesson && <input type="hidden" name="id" value={lesson.id} />}
       <Field id="ls-url" label="YouTube link" hint="Paste the video link; the title and length fill in automatically.">
         <input
@@ -146,7 +146,7 @@ export default function LessonForm({
         />
       </Field>
       <FormMessage state={state} />
-      <SubmitButton className="justify-self-start">{lesson ? 'Save lesson' : 'Add lesson'}</SubmitButton>
+      <SubmitButton pending={pending} className="justify-self-start">{lesson ? 'Save lesson' : 'Add lesson'}</SubmitButton>
     </form>
   );
 }

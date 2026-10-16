@@ -3,7 +3,8 @@ import { error, json, requireUserId } from '../../../../../lib/api';
 import { lessonContext, reward } from '../../../../../lib/rewards';
 import { rateLimit } from '../../../../../lib/rateLimit';
 
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to save practice.');
   const limited = await rateLimit('try', userId);

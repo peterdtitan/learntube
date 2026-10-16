@@ -10,7 +10,8 @@ export const metadata = { title: 'Unsubscribe · Skillreps', ...PRIVATE };
 
 // Asks before changing anything: mail scanners open links in emails, and opening a link
 // shouldn't be enough to unsubscribe someone.
-export default function UnsubscribePage({ searchParams = {} }) {
+export default async function UnsubscribePage(props) {
+  const searchParams = await props.searchParams;
   const token = readUnsubscribeToken(searchParams.t);
   const label = token && SCOPES[token.scope].label;
   let body;

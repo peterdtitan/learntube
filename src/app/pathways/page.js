@@ -28,7 +28,8 @@ function chipHref(q, skillId) {
   return query ? `/pathways?${query}` : '/pathways';
 }
 
-export default async function PathwaysPage({ searchParams = {} }) {
+export default async function PathwaysPage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const q = String(searchParams.q || '').trim().slice(0, MAX_QUERY);

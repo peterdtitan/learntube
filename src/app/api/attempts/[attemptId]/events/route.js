@@ -7,7 +7,8 @@ import { secondsLeft } from '../../../../../lib/quizGrade';
 
 // POST /api/attempts/:id/events { events }: the whole integrity log so far. Also sent with
 // navigator.sendBeacon when the page closes, so it accepts a text body too.
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to take quizzes.');
   const limited = await rateLimit('quizEvents', userId);

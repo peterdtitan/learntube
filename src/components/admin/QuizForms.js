@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useFormState } from 'react-dom';
 import { Sparkles } from 'lucide-react';
 import SubmitButton from './SubmitButton';
+import useFormAction from './useFormAction';
 import { Field, FormMessage, inputClass } from './fields';
 
 function NumberField({
@@ -20,10 +20,10 @@ function NumberField({
 }
 
 export function QuizSettingsForm({ action, quiz, lessons }) {
-  const [state, formAction] = useFormState(action, null);
+  const { state, onSubmit, pending } = useFormAction(action);
   const checkpoint = quiz.kind === 'CHECKPOINT';
   return (
-    <form action={formAction} className="grid gap-5">
+    <form onSubmit={onSubmit} className="grid gap-5">
       <input type="hidden" name="id" value={quiz.id} />
       <Field id="title" label="Title" hint="Optional, e.g. “Dough basics exam”.">
         <input id="title" name="title" maxLength={120} defaultValue={quiz.title || ''} className={inputClass()} />
@@ -73,7 +73,7 @@ export function QuizSettingsForm({ action, quiz, lessons }) {
         Published (learners can see it)
       </label>
       <FormMessage state={state} />
-      <SubmitButton className="justify-self-start">Save settings</SubmitButton>
+      <SubmitButton pending={pending} className="justify-self-start">Save settings</SubmitButton>
     </form>
   );
 }
@@ -81,13 +81,13 @@ export function QuizSettingsForm({ action, quiz, lessons }) {
 export function DraftForm({
   action, quizId, defaultCount, disabledReason, outlineOnly,
 }) {
-  const [state, formAction] = useFormState(action, null);
+  const { state, onSubmit, pending } = useFormAction(action);
   return (
-    <form action={formAction} className="grid gap-3">
+    <form onSubmit={onSubmit} className="grid gap-3">
       <input type="hidden" name="quizId" value={quizId} />
       <div className="flex flex-wrap items-end gap-3">
         <NumberField id="count" label="How many" value={defaultCount} />
-        <SubmitButton variant="ghost" pendingText="Drafting… (up to a minute)" disabled={Boolean(disabledReason)}>
+        <SubmitButton pending={pending} variant="ghost" pendingText="Drafting… (up to a minute)" disabled={Boolean(disabledReason)}>
           <Sparkles size={16} aria-hidden="true" />
           Draft questions with AI
         </SubmitButton>

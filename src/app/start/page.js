@@ -16,7 +16,8 @@ export const metadata = {
 };
 
 // Three questions and a recommendation, before any account. Signing up comes last.
-export default async function StartPage({ searchParams = {} }) {
+export default async function StartPage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   if (session?.user?.id) redirect('/welcome');
 

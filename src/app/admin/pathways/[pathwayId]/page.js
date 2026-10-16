@@ -78,7 +78,8 @@ function MoveButtons({ action, id, label }) {
   );
 }
 
-export default async function EditPathway({ params }) {
+export default async function EditPathway(props) {
+  const params = await props.params;
   const [pathway, skills] = await Promise.all([
     prisma.pathway.findUnique({
       where: { id: params.pathwayId },
