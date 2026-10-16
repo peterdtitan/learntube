@@ -93,9 +93,11 @@ test.describe('on a phone, before the cookie notice is dismissed', () => {
       const r = el.getBoundingClientRect();
       return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.closest('button') === el;
     });
-    expect(await onTop()).toBe(true);
-    const above = (await button.boundingBox()).y + 48 <= (await notice.boundingBox()).y;
-    expect(above).toBe(true);
+    // It slides in, and moves if the notice changes height (fonts loading), so check where it
+    // settles rather than mid-move.
+    await expect.poll(onTop).toBe(true);
+    const above = async () => (await button.boundingBox()).y + 48 <= (await notice.boundingBox()).y;
+    await expect.poll(above).toBe(true);
 
     await notice.getByRole('button', { name: 'Got it' }).click();
     await expect(notice).toBeHidden();
