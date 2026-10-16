@@ -7,7 +7,8 @@ import { resultView, submitAttempt } from '../../../../../lib/quizzes';
 
 // POST /api/attempts/:id/submit { answers: { [questionId]: answer }, events? }
 // Graded on the server. Returns the score, penalties with reasons, and XP earned.
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to take quizzes.');
   const limited = await rateLimit('quizSubmit', userId);

@@ -4,7 +4,8 @@ import { rateLimit } from '../../../../../../lib/rateLimit';
 import { retract } from '../../../../../../lib/notifications';
 
 // Learners can delete their own comments.
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change comments.');
   const limited = await rateLimit('comment', userId);

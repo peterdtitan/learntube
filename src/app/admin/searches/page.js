@@ -42,7 +42,8 @@ function SearchTable({ caption, rows, missing }) {
 }
 
 // What learners search for on the skills page, and what they want that isn't taught yet.
-export default async function AdminSearches({ searchParams = {} }) {
+export default async function AdminSearches(props) {
+  const searchParams = await props.searchParams;
   const days = PERIODS.includes(Number(searchParams.days)) ? Number(searchParams.days) : 30;
   const insights = await searchInsights(days);
   const foundShare = insights.total ? Math.round((insights.found / insights.total) * 100) : 0;

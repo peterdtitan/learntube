@@ -6,7 +6,8 @@ import Button from '../../../components/ui/Button';
 
 const date = (d) => (d ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(d) : '—');
 
-export default async function AdminLearners({ searchParams = {} }) {
+export default async function AdminLearners(props) {
+  const searchParams = await props.searchParams;
   const q = String(searchParams.q || '').slice(0, 100);
   const page = Math.max(1, Number.parseInt(searchParams.page, 10) || 1);
   const { learners, total, pages } = await listLearners({ q, page });

@@ -49,7 +49,8 @@ function FollowingFeed({ feed }) {
   );
 }
 
-export default async function MakesPage({ searchParams }) {
+export default async function MakesPage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const requested = searchParams?.view;

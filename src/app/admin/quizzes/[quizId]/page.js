@@ -38,7 +38,8 @@ function Move({ id, direction, label }) {
   );
 }
 
-export default async function EditQuiz({ params }) {
+export default async function EditQuiz(props) {
+  const params = await props.params;
   const quiz = await prisma.quiz.findUnique({
     where: { id: params.quizId },
     include: {

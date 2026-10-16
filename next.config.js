@@ -31,12 +31,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' },
     ],
   },
+  // @vercel/blob depends on undici, whose syntax Next's bundler couldn't parse (14.0).
+  // Both run only on the server, so load them from node_modules instead of bundling.
+  serverExternalPackages: ['@vercel/blob', 'undici'],
   experimental: {
     // Admin cover uploads go through a server action; the default limit is 1 MB.
     serverActions: { bodySizeLimit: '5mb' },
-    // @vercel/blob depends on undici, whose syntax Next 14.0's bundler can't parse.
-    // Both run only on the server, so load them from node_modules instead of bundling.
-    serverComponentsExternalPackages: ['@vercel/blob', 'undici'],
   },
 };
 

@@ -10,7 +10,8 @@ import { PRIVATE } from '../../../../../lib/seo';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Module exam · Skillreps', ...PRIVATE };
 
-export default async function CheckpointPage({ params }) {
+export default async function CheckpointPage(props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const quiz = await getQuizForLearner(params.quizId, userId, {

@@ -49,7 +49,8 @@ function Panel({ title, children }) {
   );
 }
 
-export default async function AdminEmails({ searchParams = {} }) {
+export default async function AdminEmails(props) {
+  const searchParams = await props.searchParams;
   const config = emailConfig();
   const admin = await getAdmin();
   const preview = KINDS[searchParams.show] ? searchParams.show : 'STREAK_AT_RISK';

@@ -7,7 +7,8 @@ async function cheerCount(milestoneId) {
   return prisma.cheer.count({ where: { milestoneId } });
 }
 
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to cheer.');
   const limited = await rateLimit('reaction', userId);
@@ -28,7 +29,8 @@ export async function POST(req, { params }) {
   return json({ cheered: true, cheerCount: await cheerCount(milestone.id) });
 }
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to change cheers.');
   const limited = await rateLimit('reaction', userId);

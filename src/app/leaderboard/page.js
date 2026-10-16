@@ -49,7 +49,8 @@ function Row({ entry }) {
   );
 }
 
-export default async function LeaderboardPage({ searchParams = {} }) {
+export default async function LeaderboardPage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const viewerId = session?.user?.id || null;
 

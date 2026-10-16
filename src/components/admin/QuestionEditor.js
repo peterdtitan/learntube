@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useFormState } from 'react-dom';
 import { Plus, X } from 'lucide-react';
 import SubmitButton from './SubmitButton';
+import useFormAction from './useFormAction';
 import {
   Field, FormMessage, inputClass, textareaClass,
 } from './fields';
@@ -99,7 +99,7 @@ function setPair(pairs, row, side, text) {
 export default function QuestionEditor({
   action, quizId, question, onDone,
 }) {
-  const [state, formAction] = useFormState(action, null);
+  const { state, onSubmit, pending } = useFormAction(action);
   const [type, setType] = useState(question?.type || 'SINGLE');
   const [data, setData] = useState(question?.data || blank('SINGLE'));
   const [key, setKey] = useState(0);
@@ -226,7 +226,7 @@ export default function QuestionEditor({
 
   const prefix = question?.id || `new-${key}`;
   return (
-    <form key={key} action={formAction} className="grid gap-4">
+    <form key={key} onSubmit={onSubmit} className="grid gap-4">
       <input type="hidden" name="quizId" value={quizId} />
       {question && <input type="hidden" name="id" value={question.id} />}
       <input type="hidden" name="type" value={type} />
@@ -245,7 +245,7 @@ export default function QuestionEditor({
         <input id={`exp-${prefix}`} name="explanation" maxLength={500} defaultValue={question?.explanation || ''} className={inputClass()} />
       </Field>
       <FormMessage state={state} />
-      <SubmitButton size="sm" className="justify-self-start">{question ? 'Save question' : 'Add question'}</SubmitButton>
+      <SubmitButton pending={pending} size="sm" className="justify-self-start">{question ? 'Save question' : 'Add question'}</SubmitButton>
     </form>
   );
 }

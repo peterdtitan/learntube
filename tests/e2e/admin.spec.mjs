@@ -81,3 +81,29 @@ test('an admin sees the library, learners and emails', async ({ page, signInAs }
   await page.getByRole('link', { name: 'Work it out' }).click();
   await expect(page.getByRole('status').filter({ hasText: /active learners would get one/ })).toBeVisible();
 });
+
+test('a lesson the server turns down keeps what the admin typed', async ({ page, signInAs }) => {
+  await signInAs('admin');
+  await page.goto('/admin/pathways/new');
+  await page.getByLabel('Title').fill('Reset check');
+  await page.getByLabel('Skill', { exact: true }).selectOption('knitting');
+  await page.getByLabel('You\'ll make').fill('A swatch');
+  await page.getByRole('button', { name: 'Create pathway' }).click();
+  await expect(page).toHaveURL(/\/admin\/pathways\/[a-z0-9]+$/);
+  await page.getByLabel('New module').fill('One');
+  await page.getByRole('button', { name: 'Add module' }).click();
+  await page.getByRole('link', { name: '+ Add a lesson' }).click();
+
+  // React 19 clears a form after its action runs; a rejected save mustn't lose the typing.
+  await page.getByLabel('YouTube link').fill('https://youtu.be/dQw4w9WgXcQ');
+  await page.getByLabel('Lesson title').fill('Typed title');
+  await page.getByLabel('Length').fill('6:05');
+  await page.getByLabel('Start at').fill('4:30');
+  await page.getByLabel('End at').fill('1:00');
+  await page.getByLabel('Try it yourself').fill('Typed task');
+  await page.getByRole('button', { name: 'Add lesson' }).click();
+  await expect(page.getByText('The clip must end after it starts.')).toBeVisible();
+  await expect(page.getByLabel('Lesson title')).toHaveValue('Typed title');
+  await expect(page.getByLabel('Try it yourself')).toHaveValue('Typed task');
+  await expect(page.getByLabel('End at')).toHaveValue('1:00');
+});

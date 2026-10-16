@@ -7,7 +7,8 @@ import { rateLimit } from '../../../../../lib/rateLimit';
 
 // POST { reason }: one report per learner per make. Enough open reports hide the make
 // until an admin reviews it.
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to report a make.');
   const limited = await rateLimit('report', userId);

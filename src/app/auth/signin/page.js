@@ -19,7 +19,8 @@ function safeCallback(value) {
   return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : '/';
 }
 
-export default function SignIn({ searchParams }) {
+export default async function SignIn(props) {
+  const searchParams = await props.searchParams;
   return (
     <div className="mx-auto grid max-w-md gap-5 rounded-lg border border-line bg-surface p-8 sm:mt-10">
       <h1 className="text-3xl font-bold">Sign in</h1>

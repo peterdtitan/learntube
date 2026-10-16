@@ -15,11 +15,13 @@ import Cover from '../../../components/ui/Cover';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return trackMetadata(params.slug);
 }
 
-export default async function TrackPage({ params }) {
+export default async function TrackPage(props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const overview = await getTrackOverview(params.slug, session?.user?.id || null);
   if (!overview || !overview.courses.length) notFound();

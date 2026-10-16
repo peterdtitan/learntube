@@ -8,7 +8,8 @@ import FilterTabs from '../../../components/admin/FilterTabs';
 
 const KINDS = [['', 'All'], ['COURSE', 'Courses'], ['SKILL', 'Short skills']];
 
-export default async function AdminPathways({ searchParams = {} }) {
+export default async function AdminPathways(props) {
+  const searchParams = await props.searchParams;
   const q = String(searchParams.q || '').slice(0, 100);
   const kind = String(searchParams.kind || '');
   const rows = await listPathways({ q, kind });

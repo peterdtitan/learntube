@@ -8,7 +8,8 @@ import { rateLimit } from '../../../../../lib/rateLimit';
 import { notify } from '../../../../../lib/notifications';
 
 // GET: the make's comments plus the phrases a learner can pick from.
-export async function GET(req, { params }) {
+export async function GET(req, props) {
+  const params = await props.params;
   const viewerId = await requireUserId();
   const make = await getMake(params.makeId, viewerId);
   if (!make) return error(404, 'Make not found.');
@@ -16,7 +17,8 @@ export async function GET(req, { params }) {
 }
 
 // POST { preset }: comments are limited to the preset phrases, once each per learner per make.
-export async function POST(req, { params }) {
+export async function POST(req, props) {
+  const params = await props.params;
   const userId = await requireUserId();
   if (!userId) return error(401, 'Sign in to comment.');
   const limited = await rateLimit('comment', userId);

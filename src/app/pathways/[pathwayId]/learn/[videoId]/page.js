@@ -17,14 +17,16 @@ import Button from '../../../../../components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return lessonMetadata(params.pathwayId, params.videoId);
 }
 
 // Skills whose lessons always get the code sandbox; any lesson with starter code gets it too.
 const SANDBOX_SKILLS = ['software-engineering'];
 
-export default async function LessonPage({ params }) {
+export default async function LessonPage(props) {
+  const params = await props.params;
   const { pathwayId, videoId } = params;
 
   const data = await getPathwayWithUnits(pathwayId);

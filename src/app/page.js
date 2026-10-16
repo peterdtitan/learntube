@@ -79,7 +79,8 @@ async function VisitorHome() {
   );
 }
 
-export default async function HomePage({ searchParams = {} }) {
+export default async function HomePage(props) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
   const me = userId

@@ -15,7 +15,8 @@ function Stat({ children, warn }) {
   return <span className={cn('tabular-nums', warn && 'font-bold text-xp')}>{children}</span>;
 }
 
-export default async function AdminQuizzes({ searchParams = {} }) {
+export default async function AdminQuizzes(props) {
+  const searchParams = await props.searchParams;
   const kind = KIND_TABS.some(([k]) => k === searchParams.kind) ? searchParams.kind : 'CHECKPOINT';
   const status = ['draft', 'live'].includes(searchParams.status) ? searchParams.status : '';
   const pathwayId = String(searchParams.pathway || '');

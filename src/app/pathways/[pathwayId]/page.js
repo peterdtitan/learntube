@@ -18,7 +18,8 @@ import Cover from '../../../components/ui/Cover';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return pathwayMetadata(params.pathwayId);
 }
 
@@ -38,7 +39,8 @@ function QuizRow({
   );
 }
 
-export default async function PathwayPage({ params }) {
+export default async function PathwayPage(props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const outline = await getPathwayOutline(params.pathwayId, session?.user?.id || null);
   if (!outline || !outline.lessonCount) notFound();
